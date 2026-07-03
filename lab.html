@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="The Shader Lab — five interactive WebGL2 wallpapers (ripples, liquid chrome, plasma, particles, Voronoi cells) from the exploration that produced this site's living background." />
+<meta name="description" content="The Shader Lab — ten interactive WebGL2 wallpapers, from rippling water and liquid chrome to auroras, lightning and a starfield warp tunnel. It began as the exploration that produced this site's living background." />
 <title>Shader Lab — Brendon James Kirk</title>
 <link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
 <meta property="og:title" content="Shader Lab — Brendon James Kirk" />
-<meta property="og:description" content="Five interactive WebGL2 wallpapers — ripples, liquid chrome, plasma, particles, Voronoi cells. The exploration that produced this site's living background." />
+<meta property="og:description" content="Ten interactive WebGL2 wallpapers — ripples, chrome, plasma, particles, cells, aurora, warp, mercury, storm, LED. The exploration that produced this site's living background." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -75,6 +75,7 @@
   body.ui-hidden #dock{ transform:translateX(-50%) translateY(6px); }
   .seg{
     display:flex; align-items:stretch; gap:4px; padding:5px;
+    flex-wrap:wrap; justify-content:center; max-width:min(92vw, 860px);
     background:var(--glass); border:1px solid var(--line); border-radius:14px;
     backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
     box-shadow:0 12px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
@@ -82,8 +83,8 @@
   .seg button{
     appearance:none; border:0; background:transparent; cursor:pointer; color:var(--ink-dim);
     font-family:var(--sans); font-size:13px; font-weight:500; letter-spacing:.01em;
-    padding:9px 16px; border-radius:10px; position:relative; transition:color .2s ease, background .2s ease;
-    display:flex; flex-direction:column; align-items:center; gap:3px; min-width:74px;
+    padding:9px 13px; border-radius:10px; position:relative; transition:color .2s ease, background .2s ease;
+    display:flex; flex-direction:column; align-items:center; gap:3px; min-width:64px;
   }
   .seg button .n{ font-family:var(--mono); font-size:9px; letter-spacing:.22em; opacity:.6; }
   .seg button:hover{ color:var(--ink); }
@@ -126,7 +127,7 @@
   <div id="readout" class="hud">
     <div class="label">Cursor Velocity</div>
     <div id="meter"><i></i></div>
-    <div class="idx"><b id="idxNum">01</b> / 05</div>
+    <div class="idx"><b id="idxNum">01</b> / 10</div>
   </div>
 
   <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
@@ -142,6 +143,11 @@
   <script src="js/lab/wp-plasma.js"></script>
   <script src="js/lab/wp-particles.js"></script>
   <script src="js/lab/wp-voronoi.js"></script>
+  <script src="js/lab/wp-aurora.js"></script>
+  <script src="js/lab/wp-warp.js"></script>
+  <script src="js/lab/wp-mercury.js"></script>
+  <script src="js/lab/wp-storm.js"></script>
+  <script src="js/lab/wp-led.js"></script>
   <script>
   (function () {
     const canvas = document.getElementById('gl');
@@ -149,7 +155,8 @@
     try { gl = Engine.createGL(canvas); }
     catch (e) { document.body.classList.add('no-webgl'); console.warn(e); return; }
 
-    const ORDER = ['ripples', 'chrome', 'plasma', 'particles', 'voronoi'];
+    const ORDER = ['ripples', 'chrome', 'plasma', 'particles', 'voronoi',
+                   'aurora', 'warp', 'mercury', 'storm', 'led'];
     const LIST = ORDER.map(k => window.WP[k]);
     const quad = Engine.quad(gl);
 
@@ -218,7 +225,7 @@
       document.getElementById('wpHint').textContent = next.hint;
       document.getElementById('idxNum').textContent = String(idx + 1).padStart(2, '0');
       [...seg.children].forEach((b, i) => b.classList.toggle('active', i === idx));
-      if (save !== false) try { localStorage.setItem('wp.active', next.id); } catch (e) {}
+      if (save !== false) try { localStorage.setItem('wp.active', ORDER[idx]); } catch (e) {}
     }
 
     // build switcher
@@ -236,7 +243,8 @@
     hideBtn.addEventListener('click', toggleUI);
     window.addEventListener('keydown', (e) => {
       if (e.key === 'h' || e.key === 'H') toggleUI();
-      else if (e.key >= '1' && e.key <= '5') activate(parseInt(e.key, 10) - 1);
+      else if (e.key >= '1' && e.key <= '9') activate(parseInt(e.key, 10) - 1);
+      else if (e.key === '0') activate(9);
       else if (e.key === 'ArrowRight') activate((LIST.indexOf(active) + 1) % LIST.length);
       else if (e.key === 'ArrowLeft') activate((LIST.indexOf(active) + LIST.length - 1) % LIST.length);
     });
