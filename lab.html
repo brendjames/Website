@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="The Shader Lab — ten interactive WebGL2 wallpapers, from rippling water and liquid chrome to auroras, lightning and a starfield warp tunnel. It began as the exploration that produced this site's living background." />
+<meta name="description" content="The Shader Lab — twelve interactive WebGL2 wallpapers, from rippling water and liquid chrome to auroras, lightning, open fire and a synthwave sunset. It began as the exploration that produced this site's living background." />
 <title>Shader Lab — Brendon James Kirk</title>
 <link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
 <meta property="og:title" content="Shader Lab — Brendon James Kirk" />
-<meta property="og:description" content="Ten interactive WebGL2 wallpapers — ripples, chrome, plasma, particles, cells, aurora, warp, mercury, storm, LED. The exploration that produced this site's living background." />
+<meta property="og:description" content="Twelve interactive WebGL2 wallpapers — ripples, chrome, plasma, particles, cells, aurora, warp, mercury, storm, LED, ember, synth. The exploration that produced this site's living background." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -127,7 +127,7 @@
   <div id="readout" class="hud">
     <div class="label">Cursor Velocity</div>
     <div id="meter"><i></i></div>
-    <div class="idx"><b id="idxNum">01</b> / 10</div>
+    <div class="idx"><b id="idxNum">01</b> / 12</div>
   </div>
 
   <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
@@ -148,6 +148,8 @@
   <script src="js/lab/wp-mercury.js"></script>
   <script src="js/lab/wp-storm.js"></script>
   <script src="js/lab/wp-led.js"></script>
+  <script src="js/lab/wp-ember.js"></script>
+  <script src="js/lab/wp-synth.js"></script>
   <script>
   (function () {
     const canvas = document.getElementById('gl');
@@ -156,7 +158,7 @@
     catch (e) { document.body.classList.add('no-webgl'); console.warn(e); return; }
 
     const ORDER = ['ripples', 'chrome', 'plasma', 'particles', 'voronoi',
-                   'aurora', 'warp', 'mercury', 'storm', 'led'];
+                   'aurora', 'warp', 'mercury', 'storm', 'led', 'ember', 'synth'];
     const LIST = ORDER.map(k => window.WP[k]);
     const quad = Engine.quad(gl);
 
