@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="The Shader Lab — five interactive WebGL2 wallpapers (ripples, liquid chrome, plasma, particles, Voronoi cells) from the exploration that produced this site's living background." />
+<title>Shader Lab — Brendon James Kirk</title>
+<link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
+<meta property="og:title" content="Shader Lab — Brendon James Kirk" />
+<meta property="og:description" content="Five interactive WebGL2 wallpapers — ripples, liquid chrome, plasma, particles, Voronoi cells. The exploration that produced this site's living background." />
+<meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
+<meta property="og:site_name" content="Brendon James Kirk" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<style>
+  :root{
+    --ink: rgba(226,236,246,0.92);
+    --ink-dim: rgba(170,190,210,0.55);
+    --line: rgba(150,180,210,0.16);
+    --line-bright: rgba(150,190,230,0.40);
+    --glass: rgba(14,20,30,0.42);
+    --cyan: oklch(0.82 0.11 220);
+    --sans: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; width:100%; overflow:hidden; background:#05080d; }
+  body{ font-family:var(--sans); color:var(--ink); -webkit-font-smoothing:antialiased; }
+
+  #stage{ position:fixed; inset:0; }
+  #gl{ display:block; width:100%; height:100%; cursor:crosshair; }
+
+  /* ---- HUD chrome ---- */
+  .hud{ position:fixed; z-index:10; transition:opacity .35s ease, transform .35s ease; }
+  body.ui-hidden .hud{ opacity:0; pointer-events:none; transform:translateY(6px); }
+
+  /* top-left identity */
+  #brand{ top:26px; left:30px; }
+  #brand .kicker{
+    font-family:var(--mono); font-size:11px; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--ink-dim); display:flex; align-items:center; gap:9px;
+  }
+  #brand .dot{ width:6px; height:6px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 10px 1px var(--cyan); animation:pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+  #brand .title{ margin-top:9px; font-size:21px; font-weight:600; letter-spacing:-.01em; }
+  #brand .hint{ margin-top:4px; font-family:var(--mono); font-size:11.5px; color:var(--ink-dim); letter-spacing:.02em; }
+  #brand .back{
+    display:inline-block; margin-top:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-dim); text-decoration:none;
+    border:1px solid var(--line); border-radius:10px; padding:8px 13px;
+    background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    transition:color .2s, border-color .2s;
+  }
+  #brand .back:hover{ color:var(--ink); border-color:var(--line-bright); }
+
+  /* top-right readout */
+  #readout{ top:26px; right:30px; text-align:right; font-family:var(--mono); }
+  #readout .label{ font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--ink-dim); }
+  #meter{ margin-top:8px; width:124px; height:3px; border-radius:3px; background:rgba(150,180,210,0.14);
+    overflow:hidden; margin-left:auto; }
+  #meter > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg, transparent, var(--cyan));
+    transition:width .08s linear; }
+  #readout .idx{ margin-top:10px; font-size:11px; color:var(--ink-dim); letter-spacing:.18em; }
+  #readout .idx b{ color:var(--ink); font-weight:500; }
+
+  /* bottom switcher */
+  #dock{ left:50%; bottom:30px; transform:translateX(-50%); }
+  body.ui-hidden #dock{ transform:translateX(-50%) translateY(6px); }
+  .seg{
+    display:flex; align-items:stretch; gap:4px; padding:5px;
+    background:var(--glass); border:1px solid var(--line); border-radius:14px;
+    backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    box-shadow:0 12px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .seg button{
+    appearance:none; border:0; background:transparent; cursor:pointer; color:var(--ink-dim);
+    font-family:var(--sans); font-size:13px; font-weight:500; letter-spacing:.01em;
+    padding:9px 16px; border-radius:10px; position:relative; transition:color .2s ease, background .2s ease;
+    display:flex; flex-direction:column; align-items:center; gap:3px; min-width:74px;
+  }
+  .seg button .n{ font-family:var(--mono); font-size:9px; letter-spacing:.22em; opacity:.6; }
+  .seg button:hover{ color:var(--ink); }
+  .seg button.active{ color:#06121c; background:linear-gradient(180deg, oklch(0.86 0.10 220), oklch(0.74 0.12 222));
+    box-shadow:0 4px 16px -6px var(--cyan); }
+  .seg button.active .n{ opacity:.7; }
+
+  /* hide-ui affordance */
+  #hideBtn{ right:30px; bottom:30px; }
+  #hideBtn button{
+    appearance:none; cursor:pointer; font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+    color:var(--ink-dim); background:var(--glass); border:1px solid var(--line); border-radius:10px;
+    padding:10px 13px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); transition:color .2s, border-color .2s;
+  }
+  #hideBtn button:hover{ color:var(--ink); border-color:var(--line-bright); }
+
+  /* show-again pill when UI hidden */
+  #peek{ position:fixed; z-index:11; left:50%; bottom:18px; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; color:var(--ink-dim);
+    opacity:0; transition:opacity .35s ease; pointer-events:none; text-transform:uppercase; }
+  body.ui-hidden #peek{ opacity:.7; }
+
+  #fallback{ position:fixed; inset:0; display:none; place-items:center; text-align:center;
+    font-family:var(--mono); color:var(--ink-dim); font-size:13px; padding:40px; }
+  body.no-webgl #fallback{ display:grid; }
+  body.no-webgl .hud{ display:none; }
+  #fallback a{ color:var(--ink); }
+</style>
+</head>
+<body>
+  <div id="stage"><canvas id="gl"></canvas></div>
+
+  <div id="brand" class="hud">
+    <div class="kicker"><span class="dot"></span>BK // SHADER LAB</div>
+    <div class="title" id="wpName">Ripple</div>
+    <div class="hint" id="wpHint">Drag to push the water · click to drop a stone</div>
+    <a class="back" href="index.html">← Back to site</a>
+  </div>
+
+  <div id="readout" class="hud">
+    <div class="label">Cursor Velocity</div>
+    <div id="meter"><i></i></div>
+    <div class="idx"><b id="idxNum">01</b> / 05</div>
+  </div>
+
+  <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
+
+  <div id="hideBtn" class="hud"><button id="hide">H · HIDE UI</button></div>
+  <div id="peek">press H to show controls</div>
+
+  <div id="fallback">This lab needs WebGL2.<br/>Try a current Chrome, Edge, Firefox or Safari — or head <a href="index.html">back to the site</a>.</div>
+
+  <script src="js/lab/gl-engine.js"></script>
+  <script src="js/lab/wp-ripples.js"></script>
+  <script src="js/lab/wp-chrome.js"></script>
+  <script src="js/lab/wp-plasma.js"></script>
+  <script src="js/lab/wp-particles.js"></script>
+  <script src="js/lab/wp-voronoi.js"></script>
+  <script>
+  (function () {
+    const canvas = document.getElementById('gl');
+    let gl;
+    try { gl = Engine.createGL(canvas); }
+    catch (e) { document.body.classList.add('no-webgl'); console.warn(e); return; }
+
+    const ORDER = ['ripples', 'chrome', 'plasma', 'particles', 'voronoi'];
+    const LIST = ORDER.map(k => window.WP[k]);
+    const quad = Engine.quad(gl);
+
+    const DPR_CAP = 1.5;
+    let W = 0, H = 0, dpr = 1;
+
+    // ---- input state ----
+    const input = {
+      mouse: [0.5, 0.5], pmouse: [0.5, 0.5], vel: [0, 0], speed: 0,
+      mousePx: [0, 0], velPx: [0, 0], down: false,
+      click: { pos: [0.5, 0.5], energy: 0 }, clickAge: 0,
+    };
+    let curN = [0.5, 0.5], lastN = [0.5, 0.5];
+    let curPx = [0, 0], lastPx = [0, 0];
+    let clickStart = -10;
+
+    function setFromEvent(e) {
+      const r = canvas.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      curN = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, 1 - y))];
+      curPx = [curN[0] * W, (1 - curN[1]) * H];
+    }
+    window.addEventListener('pointermove', setFromEvent, { passive: true });
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('a, button')) return; // keep HUD links clickable
+      setFromEvent(e);
+      input.down = true;
+      input.click.pos = curN.slice();
+      input.click.energy = 1;
+      clickStart = time;
+    });
+    window.addEventListener('pointerup', () => { input.down = false; });
+    window.addEventListener('pointercancel', () => { input.down = false; });
+
+    // ---- env passed to wallpapers ----
+    const env = { gl, canvas, quad, input, time: 0, dt: 0, W: 0, H: 0, dpr: 1 };
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+      const cw = canvas.clientWidth || window.innerWidth;
+      const ch = canvas.clientHeight || window.innerHeight;
+      W = Math.max(2, Math.round(cw * dpr));
+      H = Math.max(2, Math.round(ch * dpr));
+      canvas.width = W; canvas.height = H;
+      env.W = W; env.H = H; env.dpr = dpr;
+      if (active && initialized.has(active.id)) active.resize && active.resize(env);
+    }
+    window.addEventListener('resize', resize);
+
+    // ---- wallpaper switching ----
+    const initialized = new Set();
+    let active = null;
+
+    function activate(idx, save) {
+      const next = LIST[idx];
+      if (active === next) return;
+      active = next;
+      env.W = W; env.H = H; env.dpr = dpr;
+      if (!initialized.has(next.id)) { next.setup(env); initialized.add(next.id); }
+      next.resize && next.resize(env);
+      // reset transient input so a new shader starts calm
+      input.click.energy = 0;
+      // UI
+      document.getElementById('wpName').textContent = next.name;
+      document.getElementById('wpHint').textContent = next.hint;
+      document.getElementById('idxNum').textContent = String(idx + 1).padStart(2, '0');
+      [...seg.children].forEach((b, i) => b.classList.toggle('active', i === idx));
+      if (save !== false) try { localStorage.setItem('wp.active', next.id); } catch (e) {}
+    }
+
+    // build switcher
+    const seg = document.getElementById('seg');
+    LIST.forEach((wp, i) => {
+      const b = document.createElement('button');
+      b.innerHTML = '<span class="t">' + wp.name + '</span><span class="n">' + String(i + 1).padStart(2, '0') + '</span>';
+      b.addEventListener('click', () => activate(i));
+      seg.appendChild(b);
+    });
+
+    // hide UI
+    const hideBtn = document.getElementById('hide');
+    function toggleUI() { document.body.classList.toggle('ui-hidden'); }
+    hideBtn.addEventListener('click', toggleUI);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'h' || e.key === 'H') toggleUI();
+      else if (e.key >= '1' && e.key <= '5') activate(parseInt(e.key, 10) - 1);
+      else if (e.key === 'ArrowRight') activate((LIST.indexOf(active) + 1) % LIST.length);
+      else if (e.key === 'ArrowLeft') activate((LIST.indexOf(active) + LIST.length - 1) % LIST.length);
+    });
+
+    // ---- main loop ----
+    let time = 0, start = performance.now(), prev = start;
+    const meter = document.querySelector('#meter > i');
+    let raf = null;
+
+    function frame(now) {
+      time = (now - start) / 1000;
+      env.dt = Math.min(0.05, (now - prev) / 1000); prev = now;
+      env.time = time;
+
+      // velocity + smoothed speed
+      const velN = [curN[0] - lastN[0], curN[1] - lastN[1]];
+      const velPx = [curPx[0] - lastPx[0], curPx[1] - lastPx[1]];
+      const rawSpeed = Math.min(1.5, Math.hypot(velPx[0], velPx[1]) / (35 * dpr));
+      input.speed += (rawSpeed - input.speed) * 0.25;
+      input.mouse = curN; input.pmouse = lastN.slice();
+      input.vel = velN; input.velPx = velPx;
+      input.mousePx = curPx.slice();
+      lastN = curN.slice(); lastPx = curPx.slice();
+
+      // click decay
+      input.click.energy *= 0.96;
+      if (input.click.energy < 0.001) input.click.energy = 0;
+      input.clickAge = time - clickStart;
+
+      meter.style.width = Math.min(100, input.speed * 80) + '%';
+
+      if (active) active.render(env);
+      raf = requestAnimationFrame(frame);
+    }
+    // pause when tab hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = null; }
+      else if (!raf) { prev = performance.now(); raf = requestAnimationFrame(frame); }
+    });
+
+    // ---- boot ----
+    resize();
+    let startIdx = 0;
+    try { const saved = localStorage.getItem('wp.active'); const si = ORDER.indexOf(saved); if (si >= 0) startIdx = si; } catch (e) {}
+    activate(startIdx, false);
+    raf = requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

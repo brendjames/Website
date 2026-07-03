@@ -1,0 +1,9 @@
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# tooling
+node_modules/
+*.tmp
+.claude/settings.local.json
