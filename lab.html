@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="The Shader Lab — twelve interactive WebGL2 wallpapers, from rippling water and liquid chrome to auroras, lightning, open fire and a synthwave sunset. It began as the exploration that produced this site's living background." />
+<meta name="description" content="The Shader Lab — seventeen interactive WebGL2 wallpapers, from rippling water and flowing ink to auroras, lightning, a black hole and a synthwave sunset. Fullscreen it, download frames as wallpapers, or let it react to your music." />
 <title>Shader Lab — Brendon James Kirk</title>
 <link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
 <meta property="og:title" content="Shader Lab — Brendon James Kirk" />
-<meta property="og:description" content="Twelve interactive WebGL2 wallpapers — ripples, chrome, plasma, particles, cells, aurora, warp, mercury, storm, LED, ember, synth. The exploration that produced this site's living background." />
+<meta property="og:description" content="Seventeen interactive WebGL2 wallpapers — from rippling water and flowing ink to lightning, a black hole and a synthwave sunset. Fullscreen it, download frames, or let it react to your music." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -73,6 +73,7 @@
   /* bottom switcher */
   #dock{ left:50%; bottom:30px; transform:translateX(-50%); }
   body.ui-hidden #dock{ transform:translateX(-50%) translateY(6px); }
+  @media (max-width: 900px){ #dock{ bottom:88px; } }  /* clear the control row */
   .seg{
     display:flex; align-items:stretch; gap:4px; padding:5px;
     flex-wrap:wrap; justify-content:center; max-width:min(92vw, 860px);
@@ -92,14 +93,34 @@
     box-shadow:0 4px 16px -6px var(--cyan); }
   .seg button.active .n{ opacity:.7; }
 
-  /* hide-ui affordance */
-  #hideBtn{ right:30px; bottom:30px; }
-  #hideBtn button{
-    appearance:none; cursor:pointer; font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+  /* control cluster, bottom-right */
+  #ctl{ right:30px; bottom:30px; display:flex; gap:6px; }
+  #ctl button{
+    appearance:none; cursor:pointer; font-family:var(--mono); font-size:11px; letter-spacing:.14em;
     color:var(--ink-dim); background:var(--glass); border:1px solid var(--line); border-radius:10px;
-    padding:10px 13px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); transition:color .2s, border-color .2s;
+    padding:10px 12px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); transition:color .2s, border-color .2s;
   }
-  #hideBtn button:hover{ color:var(--ink); border-color:var(--line-bright); }
+  #ctl button:hover{ color:var(--ink); border-color:var(--line-bright); }
+  #ctl button.on{
+    color:#06121c; border-color:transparent;
+    background:linear-gradient(180deg, oklch(0.86 0.10 220), oklch(0.74 0.12 222));
+  }
+
+  /* hue dial, bottom-left */
+  #hueCtl{
+    left:30px; bottom:30px; display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.24em; color:var(--ink-dim);
+    background:var(--glass); border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  #hueCtl input{ width:110px; accent-color: oklch(0.82 0.11 220); cursor:pointer; }
+
+  /* crossfade veil between shaders */
+  #fader{
+    position:fixed; inset:0; z-index:5; background:#05080d;
+    opacity:0; pointer-events:none; transition:opacity .28s ease;
+  }
+  #fader.show{ opacity:1; }
 
   /* show-again pill when UI hidden */
   #peek{ position:fixed; z-index:11; left:50%; bottom:18px; transform:translateX(-50%);
@@ -127,13 +148,25 @@
   <div id="readout" class="hud">
     <div class="label">Cursor Velocity</div>
     <div id="meter"><i></i></div>
-    <div class="idx"><b id="idxNum">01</b> / 12</div>
+    <div class="idx"><b id="idxNum">01</b> / 17</div>
   </div>
 
   <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
 
-  <div id="hideBtn" class="hud"><button id="hide">H · HIDE UI</button></div>
+  <div id="hueCtl" class="hud">
+    <span>HUE</span>
+    <input id="hue" type="range" min="0" max="360" value="0" step="1" aria-label="Hue shift" />
+  </div>
+
+  <div id="ctl" class="hud">
+    <button id="mic" title="React to sound — M">MIC</button>
+    <button id="auto" title="Auto-cycle shaders — A">AUTO</button>
+    <button id="save" title="Download this frame as a wallpaper — S">SAVE</button>
+    <button id="fs" title="Fullscreen — F">FULL</button>
+    <button id="hide" title="Hide interface — H">HIDE</button>
+  </div>
   <div id="peek">press H to show controls</div>
+  <div id="fader"></div>
 
   <div id="fallback">This lab needs WebGL2.<br/>Try a current Chrome, Edge, Firefox or Safari — or head <a href="index.html">back to the site</a>.</div>
 
@@ -150,6 +183,11 @@
   <script src="js/lab/wp-led.js"></script>
   <script src="js/lab/wp-ember.js"></script>
   <script src="js/lab/wp-synth.js"></script>
+  <script src="js/lab/wp-ink.js"></script>
+  <script src="js/lab/wp-rain.js"></script>
+  <script src="js/lab/wp-glyphs.js"></script>
+  <script src="js/lab/wp-void.js"></script>
+  <script src="js/lab/wp-coral.js"></script>
   <script>
   (function () {
     const canvas = document.getElementById('gl');
@@ -158,7 +196,8 @@
     catch (e) { document.body.classList.add('no-webgl'); console.warn(e); return; }
 
     const ORDER = ['ripples', 'chrome', 'plasma', 'particles', 'voronoi',
-                   'aurora', 'warp', 'mercury', 'storm', 'led', 'ember', 'synth'];
+                   'aurora', 'warp', 'mercury', 'storm', 'led', 'ember', 'synth',
+                   'ink', 'rain', 'glyphs', 'void', 'coral'];
     const LIST = ORDER.map(k => window.WP[k]);
     const quad = Engine.quad(gl);
 
@@ -174,6 +213,7 @@
     let curN = [0.5, 0.5], lastN = [0.5, 0.5];
     let curPx = [0, 0], lastPx = [0, 0];
     let clickStart = -10;
+    let lastRealInput = performance.now();
 
     function setFromEvent(e) {
       const r = canvas.getBoundingClientRect();
@@ -181,10 +221,11 @@
       const y = (e.clientY - r.top) / r.height;
       curN = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, 1 - y))];
       curPx = [curN[0] * W, (1 - curN[1]) * H];
+      lastRealInput = performance.now();
     }
     window.addEventListener('pointermove', setFromEvent, { passive: true });
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('a, button')) return; // keep HUD links clickable
+      if (e.target && e.target.closest && e.target.closest('a, button, input, label')) return; // keep HUD clickable
       setFromEvent(e);
       input.down = true;
       input.click.pos = curN.slice();
@@ -211,12 +252,15 @@
 
     // ---- wallpaper switching ----
     const initialized = new Set();
-    let active = null;
+    let active = null, curIdx = 0, lastSwitch = 0, fading = false;
+    const fader = document.getElementById('fader');
 
     function activate(idx, save) {
       const next = LIST[idx];
       if (active === next) return;
       active = next;
+      curIdx = idx;
+      lastSwitch = time;
       env.W = W; env.H = H; env.dpr = dpr;
       if (!initialized.has(next.id)) { next.setup(env); initialized.add(next.id); }
       next.resize && next.resize(env);
@@ -227,28 +271,134 @@
       document.getElementById('wpHint').textContent = next.hint;
       document.getElementById('idxNum').textContent = String(idx + 1).padStart(2, '0');
       [...seg.children].forEach((b, i) => b.classList.toggle('active', i === idx));
-      if (save !== false) try { localStorage.setItem('wp.active', ORDER[idx]); } catch (e) {}
+      if (save !== false) {
+        try { localStorage.setItem('wp.active', ORDER[idx]); } catch (e) {}
+        try { history.replaceState(null, '', '#' + ORDER[idx]); } catch (e) {}
+      }
     }
+
+    // dip to black, switch, dip back up
+    function switchTo(idx, save) {
+      if (fading || LIST[idx] === active) return;
+      fading = true;
+      fader.classList.add('show');
+      setTimeout(() => {
+        activate(idx, save);
+        fader.classList.remove('show');
+        fading = false;
+      }, 300);
+    }
+
+    // deep links: lab.html#storm, #void, #cells...
+    function hashIndex() {
+      const h = decodeURIComponent(location.hash.slice(1)).toLowerCase();
+      if (!h) return -1;
+      const byKey = ORDER.indexOf(h);
+      if (byKey >= 0) return byKey;
+      return LIST.findIndex((w) => w.id === h || w.name.toLowerCase() === h);
+    }
+    window.addEventListener('hashchange', () => {
+      const i = hashIndex();
+      if (i >= 0) switchTo(i);
+    });
 
     // build switcher
     const seg = document.getElementById('seg');
     LIST.forEach((wp, i) => {
       const b = document.createElement('button');
       b.innerHTML = '<span class="t">' + wp.name + '</span><span class="n">' + String(i + 1).padStart(2, '0') + '</span>';
-      b.addEventListener('click', () => activate(i));
+      b.addEventListener('click', () => switchTo(i));
       seg.appendChild(b);
     });
 
-    // hide UI
+    // ---- controls ----
     const hideBtn = document.getElementById('hide');
     function toggleUI() { document.body.classList.toggle('ui-hidden'); }
     hideBtn.addEventListener('click', toggleUI);
+
+    // fullscreen
+    const fsBtn = document.getElementById('fs');
+    fsBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    });
+
+    // download the current frame as a wallpaper PNG
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', () => {
+      if (!active) return;
+      active.render(env);          // fresh frame in the buffer for toBlob
+      canvas.toBlob((b) => {
+        if (!b) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = 'bk-wallpaper-' + ORDER[curIdx] + '.png';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      }, 'image/png');
+    });
+
+    // auto-cycle (screensaver) mode
+    const autoBtn = document.getElementById('auto');
+    let auto = false;
+    autoBtn.addEventListener('click', () => {
+      auto = !auto;
+      autoBtn.classList.toggle('on', auto);
+    });
+
+    // hue dial: re-tints any shader via a CSS hue-rotate on the canvas
+    const hueInput = document.getElementById('hue');
+    function applyHue(v) { canvas.style.filter = (+v) ? 'hue-rotate(' + v + 'deg)' : ''; }
+    hueInput.addEventListener('input', () => {
+      applyHue(hueInput.value);
+      try { localStorage.setItem('wp.hue', hueInput.value); } catch (e) {}
+    });
+    document.getElementById('hueCtl').addEventListener('dblclick', () => {
+      hueInput.value = 0; applyHue(0);
+      try { localStorage.setItem('wp.hue', '0'); } catch (e) {}
+    });
+    try { const sh = localStorage.getItem('wp.hue'); if (sh) { hueInput.value = sh; applyHue(sh); } } catch (e) {}
+
+    // microphone reactivity: level drives u_speed, bass beats fire pulses
+    const micBtn = document.getElementById('mic');
+    let audio = null;
+    async function toggleMic() {
+      if (audio) {
+        audio.stream.getTracks().forEach((tr) => tr.stop());
+        audio.ctx.close();
+        audio = null;
+        micBtn.classList.remove('on');
+        return;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: false, noiseSuppression: false },
+        });
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        audio = { ctx, stream, analyser, data: new Uint8Array(analyser.frequencyBinCount), bassAvg: 0, lastBeat: -10 };
+        micBtn.classList.add('on');
+      } catch (e) {
+        micBtn.textContent = 'MIC ✕';
+        setTimeout(() => { micBtn.textContent = 'MIC'; }, 1600);
+      }
+    }
+    micBtn.addEventListener('click', toggleMic);
+
     window.addEventListener('keydown', (e) => {
+      if (e.target && e.target.tagName === 'INPUT') return;
       if (e.key === 'h' || e.key === 'H') toggleUI();
-      else if (e.key >= '1' && e.key <= '9') activate(parseInt(e.key, 10) - 1);
-      else if (e.key === '0') activate(9);
-      else if (e.key === 'ArrowRight') activate((LIST.indexOf(active) + 1) % LIST.length);
-      else if (e.key === 'ArrowLeft') activate((LIST.indexOf(active) + LIST.length - 1) % LIST.length);
+      else if (e.key === 'f' || e.key === 'F') fsBtn.click();
+      else if (e.key === 'a' || e.key === 'A') autoBtn.click();
+      else if (e.key === 's' || e.key === 'S') saveBtn.click();
+      else if (e.key === 'm' || e.key === 'M') toggleMic();
+      else if (e.key >= '1' && e.key <= '9') switchTo(parseInt(e.key, 10) - 1);
+      else if (e.key === '0') switchTo(9);
+      else if (e.key === 'ArrowRight') switchTo((curIdx + 1) % LIST.length);
+      else if (e.key === 'ArrowLeft') switchTo((curIdx + LIST.length - 1) % LIST.length);
     });
 
     // ---- main loop ----
@@ -256,10 +406,32 @@
     const meter = document.querySelector('#meter > i');
     let raf = null;
 
+    let nextDriftClick = 10;
+
     function frame(now) {
       time = (now - start) / 1000;
       env.dt = Math.min(0.05, (now - prev) / 1000); prev = now;
       env.time = time;
+
+      // screensaver: after a few idle seconds the cursor drifts on its own
+      const idle = (now - lastRealInput) / 1000;
+      if (idle > 6) {
+        const dtT = time * 0.5;
+        curN = [
+          0.5 + 0.34*Math.sin(dtT*0.26) + 0.10*Math.sin(dtT*0.83),
+          0.5 + 0.30*Math.sin(dtT*0.21 + 1.7) + 0.08*Math.cos(dtT*0.67),
+        ];
+        curPx = [curN[0]*W, (1 - curN[1])*H];
+        if (time > nextDriftClick) {
+          input.click.pos = curN.slice();
+          input.click.energy = 0.9;
+          clickStart = time;
+          nextDriftClick = time + 6 + Math.random()*8;
+        }
+      }
+
+      // auto-cycle mode: next shader every 45 seconds
+      if (auto && time - lastSwitch > 45 && !fading) switchTo((curIdx + 1) % LIST.length);
 
       // velocity + smoothed speed
       const velN = [curN[0] - lastN[0], curN[1] - lastN[1]];
@@ -270,6 +442,24 @@
       input.vel = velN; input.velPx = velPx;
       input.mousePx = curPx.slice();
       lastN = curN.slice(); lastPx = curPx.slice();
+
+      // audio drive: level feeds u_speed, bass beats fire click pulses
+      if (audio) {
+        audio.analyser.getByteFrequencyData(audio.data);
+        let sum = 0, bass = 0;
+        const n = audio.data.length;
+        for (let i = 0; i < n; i++) sum += audio.data[i];
+        for (let i = 1; i < 9; i++) bass += audio.data[i];
+        const level = sum / (n * 255), bl = bass / (8 * 255);
+        input.speed = Math.max(input.speed, level * 1.8);
+        audio.bassAvg = audio.bassAvg * 0.985 + bl * 0.015;
+        if (bl > audio.bassAvg * 1.45 + 0.06 && time - audio.lastBeat > 0.30) {
+          audio.lastBeat = time;
+          input.click.pos = curN.slice();
+          input.click.energy = Math.max(input.click.energy, Math.min(1, bl * 1.5));
+          clickStart = time;
+        }
+      }
 
       // click decay
       input.click.energy *= 0.96;
@@ -290,7 +480,9 @@
     // ---- boot ----
     resize();
     let startIdx = 0;
-    try { const saved = localStorage.getItem('wp.active'); const si = ORDER.indexOf(saved); if (si >= 0) startIdx = si; } catch (e) {}
+    const hi = hashIndex();
+    if (hi >= 0) startIdx = hi;
+    else try { const saved = localStorage.getItem('wp.active'); const si = ORDER.indexOf(saved); if (si >= 0) startIdx = si; } catch (e) {}
     activate(startIdx, false);
     raf = requestAnimationFrame(frame);
   })();
