@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, and a growing collection of AI agents." />
+<meta name="description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, a hand-built HTML5 arcade, and a growing collection of AI agents." />
 <title>Projects — Brendon James Kirk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +16,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/projects.html" />
 <meta property="og:title" content="Projects — Brendon James Kirk" />
-<meta property="og:description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, and a growing collection of AI agents." />
+<meta property="og:description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, a hand-built HTML5 arcade, and a growing collection of AI agents." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -46,6 +46,13 @@
       radial-gradient(90% 120% at 80% 85%, rgba(84,200,255,0.38), transparent 55%),
       radial-gradient(120% 140% at 15% 10%, rgba(31,127,184,0.5), transparent 60%),
       linear-gradient(150deg, #0a1a28, #05080d);
+  }
+  .proj-card .thumb .ph.arc{
+    /* amber/magenta variant for the Arcade */
+    background:
+      radial-gradient(90% 120% at 20% 85%, rgba(245,169,74,0.34), transparent 55%),
+      radial-gradient(120% 140% at 80% 12%, rgba(224,90,169,0.42), transparent 60%),
+      linear-gradient(150deg, #26101f, #05080d);
   }
   .proj-card .body{ padding:24px 26px 26px; display:flex; flex-direction:column; gap:12px; flex:1; }
   .proj-card .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -129,6 +136,22 @@
         </div>
       </article>
 
+      <article class="card glow proj-card reveal">
+        <div class="thumb">
+          <div class="ph arc"><span>HTML5 · 05 Games</span></div>
+        </div>
+        <div class="body">
+          <div class="top">
+            <h2>The Arcade</h2>
+            <span class="badge"><span class="dot"></span>Live</span>
+          </div>
+          <p>Five hand-built canvas games — Snake, Breakout, Duck Hop (starring the duck), Asteroids and 2048. No frameworks, no ads; high scores live on your device. Keyboard, mouse and touch all welcome.</p>
+          <div class="cta">
+            <a class="btn primary" href="arcade.html">Insert Coin</a>
+          </div>
+        </div>
+      </article>
+
       <article class="card glow proj-card ghost reveal">
         <div class="thumb">
           <!-- ASSET: agents project image -->
@@ -157,6 +180,7 @@
       <a href="projects.html">Projects</a>
       <a href="journey.html">Journey</a>
       <a href="contact.html">Contact</a>
+      <a href="arcade.html">Arcade</a>
       <a href="lab.html">Lab</a>
       <a href="https://github.com/brendjames">GitHub</a>
     </nav>

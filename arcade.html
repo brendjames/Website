@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="The Arcade — five hand-built HTML5 canvas games: Snake, Breakout, Duck Hop, Asteroids and 2048. No frameworks, no ads, just play. High scores stay on your device." />
+<title>Arcade — Brendon James Kirk</title>
+<link rel="canonical" href="https://brendonjameskirk.com/arcade.html" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://brendonjameskirk.com/arcade.html" />
+<meta property="og:title" content="Arcade — Brendon James Kirk" />
+<meta property="og:description" content="Five hand-built HTML5 canvas games — Snake, Breakout, Duck Hop, Asteroids, 2048. No frameworks, no ads, just play." />
+<meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
+<meta property="og:site_name" content="Brendon James Kirk" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<style>
+  :root{
+    --ink: rgba(226,236,246,0.92);
+    --ink-dim: rgba(170,190,210,0.55);
+    --line: rgba(150,180,210,0.16);
+    --line-bright: rgba(150,190,230,0.40);
+    --glass: rgba(14,20,30,0.42);
+    --cyan: oklch(0.82 0.11 220);
+    --sans: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; width:100%; overflow:hidden; background:#05080d; }
+  body{ font-family:var(--sans); color:var(--ink); -webkit-font-smoothing:antialiased; }
+
+  #game{ position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+
+  .hud{ position:fixed; z-index:10; transition:opacity .35s ease, transform .35s ease; }
+  body.ui-hidden .hud{ opacity:0; pointer-events:none; transform:translateY(6px); }
+
+  #brand{ top:26px; left:30px; }
+  #brand .kicker{
+    font-family:var(--mono); font-size:11px; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--ink-dim); display:flex; align-items:center; gap:9px;
+  }
+  #brand .dot{ width:6px; height:6px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 10px 1px var(--cyan); animation:pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+  #brand .title{ margin-top:9px; font-size:21px; font-weight:600; letter-spacing:-.01em; }
+  #brand .hint{ margin-top:4px; font-family:var(--mono); font-size:11.5px; color:var(--ink-dim); letter-spacing:.02em; }
+  #brand .back{
+    display:inline-block; margin-top:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-dim); text-decoration:none;
+    border:1px solid var(--line); border-radius:10px; padding:8px 13px;
+    background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    transition:color .2s, border-color .2s;
+  }
+  #brand .back:hover{ color:var(--ink); border-color:var(--line-bright); }
+
+  #readout{ top:26px; right:30px; text-align:right; font-family:var(--mono); }
+  #readout .label{ font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--ink-dim); }
+  #readout .score{ margin-top:8px; font-size:26px; font-weight:500; color:var(--ink); letter-spacing:.06em; }
+  #readout .bestrow{ margin-top:4px; font-size:11px; color:var(--ink-dim); letter-spacing:.18em; }
+  #readout .bestrow b{ color:var(--cyan); font-weight:500; }
+
+  #dock{ left:50%; bottom:30px; transform:translateX(-50%); }
+  body.ui-hidden #dock{ transform:translateX(-50%) translateY(6px); }
+  @media (max-width: 900px){ #dock{ bottom:88px; } }
+  .seg{
+    display:flex; align-items:stretch; gap:4px; padding:5px;
+    flex-wrap:wrap; justify-content:center; max-width:min(92vw, 860px);
+    background:var(--glass); border:1px solid var(--line); border-radius:14px;
+    backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    box-shadow:0 12px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .seg button{
+    appearance:none; border:0; background:transparent; cursor:pointer; color:var(--ink-dim);
+    font-family:var(--sans); font-size:13px; font-weight:500; letter-spacing:.01em;
+    padding:9px 13px; border-radius:10px; position:relative; transition:color .2s ease, background .2s ease;
+    display:flex; flex-direction:column; align-items:center; gap:3px; min-width:64px;
+  }
+  .seg button .n{ font-family:var(--mono); font-size:9px; letter-spacing:.22em; opacity:.6; }
+  .seg button:hover{ color:var(--ink); }
+  .seg button.active{ color:#06121c; background:linear-gradient(180deg, oklch(0.86 0.10 220), oklch(0.74 0.12 222));
+    box-shadow:0 4px 16px -6px var(--cyan); }
+  .seg button.active .n{ opacity:.7; }
+
+  #ctl{ right:30px; bottom:30px; display:flex; gap:6px; }
+  #ctl button{
+    appearance:none; cursor:pointer; font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    color:var(--ink-dim); background:var(--glass); border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); transition:color .2s, border-color .2s;
+  }
+  #ctl button:hover{ color:var(--ink); border-color:var(--line-bright); }
+
+  #peek{ position:fixed; z-index:11; left:50%; bottom:18px; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; color:var(--ink-dim);
+    opacity:0; transition:opacity .35s ease; pointer-events:none; text-transform:uppercase; }
+  body.ui-hidden #peek{ opacity:.7; }
+
+  #fader{
+    position:fixed; inset:0; z-index:5; background:#05080d;
+    opacity:0; pointer-events:none; transition:opacity .28s ease;
+  }
+  #fader.show{ opacity:1; }
+</style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="brand" class="hud">
+    <div class="kicker"><span class="dot"></span>BK // ARCADE</div>
+    <div class="title" id="gName">Snake</div>
+    <div class="hint" id="gHint"></div>
+    <a class="back" href="index.html">← Back to site</a>
+  </div>
+
+  <div id="readout" class="hud">
+    <div class="label">Score</div>
+    <div class="score" id="gScore">0</div>
+    <div class="bestrow">BEST <b id="gBest">0</b></div>
+  </div>
+
+  <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
+
+  <div id="ctl" class="hud">
+    <button id="fs" title="Fullscreen — F">FULL</button>
+    <button id="hide" title="Hide interface — H">HIDE</button>
+  </div>
+  <div id="peek">press H to show controls</div>
+  <div id="fader"></div>
+
+  <script src="js/arcade/game-snake.js"></script>
+  <script src="js/arcade/game-breakout.js"></script>
+  <script src="js/arcade/game-duck.js"></script>
+  <script src="js/arcade/game-asteroids.js"></script>
+  <script src="js/arcade/game-2048.js"></script>
+  <script>
+  (function () {
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const ORDER = ['snake', 'breakout', 'duck', 'asteroids', '2048'];
+    const LIST = ORDER.map(k => window.GAMES[k]);
+
+    let W = 0, H = 0, dpr = 1;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (current && current.resize) current.resize();
+    }
+    window.addEventListener('resize', resize);
+
+    // ---- shell API handed to each game ----
+    let score = 0, best = 0, curKey = '';
+    const scoreEl = document.getElementById('gScore');
+    const bestEl = document.getElementById('gBest');
+    const shell = {
+      canvas, ctx,
+      get w() { return W; },
+      get h() { return H; },
+      signal: null,
+      setScore(n) {
+        score = n;
+        scoreEl.textContent = String(n);
+        if (n > best) {
+          best = n;
+          bestEl.textContent = String(n);
+          try { localStorage.setItem('arcade.best.' + curKey, String(n)); } catch (e) {}
+        }
+      },
+    };
+
+    // ---- switching ----
+    let current = null, curIdx = 0, fading = false, controller = null;
+    const fader = document.getElementById('fader');
+    const seg = document.getElementById('seg');
+
+    function activate(idx, save) {
+      if (current) {
+        current.stop();
+        if (controller) controller.abort();
+      }
+      curIdx = idx;
+      curKey = ORDER[idx];
+      const game = LIST[idx];
+      current = game;
+      controller = new AbortController();
+      shell.signal = controller.signal;
+      score = 0;
+      try { best = parseInt(localStorage.getItem('arcade.best.' + curKey) || '0', 10) || 0; } catch (e) { best = 0; }
+      scoreEl.textContent = '0';
+      bestEl.textContent = String(best);
+      document.getElementById('gName').textContent = game.name;
+      document.getElementById('gHint').textContent = game.hint;
+      [...seg.children].forEach((b, i) => b.classList.toggle('active', i === idx));
+      if (save !== false) {
+        try { localStorage.setItem('arcade.last', curKey); } catch (e) {}
+        try { history.replaceState(null, '', '#' + curKey); } catch (e) {}
+      }
+      game.start(shell);
+    }
+
+    function switchTo(idx, save) {
+      if (fading || LIST[idx] === current) return;
+      fading = true;
+      fader.classList.add('show');
+      setTimeout(() => {
+        activate(idx, save);
+        fader.classList.remove('show');
+        fading = false;
+      }, 300);
+    }
+
+    function hashIndex() {
+      const h = decodeURIComponent(location.hash.slice(1)).toLowerCase();
+      if (!h) return -1;
+      const byKey = ORDER.indexOf(h);
+      if (byKey >= 0) return byKey;
+      return LIST.findIndex((g) => g.id === h || g.name.toLowerCase() === h);
+    }
+    window.addEventListener('hashchange', () => {
+      const i = hashIndex();
+      if (i >= 0) switchTo(i);
+    });
+
+    // dock
+    LIST.forEach((g, i) => {
+      const b = document.createElement('button');
+      b.innerHTML = '<span class="t">' + g.name + '</span><span class="n">' + String(i + 1).padStart(2, '0') + '</span>';
+      b.addEventListener('click', () => { b.blur(); switchTo(i); });
+      seg.appendChild(b);
+    });
+
+    // controls
+    document.getElementById('hide').addEventListener('click', function () {
+      this.blur(); document.body.classList.toggle('ui-hidden');
+    });
+    document.getElementById('fs').addEventListener('click', function () {
+      this.blur();
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    });
+
+    // shell keys: 1-5 pick a game, [ ] cycle, F fullscreen, H hide UI.
+    // Everything else belongs to the games.
+    window.addEventListener('keydown', (e) => {
+      if (e.target && e.target.tagName === 'INPUT') return;
+      if (e.key === 'h' || e.key === 'H') document.getElementById('hide').click();
+      else if (e.key === 'f' || e.key === 'F') document.getElementById('fs').click();
+      else if (e.key === '[') switchTo((curIdx + LIST.length - 1) % LIST.length);
+      else if (e.key === ']') switchTo((curIdx + 1) % LIST.length);
+      else if (e.key >= '1' && e.key <= '5') switchTo(parseInt(e.key, 10) - 1);
+    });
+
+    // keep arrows/space from scrolling or re-clicking focused buttons
+    window.addEventListener('keydown', (e) => {
+      if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
+    });
+
+    // boot
+    resize();
+    let startIdx = 0;
+    const hi = hashIndex();
+    if (hi >= 0) startIdx = hi;
+    else try { const saved = localStorage.getItem('arcade.last'); const si = ORDER.indexOf(saved); if (si >= 0) startIdx = si; } catch (e) {}
+    activate(startIdx, false);
+  })();
+  </script>
+</body>
+</html>
