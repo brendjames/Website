@@ -16,11 +16,11 @@ blog/                   8 individual post pages
 journey.html            CV — animated vertical timeline (Intersection Observer)
 projects.html           Project showcase cards
 contact.html            Contact form (mailto + honeypot + inline success)
-lab.html                Shader Lab — 17 fullscreen interactive WebGL2 wallpapers
+lab.html                Shader Lab — 22 fullscreen interactive WebGL2 wallpapers
 css/site.css            Shared design system styles
 js/site.js              Nav toggle, glow tracking, reveals, typewriter, form
 js/bg-cells.js          Standalone WebGL2 Voronoi "Cells" background (every page)
-js/lab/                 Shader Lab engine (gl-engine.js) + the 17 wallpaper modules
+js/lab/                 Shader Lab engine (gl-engine.js) + the 22 wallpaper modules
 assets/                 Hero image + 8 post images
 sitemap.xml, robots.txt Search-engine hints
 memory.md               Build planning document
@@ -42,7 +42,7 @@ memory.md               Build planning document
 - **Timeline** — Intersection Observer slide-ins, Durban → Cape Town → Vienna
 - **Projects** — glassmorphism bento cards with status badges
 - **Contact** — HTML5 validation, hidden honeypot, inline success message
-- **Shader Lab** — a seventeen-shader fullscreen playground at `lab.html`: ripples, chrome, plasma, magnet, cells, aurora, warp, mercury, storm, an LED wall, ember fire, a synthwave sunset, flowing ink, rain on glass, digital rain, a black hole, and a reaction-diffusion culture — all cursor-reactive WebGL2. Fullscreen + wallpaper download, auto-cycle screensaver mode with an idle-drifting cursor, microphone reactivity, a hue dial, and `#deep-links` per shader
+- **Shader Lab** — a twenty-two-shader fullscreen playground at `lab.html`: ripples, chrome, plasma, magnet, cells, aurora, warp, mercury, storm, an LED wall, ember fire, a synthwave sunset, flowing ink, rain on glass, digital rain, a black hole, a reaction-diffusion culture, a boids murmuration, a pulsing circuit board, a kaleidoscope, living topographic contours, and click-to-launch fireworks — all cursor-reactive WebGL2. Fullscreen + wallpaper download, auto-cycle screensaver mode with an idle-drifting cursor, microphone reactivity, a hue dial, and `#deep-links` per shader
 - **Accessibility** — ARIA roles, alt text, keyboard navigation, visible focus rings, `prefers-reduced-motion` respected
 - **SEO & sharing** — canonical URLs, Open Graph + Twitter cards on every page, `sitemap.xml` + `robots.txt`
 
