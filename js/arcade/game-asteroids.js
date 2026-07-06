@@ -10,6 +10,7 @@ window.GAMES.asteroids = (function () {
   ];
   let S, raf = 0, last = 0;
   let state, ship, rocks, bullets, parts, keys, lives, level, score, fireCd;
+  let touch = { active: false, x: 0, y: 0 }, touchMode = false;
 
   function makeRock(x, y, size) {
     const def = SIZES[size];
@@ -44,7 +45,7 @@ window.GAMES.asteroids = (function () {
     resetShip();
     spawnWave(4);
   }
-  function begin() { reset(); state = 'play'; }
+  function begin() { reset(); state = 'play'; S.playing(true); }
 
   function boom(x, y, n, col) {
     for (let i = 0; i < n; i++) {
@@ -61,7 +62,16 @@ window.GAMES.asteroids = (function () {
     // ship
     if (keys.left) ship.a -= 4.4 * dt;
     if (keys.right) ship.a += 4.4 * dt;
-    ship.thrust = !!keys.up;
+    let thrustOn = !!keys.up;
+    // touch: the ship steers toward a held finger and thrusts when it's far
+    if (touchMode && touch.active) {
+      const ta = Math.atan2(touch.y - ship.y, touch.x - ship.x);
+      const da = Math.atan2(Math.sin(ta - ship.a), Math.cos(ta - ship.a));
+      const maxTurn = 5.5 * dt;
+      ship.a += Math.max(-maxTurn, Math.min(maxTurn, da));
+      if (Math.hypot(touch.x - ship.x, touch.y - ship.y) > 90) thrustOn = true;
+    }
+    ship.thrust = thrustOn;
     if (ship.thrust) {
       ship.vx += Math.cos(ship.a) * 460 * dt;
       ship.vy += Math.sin(ship.a) * 460 * dt;
@@ -76,7 +86,7 @@ window.GAMES.asteroids = (function () {
 
     // fire
     fireCd -= dt;
-    if (keys.fire && fireCd <= 0 && bullets.length < 6) {
+    if ((keys.fire || (touchMode && touch.active)) && fireCd <= 0 && bullets.length < 6) {
       fireCd = 0.20;
       bullets.push({
         x: ship.x + Math.cos(ship.a) * 14, y: ship.y + Math.sin(ship.a) * 14,
@@ -124,7 +134,7 @@ window.GAMES.asteroids = (function () {
         if (Math.hypot(ship.x - r.x, ship.y - r.y) < SIZES[r.size].r + 10) {
           boom(ship.x, ship.y, 26, '#ffd9a0');
           lives--;
-          if (lives <= 0) { state = 'dead'; }
+          if (lives <= 0) { state = 'dead'; S.playing(false); }
           else resetShip();
           break;
         }
@@ -260,19 +270,26 @@ window.GAMES.asteroids = (function () {
     }, sig);
     window.addEventListener('pointerdown', (e) => {
       if (e.target !== S.canvas) return;
+      if (e.pointerType === 'touch') touchMode = true;
+      touch.active = true; touch.x = e.clientX; touch.y = e.clientY;
       if (state !== 'play') begin();
     }, sig);
+    window.addEventListener('pointermove', (e) => {
+      if (touch.active) { touch.x = e.clientX; touch.y = e.clientY; }
+    }, sig);
+    window.addEventListener('pointerup', () => { touch.active = false; }, sig);
+    window.addEventListener('pointercancel', () => { touch.active = false; }, sig);
   }
 
   return {
     id: 'asteroids', name: 'Asteroids',
-    hint: 'Arrows / WASD + SPACE · keyboard recommended',
+    hint: 'Arrows / WASD + SPACE · touch: hold to fly & auto-fire',
     start(shell) {
-      S = shell; keys = {}; reset(); state = 'ready'; bind();
+      S = shell; keys = {}; touch.active = false; reset(); state = 'ready'; bind();
       last = performance.now(); draw(last);
       raf = requestAnimationFrame(loop);
     },
     stop() { cancelAnimationFrame(raf); },
-    resize() { reset(); state = 'ready'; },
+    resize() { reset(); state = 'ready'; S.playing(false); },
   };
 })();

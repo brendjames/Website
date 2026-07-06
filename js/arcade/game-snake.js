@@ -32,7 +32,7 @@ window.GAMES.snake = (function () {
     if ((nx === -lastD.x && ny === -lastD.y) || (nx === lastD.x && ny === lastD.y)) return;
     if (queue.length < 2) queue.push({ x: nx, y: ny });
   }
-  function begin() { reset(); state = 'play'; }
+  function begin() { reset(); state = 'play'; S.playing(true); }
   function tickMs() { return Math.max(68, 132 - snake.length * 1.6); }
 
   function step() {
@@ -41,6 +41,7 @@ window.GAMES.snake = (function () {
     if (head.x < 0 || head.y < 0 || head.x >= cols || head.y >= rows ||
         snake.some(s => s.x === head.x && s.y === head.y)) {
       state = 'dead';
+      S.playing(false);
       return;
     }
     snake.unshift(head);
@@ -116,18 +117,27 @@ window.GAMES.snake = (function () {
       else if (k === 'ArrowRight' || k === 'd' || k === 'D') push(1, 0);
       else if (k === ' ' || k === 'Enter') { if (state !== 'play') begin(); }
     }, sig);
+    let swiped = false;
     window.addEventListener('pointerdown', (e) => {
       if (e.target !== S.canvas) return;
       pDown = [e.clientX, e.clientY];
+      swiped = false;
     }, sig);
-    window.addEventListener('pointerup', (e) => {
+    // steer continuously while dragging — no need to lift the finger
+    window.addEventListener('pointermove', (e) => {
       if (!pDown) return;
       const dx = e.clientX - pDown[0], dy = e.clientY - pDown[1];
-      pDown = null;
-      if (Math.hypot(dx, dy) > 26) {
+      if (Math.hypot(dx, dy) > 24) {
         if (Math.abs(dx) > Math.abs(dy)) push(Math.sign(dx), 0);
         else push(0, Math.sign(dy));
-      } else if (state !== 'play') begin();
+        pDown = [e.clientX, e.clientY];
+        swiped = true;
+      }
+    }, sig);
+    window.addEventListener('pointerup', () => {
+      const wasDown = !!pDown;
+      pDown = null;
+      if (wasDown && !swiped && state !== 'play') begin();
     }, sig);
   }
 
@@ -140,6 +150,6 @@ window.GAMES.snake = (function () {
       raf = requestAnimationFrame(loop);
     },
     stop() { cancelAnimationFrame(raf); },
-    resize() { layout(); reset(); state = 'ready'; },
+    resize() { layout(); reset(); state = 'ready'; S.playing(false); },
   };
 })();

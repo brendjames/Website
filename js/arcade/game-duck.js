@@ -15,7 +15,7 @@ window.GAMES.duck = (function () {
     score = 0; S.setScore(0);
     spawnT = 0; flapT = 0;
   }
-  function begin() { reset(); state = 'play'; flap(); }
+  function begin() { reset(); state = 'play'; S.playing(true); flap(); }
   function flap() {
     duck.vy = FLAP; flapT = performance.now();
   }
@@ -53,6 +53,7 @@ window.GAMES.duck = (function () {
   }
   function die() {
     state = 'dead';
+    S.playing(false);
     for (let i = 0; i < 16; i++) {
       const a = Math.random() * 3.14159;
       splash.push({ x: duck.x, y: Math.min(duck.y, horizon() - 4), vx: Math.cos(a) * (40 + Math.random() * 120) * (Math.random() < 0.5 ? -1 : 1), vy: -60 - Math.random() * 180, life: 1 });
@@ -203,6 +204,6 @@ window.GAMES.duck = (function () {
       raf = requestAnimationFrame(loop);
     },
     stop() { cancelAnimationFrame(raf); },
-    resize() { reset(); state = 'ready'; },
+    resize() { reset(); state = 'ready'; S.playing(false); },
   };
 })();

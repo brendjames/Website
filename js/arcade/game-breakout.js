@@ -35,7 +35,7 @@ window.GAMES.breakout = (function () {
     parts = [];
     buildBricks(); serve();
   }
-  function begin() { reset(); state = 'play'; }
+  function begin() { reset(); state = 'play'; S.playing(true); }
 
   function spark(x, y, col) {
     for (let i = 0; i < 6; i++) {
@@ -93,7 +93,7 @@ window.GAMES.breakout = (function () {
     // floor
     if (ball.y - ball.r > S.h) {
       lives--;
-      if (lives <= 0) state = 'dead';
+      if (lives <= 0) { state = 'dead'; S.playing(false); }
       else serve();
     }
 
@@ -199,6 +199,6 @@ window.GAMES.breakout = (function () {
       raf = requestAnimationFrame(loop);
     },
     stop() { cancelAnimationFrame(raf); },
-    resize() { reset(); state = 'ready'; },
+    resize() { reset(); state = 'ready'; S.playing(false); },
   };
 })();
