@@ -40,20 +40,6 @@
     font-family: var(--mono); font-size:12px; letter-spacing:0.3em; text-transform:uppercase;
     color: rgba(226,236,246,0.6);
   }
-  .proj-card .thumb .ph.lab{
-    /* cyan/deep-blue variant for the Shader Lab */
-    background:
-      radial-gradient(90% 120% at 80% 85%, rgba(84,200,255,0.38), transparent 55%),
-      radial-gradient(120% 140% at 15% 10%, rgba(31,127,184,0.5), transparent 60%),
-      linear-gradient(150deg, #0a1a28, #05080d);
-  }
-  .proj-card .thumb .ph.arc{
-    /* amber/magenta variant for the Arcade */
-    background:
-      radial-gradient(90% 120% at 20% 85%, rgba(245,169,74,0.34), transparent 55%),
-      radial-gradient(120% 140% at 80% 12%, rgba(224,90,169,0.42), transparent 60%),
-      linear-gradient(150deg, #26101f, #05080d);
-  }
   .proj-card .body{ padding:24px 26px 26px; display:flex; flex-direction:column; gap:12px; flex:1; }
   .proj-card .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .proj-card h2{ font-size:22px; }
@@ -122,14 +108,14 @@
 
       <article class="card glow proj-card reveal">
         <div class="thumb">
-          <div class="ph lab"><span>WebGL2 · 22 Shaders</span></div>
+          <img src="assets/img/proj/lab.webp" alt="The Void shader from the lab — a black hole lensing a starfield, ringed by an amber accretion disk" loading="lazy" width="1200" height="675" />
         </div>
         <div class="body">
           <div class="top">
             <h2>Shader Lab</h2>
             <span class="badge"><span class="dot"></span>Live</span>
           </div>
-          <p>Twenty-two interactive fullscreen wallpapers — flowing ink, a starling murmuration, lightning, a black hole, fireworks you conduct and more. Auto-cycles like a screensaver, reacts to your music, and exports frames as wallpapers. Pure WebGL2, framework-free.</p>
+          <p>Eighteen interactive fullscreen wallpapers — auroras, a black hole, living coral, a synthwave sunset, fireworks you conduct and more. Auto-cycles like a screensaver, reacts to your music, and exports frames as wallpapers. Pure WebGL2, framework-free.</p>
           <div class="cta">
             <a class="btn primary" href="lab.html">Enter the Lab</a>
           </div>
@@ -138,7 +124,7 @@
 
       <article class="card glow proj-card reveal">
         <div class="thumb">
-          <div class="ph arc"><span>HTML5 · 05 Games</span></div>
+          <img src="assets/img/proj/arcade.webp" alt="Duck Hop's title screen — the duck gliding over a dusk sea at sunset" loading="lazy" width="1200" height="675" />
         </div>
         <div class="body">
           <div class="top">
