@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="The Shader Lab — eighteen interactive WebGL2 wallpapers, from rippling water and auroras to a black hole and fireworks you conduct. Fullscreen it, download frames as wallpapers, or let it react to your music." />
+<meta name="description" content="The Shader Lab — nineteen interactive WebGL2 wallpapers, from rippling water and auroras to a black hole, fireworks you conduct and a bass-driven music visualiser. Fullscreen it, download frames as wallpapers, or feed it a song." />
 <title>Shader Lab — Brendon James Kirk</title>
 <link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
 <meta property="og:title" content="Shader Lab — Brendon James Kirk" />
-<meta property="og:description" content="Eighteen interactive WebGL2 wallpapers — from rippling water and auroras to a black hole and fireworks you conduct. Fullscreen it, download frames, or let it react to your music." />
+<meta property="og:description" content="Nineteen interactive WebGL2 wallpapers — from rippling water and auroras to a black hole, fireworks and a bass-driven music visualiser. Fullscreen it, download frames, or feed it a song." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -151,7 +151,7 @@
   <div id="readout" class="hud">
     <div class="label">Cursor Velocity</div>
     <div id="meter"><i></i></div>
-    <div class="idx"><b id="idxNum">01</b> / 18</div>
+    <div class="idx"><b id="idxNum">01</b> / 19</div>
   </div>
 
   <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
@@ -192,6 +192,7 @@
   <script src="js/lab/wp-kaleido.js"></script>
   <script src="js/lab/wp-topo.js"></script>
   <script src="js/lab/wp-fireworks.js"></script>
+  <script src="js/lab/wp-music.js"></script>
   <script>
   (function () {
     const canvas = document.getElementById('gl');
@@ -202,7 +203,7 @@
     const ORDER = ['ripples', 'plasma', 'particles', 'voronoi',
                    'aurora', 'warp', 'mercury', 'led', 'ember', 'synth',
                    'rain', 'glyphs', 'void', 'coral',
-                   'circuit', 'kaleido', 'topo', 'fireworks'];
+                   'circuit', 'kaleido', 'topo', 'fireworks', 'music'];
     const LIST = ORDER.map(k => window.WP[k]);
     const quad = Engine.quad(gl);
 
@@ -280,6 +281,8 @@
         try { localStorage.setItem('wp.active', ORDER[idx]); } catch (e) {}
         try { history.replaceState(null, '', '#' + ORDER[idx]); } catch (e) {}
       }
+      // Music feeds on the microphone — offer it as soon as the shader opens
+      if (ORDER[idx] === 'music' && !audio) toggleMic();
     }
 
     // dip to black, switch, dip back up
@@ -387,7 +390,7 @@
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 256;
         ctx.createMediaStreamSource(stream).connect(analyser);
-        audio = { ctx, stream, analyser, data: new Uint8Array(analyser.frequencyBinCount), bassAvg: 0, lastBeat: -10 };
+        audio = { ctx, stream, analyser, data: new Uint8Array(analyser.frequencyBinCount), bands: new Float32Array(24), bassAvg: 0, bassSm: 0, lastBeat: -10 };
         micBtn.classList.add('on');
       } catch (e) {
         micBtn.textContent = 'MIC ✕';
@@ -451,7 +454,8 @@
       input.mousePx = curPx.slice();
       lastN = curN.slice(); lastPx = curPx.slice();
 
-      // audio drive: level feeds u_speed, bass beats fire click pulses
+      // audio drive: level feeds u_speed, bass beats fire click pulses, and a
+      // 24-band smoothed spectrum is published for shaders that want it all
       if (audio) {
         audio.analyser.getByteFrequencyData(audio.data);
         let sum = 0, bass = 0;
@@ -459,15 +463,24 @@
         for (let i = 0; i < n; i++) sum += audio.data[i];
         for (let i = 1; i < 9; i++) bass += audio.data[i];
         const level = sum / (n * 255), bl = bass / (8 * 255);
-        input.speed = Math.max(input.speed, level * 1.8);
+        input.speed = Math.max(input.speed, level * 2.4);
+        for (let b = 0; b < 24; b++) {
+          const i0 = 1 + Math.floor(Math.pow(b / 24, 1.6) * (n - 2));
+          const i1 = 1 + Math.floor(Math.pow((b + 1) / 24, 1.6) * (n - 2));
+          let m = 0;
+          for (let i = i0; i <= Math.max(i0, i1); i++) m = Math.max(m, audio.data[i]);
+          audio.bands[b] = Math.max(audio.bands[b] * 0.86, Math.min(1, (m / 255) * 1.25));
+        }
+        audio.bassSm = audio.bassSm * 0.72 + Math.min(1, bl * 1.7) * 0.28;
         audio.bassAvg = audio.bassAvg * 0.985 + bl * 0.015;
-        if (bl > audio.bassAvg * 1.45 + 0.06 && time - audio.lastBeat > 0.30) {
+        if (bl > audio.bassAvg * 1.4 + 0.05 && time - audio.lastBeat > 0.28) {
           audio.lastBeat = time;
           input.click.pos = curN.slice();
-          input.click.energy = Math.max(input.click.energy, Math.min(1, bl * 1.5));
+          input.click.energy = Math.max(input.click.energy, Math.min(1, bl * 1.8));
           clickStart = time;
         }
-      }
+        env.audio = { on: true, level, bass: audio.bassSm, bands: audio.bands, beatAge: time - audio.lastBeat };
+      } else env.audio = null;
 
       // click decay
       input.click.energy *= 0.96;

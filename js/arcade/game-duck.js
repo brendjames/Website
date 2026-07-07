@@ -21,18 +21,27 @@ window.GAMES.duck = (function () {
   }
 
   function update(dt) {
-    const sp = 185 + Math.min(90, score * 2);
+    // progressive difficulty: faster towers, tighter gaps, closer spacing,
+    // and from 8 points the gaps start drifting up and down
+    const sp = 180 + Math.min(170, score * 3.2);
     spawnT -= dt;
     if (spawnT <= 0) {
-      spawnT = 265 / sp + 1.05;
-      const gap = Math.max(142, 178 - score * 1.1);
+      spawnT = 265 / sp + Math.max(0.55, 1.05 - score * 0.012);
+      const gap = Math.max(126, 186 - score * 1.5);
       const m = 60;
       const gy = m + Math.random() * (horizon() - gap - m * 2);
-      towers.push({ x: S.w + 40, w: 68, top: gy, bot: gy + gap, counted: false });
+      const amp = score >= 8 ? Math.min(42, (score - 7) * 3) : 0;
+      towers.push({ x: S.w + 40, w: 68, top: gy, bot: gy + gap, counted: false,
+                    gy, gap, amp, ph: Math.random() * 6.283 });
     }
     for (let i = towers.length - 1; i >= 0; i--) {
       const tw = towers[i];
       tw.x -= sp * dt;
+      if (tw.amp) {
+        const off = Math.sin(performance.now() / 1000 * 1.4 + tw.ph) * tw.amp;
+        tw.top = tw.gy + off;
+        tw.bot = tw.gy + tw.gap + off;
+      }
       if (!tw.counted && tw.x + tw.w < duck.x - duck.r) {
         tw.counted = true; score++; S.setScore(score);
       }
