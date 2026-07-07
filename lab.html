@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="The Shader Lab — nineteen interactive WebGL2 wallpapers, from rippling water and auroras to a black hole, fireworks you conduct and a bass-driven music visualiser. Fullscreen it, download frames as wallpapers, or feed it a song." />
+<meta name="description" content="The Shader Lab — fourteen interactive WebGL2 wallpapers, from rippling water and auroras to living coral and a Milkdrop-style music visualiser that morphs to your bass. Fullscreen it, download frames as wallpapers, or feed it a song." />
 <title>Shader Lab — Brendon James Kirk</title>
 <link rel="canonical" href="https://brendonjameskirk.com/lab.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/lab.html" />
 <meta property="og:title" content="Shader Lab — Brendon James Kirk" />
-<meta property="og:description" content="Nineteen interactive WebGL2 wallpapers — from rippling water and auroras to a black hole, fireworks and a bass-driven music visualiser. Fullscreen it, download frames, or feed it a song." />
+<meta property="og:description" content="Fourteen interactive WebGL2 wallpapers — from rippling water and auroras to living coral and a Milkdrop-style music visualiser. Fullscreen it, download frames, or feed it a song." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -151,7 +151,7 @@
   <div id="readout" class="hud">
     <div class="label">Cursor Velocity</div>
     <div id="meter"><i></i></div>
-    <div class="idx"><b id="idxNum">01</b> / 19</div>
+    <div class="idx"><b id="idxNum">01</b> / 14</div>
   </div>
 
   <nav id="dock" class="hud"><div class="seg" id="seg"></div></nav>
@@ -179,19 +179,14 @@
   <script src="js/lab/wp-particles.js"></script>
   <script src="js/lab/wp-voronoi.js"></script>
   <script src="js/lab/wp-aurora.js"></script>
-  <script src="js/lab/wp-warp.js"></script>
   <script src="js/lab/wp-mercury.js"></script>
   <script src="js/lab/wp-led.js"></script>
   <script src="js/lab/wp-ember.js"></script>
   <script src="js/lab/wp-synth.js"></script>
-  <script src="js/lab/wp-rain.js"></script>
   <script src="js/lab/wp-glyphs.js"></script>
-  <script src="js/lab/wp-void.js"></script>
   <script src="js/lab/wp-coral.js"></script>
   <script src="js/lab/wp-circuit.js"></script>
   <script src="js/lab/wp-kaleido.js"></script>
-  <script src="js/lab/wp-topo.js"></script>
-  <script src="js/lab/wp-fireworks.js"></script>
   <script src="js/lab/wp-music.js"></script>
   <script>
   (function () {
@@ -201,9 +196,8 @@
     catch (e) { document.body.classList.add('no-webgl'); console.warn(e); return; }
 
     const ORDER = ['ripples', 'plasma', 'particles', 'voronoi',
-                   'aurora', 'warp', 'mercury', 'led', 'ember', 'synth',
-                   'rain', 'glyphs', 'void', 'coral',
-                   'circuit', 'kaleido', 'topo', 'fireworks', 'music'];
+                   'aurora', 'mercury', 'led', 'ember', 'synth',
+                   'glyphs', 'coral', 'circuit', 'kaleido', 'music'];
     const LIST = ORDER.map(k => window.WP[k]);
     const quad = Engine.quad(gl);
 
