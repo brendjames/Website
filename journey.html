@@ -20,6 +20,57 @@
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
+<style>
+  /* ---- Skills & certifications ---- */
+  .sub-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+    margin-top:30px;
+  }
+  .sub-head h3{ font-size:17px; }
+  .sub-head .count{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--ink-faint);
+  }
+
+  .skill-grid{ display:grid; gap:16px; margin-top:16px; grid-template-columns:1fr; }
+  @media(min-width: 760px){ .skill-grid{ grid-template-columns:1fr 1fr; } }
+  .skill-cell{ padding:22px 24px 24px; }
+  .skill-cell .lbl{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.26em; text-transform:uppercase;
+    color:var(--accent); display:flex; align-items:center; gap:12px; white-space:nowrap;
+  }
+  .skill-cell .lbl::after{ content:""; flex:1; height:1px; background:var(--line); }
+  .skill-cell .chips{ margin-top:15px; }
+
+  .cert-card{ margin-top:16px; padding:26px 28px 18px; }
+  .certs{ list-style:none; margin-top:8px; }
+  .certs li{
+    display:flex; align-items:center; gap:16px;
+    padding:13px 2px; border-bottom:1px solid var(--line);
+  }
+  .certs li:last-child{ border-bottom:0; }
+  .certs .mark{
+    flex:0 0 auto; width:38px; height:38px; border-radius:10px;
+    display:grid; place-items:center;
+    background:linear-gradient(135deg, #123146, #0a1623);
+    border:1px solid var(--line-bright);
+    color:var(--accent); font-family:var(--mono); font-size:11px; font-weight:700;
+  }
+  .certs .what{ flex:1; min-width:0; }
+  .certs .name{
+    font-family:var(--sans); font-weight:600; font-size:14.5px; color:var(--ink);
+    display:flex; align-items:center; gap:9px; line-height:1.3;
+  }
+  .certs .name .fresh{
+    flex:0 0 auto; width:6px; height:6px; border-radius:50%;
+    background:var(--color-highlight); box-shadow:0 0 9px rgba(200,245,90,0.85);
+  }
+  .certs .org{ margin-top:2px; font-size:12px; color:var(--ink-faint); line-height:1.4; }
+  .certs .when{
+    flex:0 0 auto; font-family:var(--mono); font-size:12px;
+    color:var(--accent); letter-spacing:0.08em;
+  }
+</style>
 </head>
 <body>
 
@@ -138,39 +189,126 @@
     <section id="skills" style="margin-top:90px;">
       <h2 style="font-size:13px; letter-spacing:0.3em; text-transform:uppercase; color:var(--ink-faint); font-family:var(--mono); font-weight:400;">// Skills &amp; Certifications</h2>
 
-      <div class="card glow reveal" style="margin-top:24px; padding:28px;">
-        <h3 style="font-size:17px;">Toolbox</h3>
-        <div class="chips">
-          <span class="chip"><b>Python</b></span>
-          <span class="chip"><b>Java</b> · Spring Boot</span>
-          <span class="chip"><b>Flask</b></span>
-          <span class="chip">HTML · CSS</span>
-          <span class="chip"><b>Azure</b></span>
-          <span class="chip">SQL · MySQL · MongoDB</span>
-          <span class="chip">Pandas · NumPy</span>
-          <span class="chip">Docker</span>
-          <span class="chip">Windows · Linux</span>
-          <span class="chip">Scrum · Agile</span>
+      <div class="sub-head">
+        <h3>Toolbox</h3>
+        <span class="count">4 stacks</span>
+      </div>
+      <div class="skill-grid">
+        <div class="card glow skill-cell reveal">
+          <p class="lbl">// Support &amp; Systems</p>
+          <div class="chips">
+            <span class="chip"><b>Windows</b> · Linux</span>
+            <span class="chip"><b>Active Directory</b></span>
+            <span class="chip">Jira · ServiceNow</span>
+            <span class="chip">Asset &amp; access management</span>
+          </div>
+        </div>
+        <div class="card glow skill-cell reveal">
+          <p class="lbl">// Code</p>
+          <div class="chips">
+            <span class="chip"><b>Python</b></span>
+            <span class="chip"><b>Java</b> · Spring Boot</span>
+            <span class="chip">Flask</span>
+            <span class="chip">HTML · CSS</span>
+          </div>
+        </div>
+        <div class="card glow skill-cell reveal">
+          <p class="lbl">// Cloud &amp; Data</p>
+          <div class="chips">
+            <span class="chip"><b>Azure</b></span>
+            <span class="chip">SQL · MySQL</span>
+            <span class="chip">MongoDB</span>
+            <span class="chip">Pandas · NumPy</span>
+          </div>
+        </div>
+        <div class="card glow skill-cell reveal">
+          <p class="lbl">// Practice</p>
+          <div class="chips">
+            <span class="chip"><b>Docker</b></span>
+            <span class="chip">Scrum · Agile</span>
+            <span class="chip">Onboarding &amp; training</span>
+          </div>
         </div>
       </div>
 
-      <div class="card glow reveal" style="margin-top:18px; padding:28px;">
-        <h3 style="font-size:17px;">Certifications</h3>
-        <div class="chips">
-          <span class="chip"><b>Claude 101</b> · 03/2026</span>
-          <span class="chip"><b>Google AI Essentials</b> · 06/2025</span>
-          <span class="chip"><b>Azure Fundamentals AZ-900</b> · 08/2023</span>
-          <span class="chip"><b>Java Advanced</b> · everyone codes · 2023</span>
-          <span class="chip">Java: Principles of Software Design · 2022</span>
-          <span class="chip"><b>CS50x</b> · 2022</span>
-          <span class="chip">Python for Everybody · 2022</span>
-          <span class="chip">Google Data Analytics · 2021</span>
-        </div>
+      <div class="sub-head">
+        <h3>Certifications</h3>
+        <span class="count">08 credentials · 2021 — 2026</span>
+      </div>
+      <div class="card glow reveal cert-card">
+        <ol class="certs">
+          <li>
+            <span class="mark">CL</span>
+            <span class="what">
+              <span class="name">Claude 101 <span class="fresh" title="Latest"></span></span>
+              <span class="org">Anthropic</span>
+            </span>
+            <span class="when">03/2026</span>
+          </li>
+          <li>
+            <span class="mark">AI</span>
+            <span class="what">
+              <span class="name">Google AI Essentials</span>
+              <span class="org">Google</span>
+            </span>
+            <span class="when">06/2025</span>
+          </li>
+          <li>
+            <span class="mark">AZ</span>
+            <span class="what">
+              <span class="name">Azure Fundamentals (AZ-900)</span>
+              <span class="org">Microsoft</span>
+            </span>
+            <span class="when">08/2023</span>
+          </li>
+          <li>
+            <span class="mark">JA</span>
+            <span class="what">
+              <span class="name">Java Advanced</span>
+              <span class="org">everyone codes · 6 months, full-time</span>
+            </span>
+            <span class="when">2023</span>
+          </li>
+          <li>
+            <span class="mark">SD</span>
+            <span class="what">
+              <span class="name">Java: Principles of Software Design</span>
+              <span class="org">everyone codes</span>
+            </span>
+            <span class="when">2022</span>
+          </li>
+          <li>
+            <span class="mark">50</span>
+            <span class="what">
+              <span class="name">CS50x — Introduction to Computer Science</span>
+              <span class="org">Harvard University</span>
+            </span>
+            <span class="when">2022</span>
+          </li>
+          <li>
+            <span class="mark">PY</span>
+            <span class="what">
+              <span class="name">Python for Everybody</span>
+              <span class="org">University of Michigan</span>
+            </span>
+            <span class="when">2022</span>
+          </li>
+          <li>
+            <span class="mark">DA</span>
+            <span class="what">
+              <span class="name">Google Data Analytics</span>
+              <span class="org">Google</span>
+            </span>
+            <span class="when">2021</span>
+          </li>
+        </ol>
       </div>
 
-      <div class="card glow reveal" style="margin-top:18px; padding:28px;">
-        <h3 style="font-size:17px;">Languages</h3>
-        <div class="chips">
+      <div class="sub-head">
+        <h3>Languages</h3>
+      </div>
+      <div class="card glow reveal skill-cell" style="margin-top:16px;">
+        <div class="chips" style="margin-top:0;">
           <span class="chip"><b>English</b> · C2 native</span>
           <span class="chip"><b>Afrikaans</b> · B2</span>
           <span class="chip"><b>German</b> · A2/B1 and climbing</span>
