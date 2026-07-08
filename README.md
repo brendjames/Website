@@ -16,12 +16,12 @@ blog/                   8 individual post pages
 journey.html            CV — animated vertical timeline (Intersection Observer)
 projects.html           Project showcase cards
 contact.html            Contact form (mailto + honeypot + inline success)
-lab.html                Shader Lab — 14 fullscreen interactive WebGL2 wallpapers
+lab.html                Shader Lab — 15 fullscreen interactive WebGL2 wallpapers
 arcade.html             The Arcade — 5 hand-built HTML5 canvas games
 css/site.css            Shared design system styles
 js/site.js              Nav toggle, glow tracking, reveals, typewriter, form
 js/bg-cells.js          Standalone WebGL2 Voronoi "Cells" background (every page)
-js/lab/                 Shader Lab engine (gl-engine.js) + the 14 wallpaper modules
+js/lab/                 Shader Lab engine (gl-engine.js) + the 15 wallpaper modules
 js/arcade/              The Arcade's five game modules (shared shell in arcade.html)
 assets/                 Hero image + 8 post images
 sitemap.xml, robots.txt Search-engine hints
@@ -44,7 +44,7 @@ memory.md               Build planning document
 - **Timeline** — Intersection Observer slide-ins, Durban → Cape Town → Vienna
 - **Projects** — glassmorphism bento cards with status badges
 - **Contact** — HTML5 validation, hidden honeypot, inline success message
-- **Shader Lab** — a fourteen-shader fullscreen playground at `lab.html`: ripples, plasma, magnet, cells, aurora, mercury, an LED wall, ember fire, a synthwave sunset, digital rain, a reaction-diffusion culture, a pulsing circuit board, a kaleidoscope, and a Milkdrop-style music visualiser that morphs through random presets as it feeds on the microphone — all cursor-reactive WebGL2. Fullscreen + wallpaper download, auto-cycle screensaver mode with an idle-drifting cursor, microphone reactivity, a hue dial, and `#deep-links` per shader
+- **Shader Lab** — a fifteen-shader fullscreen playground at `lab.html`: ripples, plasma, magnet, cells, aurora, mercury, an LED wall, ember fire, a synthwave sunset, digital rain, a reaction-diffusion culture, a pulsing circuit board, a kaleidoscope, a music visualiser that morphs through presets as it feeds on the microphone, and a Milkdrop homage that rolls a completely random 20-gene universe every 30 seconds — all cursor-reactive WebGL2. Fullscreen + wallpaper download, auto-cycle screensaver mode with an idle-drifting cursor, microphone reactivity, a hue dial, and `#deep-links` per shader
 - **The Arcade** — five hand-built HTML5 canvas games at `arcade.html`: Snake, Breakout, Duck Hop (starring the hero duck), Asteroids and 2048 — keyboard, mouse and touch controls, per-game high scores in localStorage, `#deep-links`, fullscreen
 - **Accessibility** — ARIA roles, alt text, keyboard navigation, visible focus rings, `prefers-reduced-motion` respected
 - **SEO & sharing** — canonical URLs, Open Graph + Twitter cards on every page, `sitemap.xml` + `robots.txt`
