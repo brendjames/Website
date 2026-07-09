@@ -168,6 +168,14 @@ window.GAMES['2048'] = (function () {
   return {
     id: '2048', name: '2048',
     hint: 'Arrows / swipe · merge to lime and beyond',
+    howto: {
+      goal: 'Slide the whole board — equal tiles merge and double. Climb the palette from slate through cyan to the lime 2048 tile, then keep going.',
+      controls: [
+        ['ARROWS / WASD', 'slide'],
+        ['SWIPE', 'slide'],
+        ['R', 'deal a fresh board'],
+      ],
+    },
     start(shell) {
       S = shell; reset(); bind();
       draw(performance.now());

@@ -284,6 +284,15 @@ window.GAMES.asteroids = (function () {
   return {
     id: 'asteroids', name: 'Asteroids',
     hint: 'Arrows / WASD + SPACE · touch: hold to fly & auto-fire',
+    howto: {
+      goal: 'Blast the rocks — big ones split into smaller ones. Clear the field to level up. You have 3 ships, each respawning with a brief shield.',
+      controls: [
+        ['← → / A D', 'rotate'],
+        ['↑ / W', 'thrust'],
+        ['SPACE', 'fire'],
+        ['HOLD (touch)', 'fly toward your finger · auto-fire'],
+      ],
+    },
     start(shell) {
       S = shell; keys = {}; touch.active = false; reset(); state = 'ready'; bind();
       last = performance.now(); draw(last);

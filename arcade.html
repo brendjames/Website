@@ -112,6 +112,40 @@
     opacity:0; pointer-events:none; transition:opacity .28s ease;
   }
   #fader.show{ opacity:1; }
+
+  /* how-to-play card, shown before each game */
+  #howto{
+    position:fixed; inset:0; z-index:9; display:grid; place-items:center;
+    pointer-events:none; opacity:0; transition:opacity .3s ease;
+  }
+  #howto.show{ opacity:1; }
+  #howto .ht-card{
+    width:min(88vw, 360px); padding:26px 28px 22px;
+    background:rgba(10,15,24,0.88); border:1px solid var(--line-bright); border-radius:16px;
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 24px 70px -20px rgba(0,0,0,0.8);
+    transform:translateY(10px); transition:transform .3s ease;
+  }
+  #howto.show .ht-card{ transform:none; }
+  #howto .ht-kicker{
+    font-family:var(--mono); font-size:10px; letter-spacing:.30em;
+    text-transform:uppercase; color:var(--cyan);
+  }
+  #howto h2{ margin-top:8px; font-size:26px; font-weight:600; letter-spacing:-.01em; }
+  #howto .ht-goal{ margin-top:8px; font-size:13px; line-height:1.55; color:var(--ink-dim); }
+  #howto .ht-controls{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  #howto .ht-row{ display:flex; align-items:center; gap:12px; }
+  #howto .ht-key{
+    flex:0 0 auto; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+    color:var(--ink); background:rgba(150,190,230,0.08);
+    border:1px solid var(--line-bright); border-radius:7px; padding:4px 9px;
+  }
+  #howto .ht-act{ font-size:12.5px; color:var(--ink-dim); }
+  #howto .ht-start{
+    margin-top:18px; font-family:var(--mono); font-size:11px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--cyan); animation:htpulse 1.6s ease-in-out infinite;
+  }
+  @keyframes htpulse{ 0%,100%{ opacity:.5 } 50%{ opacity:1 } }
 </style>
 </head>
 <body>
@@ -138,6 +172,16 @@
   </div>
   <div id="peek">tap here or press H for controls</div>
   <div id="fader"></div>
+
+  <div id="howto" aria-live="polite">
+    <div class="ht-card">
+      <p class="ht-kicker">// How to play</p>
+      <h2 id="htTitle"></h2>
+      <p class="ht-goal" id="htGoal"></p>
+      <div class="ht-controls" id="htControls"></div>
+      <p class="ht-start">press any key or tap to play</p>
+    </div>
+  </div>
 
   <script src="js/arcade/game-snake.js"></script>
   <script src="js/arcade/game-breakout.js"></script>
@@ -181,8 +225,35 @@
         }
       },
       // games flag active play so the chrome ducks out of the way
-      playing(v) { document.body.classList.toggle('playing', !!v); },
+      playing(v) {
+        document.body.classList.toggle('playing', !!v);
+        if (v) hideHowto();
+      },
     };
+
+    // ---- how-to-play card: shown on every game entry, gone on first input ----
+    const howtoEl = document.getElementById('howto');
+    function showHowto(game) {
+      if (!game.howto) { howtoEl.classList.remove('show'); return; }
+      document.getElementById('htTitle').textContent = game.name;
+      document.getElementById('htGoal').textContent = game.howto.goal;
+      const box = document.getElementById('htControls');
+      box.innerHTML = '';
+      for (const pair of game.howto.controls) {
+        const row = document.createElement('div');
+        row.className = 'ht-row';
+        const k = document.createElement('span');
+        k.className = 'ht-key'; k.textContent = pair[0];
+        const a = document.createElement('span');
+        a.className = 'ht-act'; a.textContent = pair[1];
+        row.appendChild(k); row.appendChild(a);
+        box.appendChild(row);
+      }
+      howtoEl.classList.add('show');
+    }
+    function hideHowto() { howtoEl.classList.remove('show'); }
+    window.addEventListener('keydown', () => hideHowto());
+    window.addEventListener('pointerdown', (e) => { if (e.target === canvas) hideHowto(); });
 
     // ---- switching ----
     let current = null, curIdx = 0, fading = false, controller = null;
@@ -212,6 +283,7 @@
         try { localStorage.setItem('arcade.last', curKey); } catch (e) {}
         try { history.replaceState(null, '', '#' + curKey); } catch (e) {}
       }
+      showHowto(game);
       game.start(shell);
     }
 

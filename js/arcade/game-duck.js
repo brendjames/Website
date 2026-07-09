@@ -207,6 +207,14 @@ window.GAMES.duck = (function () {
   return {
     id: 'duck', name: 'Duck Hop',
     hint: 'SPACE / tap to flap · mind the glass',
+    howto: {
+      goal: 'Flap the duck between the glass towers — one point per tower. It gets faster, tighter and wobblier the further you fly. Yes, that’s the duck.',
+      controls: [
+        ['SPACE / ↑', 'flap'],
+        ['TAP', 'flap'],
+        ['GRAVITY', 'relentless'],
+      ],
+    },
     start(shell) {
       S = shell; reset(); state = 'ready'; bind();
       last = performance.now(); draw(last);
