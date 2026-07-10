@@ -33,9 +33,15 @@
     }
   }, { passive: true });
 
-  // ----- Scroll reveals -----
+  // ----- Scroll reveals (staggered per sibling group) -----
   const revealed = document.querySelectorAll('.reveal');
   if (revealed.length) {
+    const siblingIndex = new Map();
+    revealed.forEach((el) => {
+      const i = siblingIndex.get(el.parentElement) || 0;
+      el.style.setProperty('--stagger', Math.min(i, 6));
+      siblingIndex.set(el.parentElement, i + 1);
+    });
     const io = new IntersectionObserver((entries) => {
       for (const en of entries) {
         if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
@@ -44,11 +50,62 @@
     revealed.forEach((el) => io.observe(el));
   }
 
+  // ----- Scroll progress beam + nav elevation -----
+  const navEl = document.querySelector('.nav');
+  const progress = document.createElement('div');
+  progress.className = 'scroll-progress';
+  progress.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(progress);
+  let scrollQueued = false;
+  const onScroll = () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+      if (navEl) navEl.classList.toggle('scrolled', window.scrollY > 8);
+      scrollQueued = false;
+    });
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ----- Count-up stats ([data-count] spans, e.g. home bento tiles) -----
+  const counters = document.querySelectorAll('[data-count]');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (counters.length && !prefersReduced) {
+    const cio = new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        cio.unobserve(en.target);
+        const el = en.target;
+        const target = parseFloat(el.getAttribute('data-count'));
+        if (!isFinite(target)) continue;
+        const t0 = performance.now();
+        const dur = 1400;
+        const step = (t) => {
+          const p = Math.min((t - t0) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 4); // ease-out quart
+          el.textContent = Math.round(target * eased).toLocaleString('en-US');
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+    }, { threshold: 0.4 });
+    counters.forEach((el) => cio.observe(el));
+  }
+
+  // ----- Print / save-as-PDF buttons -----
+  for (const b of document.querySelectorAll('[data-print]')) {
+    b.addEventListener('click', () => window.print());
+  }
+
   // ----- Typewriter (index hero) -----
   const tw = document.querySelector('[data-typewriter]');
   if (tw) {
-    const text = tw.getAttribute('data-typewriter');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // name lives in the markup so no-JS visitors and crawlers still see it
+    const text = tw.getAttribute('data-typewriter') || tw.textContent.trim();
+    const reduced = prefersReduced;
     if (reduced) {
       tw.textContent = text;
     } else {

@@ -24,6 +24,34 @@
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
 <style>
+  /* ---- At a glance (recruiter fast-path) ---- */
+  .glance{
+    margin-top:34px; padding:26px 28px;
+    display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:space-between;
+  }
+  .glance-grid{
+    display:grid; gap:20px 34px; grid-template-columns:repeat(2, minmax(150px, 1fr));
+    flex:1; min-width:min(100%, 460px);
+  }
+  @media(min-width: 980px){ .glance-grid{ grid-template-columns:repeat(4, 1fr); } }
+  .glance .k{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--accent);
+  }
+  .glance .v{ font-family:var(--sans); font-weight:600; font-size:16px; margin-top:6px; color:var(--ink); line-height:1.3; }
+  .glance .s{ font-size:12px; color:var(--ink-faint); margin-top:2px; line-height:1.45; }
+  .glance-cta{ display:flex; flex-wrap:wrap; gap:10px; }
+  @media(min-width: 980px){ .glance-cta{ flex-direction:column; } }
+
+  /* ---- Closing hire CTA ---- */
+  .hire{
+    margin-top:70px; padding:40px 36px;
+    display:flex; flex-wrap:wrap; gap:26px; align-items:center; justify-content:space-between;
+  }
+  .hire h2{ font-size:clamp(22px, 3vw, 30px); max-width:22ch; }
+  .hire p{ margin-top:10px; color:var(--ink-dim); font-size:var(--fs-sm); max-width:48ch; }
+  .hire-cta{ display:flex; flex-wrap:wrap; gap:12px; }
+
   /* ---- Skills & certifications ---- */
   .sub-head{
     display:flex; align-items:baseline; justify-content:space-between; gap:12px;
@@ -81,6 +109,8 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <header class="nav" role="banner">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html"><span class="bk">BK</span>Brendon James Kirk</a>
@@ -113,13 +143,45 @@
 
 <div id="bg-cells"></div>
 
-<main role="main">
+<main id="main" role="main" tabindex="-1">
   <div class="wrap">
     <div class="page-head">
       <p class="kicker">The Journey</p>
       <h1>The upgrade path</h1>
       <p class="lede">I bring over 5,000 hours of hands-on IT and end-user support expertise, resolving everyday technical friction with speed and empathy. Shaped by a global journey that started in a Durban kitchen and spanned two continents, my approach is grounded in real-world adaptability. I don't just fix problems; I build the upgrade path that moves systems forward.</p>
     </div>
+
+    <section class="card glow glance reveal" aria-label="At a glance">
+      <div class="glance-grid">
+        <div>
+          <p class="k">// Current role</p>
+          <p class="v">Desktop Support Admin</p>
+          <p class="s">Trayport, a TMX company · Vienna</p>
+        </div>
+        <div>
+          <p class="k">// Experience</p>
+          <p class="v">5,000+ hours</p>
+          <p class="s">Hands-on IT &amp; end-user support</p>
+        </div>
+        <div>
+          <p class="k">// Core stack</p>
+          <p class="v">Windows · AD · ITSM</p>
+          <p class="s">Azure, Jira, ServiceNow</p>
+        </div>
+        <div>
+          <p class="k">// Languages</p>
+          <p class="v">EN · AF · DE</p>
+          <p class="s">C2 native · B2 · A2/B1</p>
+        </div>
+      </div>
+      <div class="glance-cta no-print">
+        <a class="btn primary" href="contact.html">Get in touch</a>
+        <button class="btn" type="button" data-print>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Save as PDF
+        </button>
+      </div>
+    </section>
 
     <ol class="timeline">
       <li class="reveal">
@@ -186,7 +248,7 @@
     </ol>
 
     <section id="skills" style="margin-top:90px;">
-      <h2 style="font-size:13px; letter-spacing:0.3em; text-transform:uppercase; color:var(--ink-faint); font-family:var(--mono); font-weight:400;">// Skills &amp; Certifications</h2>
+      <h2 class="sec-label">// Skills &amp; Certifications</h2>
 
       <div class="sub-head">
         <h3>Toolbox</h3>
@@ -347,11 +409,23 @@
       </div>
     </section>
 
+    <section class="card glow hire reveal" aria-label="Work with me">
+      <div>
+        <h2>Sound like someone your team needs?</h2>
+        <p>As good with humans as with hardware — and I bring the same energy to both. My inbox is open.</p>
+      </div>
+      <div class="hire-cta no-print">
+        <a class="btn primary" href="contact.html">Say howzit</a>
+        <a class="btn" href="mailto:brendonkirk86@gmail.com">Email me directly</a>
+      </div>
+    </section>
+
   </div>
 </main>
 
 <footer class="footer" role="contentinfo">
   <div class="footer-inner">
+    <p class="tagline">© 2026 · Empowering solutions <b>through technology</b></p>
     <nav aria-label="Footer">
       <a href="blog.html">Blog</a>
       <a href="projects.html">Projects</a>
