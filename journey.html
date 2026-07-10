@@ -38,12 +38,16 @@
   .skill-grid{ display:grid; gap:16px; margin-top:16px; grid-template-columns:1fr; }
   @media(min-width: 760px){ .skill-grid{ grid-template-columns:1fr 1fr; } }
   .skill-cell{ padding:22px 24px 24px; }
-  .skill-cell .lbl{
-    font-family:var(--mono); font-size:11px; letter-spacing:0.26em; text-transform:uppercase;
-    color:var(--accent); display:flex; align-items:center; gap:12px; white-space:nowrap;
+  .skill-head{
+    display:flex; align-items:center; gap:14px;
+    padding-bottom:16px; border-bottom:1px solid var(--line);
   }
-  .skill-cell .lbl::after{ content:""; flex:1; height:1px; background:var(--line); }
-  .skill-cell .chips{ margin-top:15px; }
+  .skill-head .lbl{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;
+    color:var(--accent);
+  }
+  .skill-head .sub{ margin-top:3px; font-size:12.5px; color:var(--ink-faint); }
+  .skill-cell .chips{ margin-top:16px; }
 
   .cert-card{ margin-top:16px; padding:26px 28px 18px; }
   .certs{ list-style:none; margin-top:8px; }
@@ -52,7 +56,7 @@
     padding:13px 2px; border-bottom:1px solid var(--line);
   }
   .certs li:last-child{ border-bottom:0; }
-  .certs .mark{
+  .mark{
     flex:0 0 auto; width:38px; height:38px; border-radius:10px;
     display:grid; place-items:center;
     background:linear-gradient(135deg, #123146, #0a1623);
@@ -190,37 +194,68 @@
       </div>
       <div class="skill-grid">
         <div class="card glow skill-cell reveal">
-          <p class="lbl">// Support &amp; Systems</p>
+          <div class="skill-head">
+            <span class="mark">SY</span>
+            <div>
+              <p class="lbl">// Support &amp; Systems</p>
+              <p class="sub">Desktop support, identity &amp; ITSM</p>
+            </div>
+          </div>
           <div class="chips">
-            <span class="chip"><b>Windows</b> · Linux</span>
-            <span class="chip"><b>Active Directory</b></span>
-            <span class="chip">Jira · ServiceNow</span>
+            <span class="chip core">Windows</span>
+            <span class="chip">Linux</span>
+            <span class="chip core">Active Directory</span>
+            <span class="chip">Jira</span>
+            <span class="chip">ServiceNow</span>
             <span class="chip">Asset &amp; access management</span>
           </div>
         </div>
         <div class="card glow skill-cell reveal">
-          <p class="lbl">// Code</p>
+          <div class="skill-head">
+            <span class="mark">CO</span>
+            <div>
+              <p class="lbl">// Code</p>
+              <p class="sub">Languages &amp; frameworks</p>
+            </div>
+          </div>
           <div class="chips">
-            <span class="chip"><b>Python</b></span>
-            <span class="chip"><b>Java</b> · Spring Boot</span>
+            <span class="chip core">Python</span>
+            <span class="chip core">Java</span>
+            <span class="chip">Spring Boot</span>
             <span class="chip">Flask</span>
-            <span class="chip">HTML · CSS</span>
+            <span class="chip">HTML</span>
+            <span class="chip">CSS</span>
           </div>
         </div>
         <div class="card glow skill-cell reveal">
-          <p class="lbl">// Cloud &amp; Data</p>
+          <div class="skill-head">
+            <span class="mark">CD</span>
+            <div>
+              <p class="lbl">// Cloud &amp; Data</p>
+              <p class="sub">Platforms &amp; data tooling</p>
+            </div>
+          </div>
           <div class="chips">
-            <span class="chip"><b>Azure</b></span>
-            <span class="chip">SQL · MySQL</span>
+            <span class="chip core">Azure</span>
+            <span class="chip">SQL</span>
+            <span class="chip">MySQL</span>
             <span class="chip">MongoDB</span>
-            <span class="chip">Pandas · NumPy</span>
+            <span class="chip">Pandas</span>
+            <span class="chip">NumPy</span>
           </div>
         </div>
         <div class="card glow skill-cell reveal">
-          <p class="lbl">// Practice</p>
+          <div class="skill-head">
+            <span class="mark">PR</span>
+            <div>
+              <p class="lbl">// Practice</p>
+              <p class="sub">How I work</p>
+            </div>
+          </div>
           <div class="chips">
-            <span class="chip"><b>Docker</b></span>
-            <span class="chip">Scrum · Agile</span>
+            <span class="chip core">Docker</span>
+            <span class="chip">Scrum</span>
+            <span class="chip">Agile</span>
             <span class="chip">Onboarding &amp; training</span>
           </div>
         </div>
