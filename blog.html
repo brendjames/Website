@@ -7,14 +7,14 @@
 <title>Blog — Brendon James Kirk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" /></noscript>
 <link rel="stylesheet" href="css/site.css" />
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
-<meta name="theme-color" content="#05080d" />
+<meta name="theme-color" content="#FAF9F6" />
 <link rel="canonical" href="https://brendonjameskirk.com/blog.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/blog.html" />
@@ -31,35 +31,17 @@
 
 <header class="nav" role="banner">
   <div class="nav-inner">
-    <a class="nav-logo" href="index.html"><span class="bk">BK</span>Brendon James Kirk</a>
+    <a class="nav-logo" href="index.html"><span class="bk">BK</span><span class="nav-name">Brendon James Kirk</span></a>
     <nav role="navigation" aria-label="Main">
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="blog.html" aria-current="page">Blog</a></li>
         <li><a href="projects.html">Projects</a></li>
-        <li><a href="journey.html">Journey</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="arcade.html">Arcade</a></li>
-        <li><a href="lab.html">Lab</a></li>
       </ul>
     </nav>
-    <button class="nav-burger" aria-label="Open menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
-    </button>
   </div>
 </header>
-<div class="mobile-nav" role="dialog" aria-label="Menu">
-  <button class="close" aria-label="Close menu">✕</button>
-  <a href="index.html">Home</a>
-  <a href="blog.html" aria-current="page">Blog</a>
-  <a href="projects.html">Projects</a>
-  <a href="journey.html">Journey</a>
-  <a href="contact.html">Contact</a>
-  <a href="arcade.html">Arcade</a>
-  <a href="lab.html">Lab</a>
-</div>
-
-<div id="bg-cells"></div>
 
 <main id="main" role="main" tabindex="-1">
   <div class="wrap">
@@ -71,8 +53,8 @@
 
     <div class="post-grid">
 
-      <article class="card glow post-card featured reveal">
-        <div class="thumb hud-frame"><img src="assets/img/posts/ai.webp" alt="Search results about AI-generated 'slop' overwhelming the internet" loading="lazy" width="864" height="801" /></div>
+      <article class="card post-card featured reveal">
+        <div class="thumb"><img src="assets/img/posts/ai.webp" alt="Search results about AI-generated 'slop' overwhelming the internet" loading="lazy" width="864" height="801" /></div>
         <div class="body">
           <span class="badge lime"><span class="dot"></span>Featured</span>
           <p class="meta">Perspective · <time datetime="2025-08-09">Aug 9, 2025</time></p>
@@ -82,7 +64,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/durban2vienna.webp" alt="Cartoon split scene: sunny Durban beach on one side, snowy imperial Vienna on the other" loading="lazy" width="1280" height="698" /></div>
         <div class="body">
           <p class="meta">Perspective · <time datetime="2025">2025</time></p>
@@ -92,7 +74,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/america.webp" alt="Cartoon of an American tourist with a 'Global Influence' backpack accidentally knocking over world landmarks" loading="lazy" width="1280" height="698" /></div>
         <div class="body">
           <p class="meta">Perspective · <time datetime="2025">2025</time></p>
@@ -102,7 +84,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/capetown.webp" alt="Table Mountain rising over the turquoise sea, viewed from a Cape Town beach" loading="lazy" width="1280" height="960" /></div>
         <div class="body">
           <p class="meta">Travel · <time datetime="2025">2025</time></p>
@@ -112,7 +94,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/durban.webp" alt="Cartoon of Durban beach life: a penguin surfing with a bunny chow, monkeys raiding a cooler, Moses Mabhida stadium behind" loading="lazy" width="1280" height="698" /></div>
         <div class="body">
           <p class="meta">Travel · <time datetime="2025">2025</time></p>
@@ -122,7 +104,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/kruger.webp" alt="A herd of elephants crossing a river in Kruger National Park under a moody sky" loading="lazy" width="1280" height="577" /></div>
         <div class="body">
           <p class="meta">Travel · <time datetime="2025">2025</time></p>
@@ -132,7 +114,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/wildcoast.webp" alt="Green hills meeting the sea at a river mouth on the Wild Coast, Eastern Cape" loading="lazy" width="1280" height="719" /></div>
         <div class="body">
           <p class="meta">Travel · <time datetime="2025">2025</time></p>
@@ -142,7 +124,7 @@
         </div>
       </article>
 
-      <article class="card glow post-card reveal">
+      <article class="card post-card reveal">
         <div class="thumb"><img src="assets/img/posts/wilderness.webp" alt="Strelitzia flowers in bloom in a lush garden in Wilderness, Garden Route" loading="lazy" width="1280" height="960" /></div>
         <div class="body">
           <p class="meta">Travel · <time datetime="2025">2025</time></p>
@@ -158,11 +140,10 @@
 
 <footer class="footer" role="contentinfo">
   <div class="footer-inner">
-    <p class="tagline">© 2026 · Empowering solutions <b>through technology</b></p>
+    <p class="tagline">© 2026 Brendon James Kirk · Empowering solutions <b>through technology</b></p>
     <nav aria-label="Footer">
       <a href="blog.html">Blog</a>
       <a href="projects.html">Projects</a>
-      <a href="journey.html">Journey</a>
       <a href="contact.html">Contact</a>
       <a href="arcade.html">Arcade</a>
       <a href="lab.html">Lab</a>
@@ -171,7 +152,6 @@
   </div>
 </footer>
 
-<script src="js/bg-cells.js" defer></script>
 <script src="js/site.js" defer></script>
 </body>
 </html>

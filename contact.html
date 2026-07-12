@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Get in touch with Brendon James Kirk — technology enthusiast in Vienna." />
+<meta name="description" content="Get in touch with Brendon James Kirk — IT support professional in Vienna, Austria." />
 <title>Contact — Brendon James Kirk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" /></noscript>
 <link rel="stylesheet" href="css/site.css" />
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
-<meta name="theme-color" content="#05080d" />
+<meta name="theme-color" content="#FAF9F6" />
 <link rel="canonical" href="https://brendonjameskirk.com/contact.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://brendonjameskirk.com/contact.html" />
 <meta property="og:title" content="Contact — Brendon James Kirk" />
-<meta property="og:description" content="Get in touch with Brendon James Kirk — technology enthusiast in Vienna." />
+<meta property="og:description" content="Get in touch with Brendon James Kirk — IT support professional in Vienna, Austria." />
 <meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
 <style>
   /* ---- Direct contact cards ---- */
-  .c-grid{ display:grid; gap:16px; margin-top:36px; grid-template-columns:1fr; }
+  .c-grid{ display:grid; gap:16px; margin-top:40px; grid-template-columns:1fr; }
   @media(min-width: 760px){ .c-grid{ grid-template-columns:repeat(3, 1fr); } }
   .c-card{
     display:flex; align-items:flex-start; gap:16px; padding:22px 24px;
@@ -35,8 +35,8 @@
   .c-icon{
     flex:0 0 auto; width:40px; height:40px; border-radius:11px;
     display:grid; place-items:center;
-    background:linear-gradient(135deg, #123146, #0a1623);
-    border:1px solid var(--line-bright); color:var(--accent);
+    background: var(--bg-2);
+    border:1px solid var(--line-bright); color: var(--accent);
   }
   .c-icon svg{ width:19px; height:19px; }
   .c-k{
@@ -44,10 +44,10 @@
     text-transform:uppercase; color:var(--accent);
   }
   .c-v{
-    display:block; margin-top:5px; font-family:var(--sans); font-weight:600;
+    display:block; margin-top:5px; font-weight:600;
     font-size:14.5px; color:var(--ink); line-height:1.35; overflow-wrap:anywhere;
   }
-  .c-s{ display:block; margin-top:3px; font-size:12px; color:var(--ink-faint); line-height:1.45; }
+  .c-s{ display:block; margin-top:3px; font-size:12.5px; color:var(--ink-faint); line-height:1.45; }
 </style>
 </head>
 <body>
@@ -56,78 +56,60 @@
 
 <header class="nav" role="banner">
   <div class="nav-inner">
-    <a class="nav-logo" href="index.html"><span class="bk">BK</span>Brendon James Kirk</a>
+    <a class="nav-logo" href="index.html"><span class="bk">BK</span><span class="nav-name">Brendon James Kirk</span></a>
     <nav role="navigation" aria-label="Main">
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li><a href="projects.html">Projects</a></li>
-        <li><a href="journey.html">Journey</a></li>
         <li><a href="contact.html" aria-current="page">Contact</a></li>
-        <li><a href="arcade.html">Arcade</a></li>
-        <li><a href="lab.html">Lab</a></li>
       </ul>
     </nav>
-    <button class="nav-burger" aria-label="Open menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
-    </button>
   </div>
 </header>
-<div class="mobile-nav" role="dialog" aria-label="Menu">
-  <button class="close" aria-label="Close menu">✕</button>
-  <a href="index.html">Home</a>
-  <a href="blog.html">Blog</a>
-  <a href="projects.html">Projects</a>
-  <a href="journey.html">Journey</a>
-  <a href="contact.html" aria-current="page">Contact</a>
-  <a href="arcade.html">Arcade</a>
-  <a href="lab.html">Lab</a>
-</div>
-
-<div id="bg-cells"></div>
 
 <main id="main" role="main" tabindex="-1">
   <div class="wrap">
     <div class="page-head">
       <p class="kicker">Contact</p>
       <h1>Say howzit</h1>
-      <p class="lede">Whether it's tech, travel, or a proper bunny chow recommendation in Vienna — my inbox is open.</p>
+      <p class="lede">Whether it's a role you think I'd fit, tech, travel, or a proper bunny chow recommendation in Vienna — my inbox is open.</p>
     </div>
 
     <div class="c-grid">
-      <a class="card glow c-card reveal" href="mailto:brendonkirk86@gmail.com">
+      <a class="card c-card reveal" href="mailto:brendonkirk86@gmail.com">
         <span class="c-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
         </span>
         <span>
-          <span class="c-k">// Email</span>
+          <span class="c-k">Email</span>
           <span class="c-v">brendonkirk86@gmail.com</span>
           <span class="c-s">The fastest way to reach me</span>
         </span>
       </a>
-      <a class="card glow c-card reveal" href="https://github.com/brendjames">
+      <a class="card c-card reveal" href="https://github.com/brendjames">
         <span class="c-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
         </span>
         <span>
-          <span class="c-k">// GitHub</span>
+          <span class="c-k">GitHub</span>
           <span class="c-v">github.com/brendjames</span>
           <span class="c-s">Code, experiments &amp; this site</span>
         </span>
       </a>
-      <div class="card glow c-card reveal">
+      <div class="card c-card reveal">
         <span class="c-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
         </span>
         <span>
-          <span class="c-k">// Location</span>
+          <span class="c-k">Location</span>
           <span class="c-v">Vienna, Austria</span>
           <span class="c-s">CET / CEST · EU-based</span>
         </span>
       </div>
     </div>
 
-    <h2 class="sec-label" style="margin-top:56px;">// Or send it from here</h2>
+    <h2 class="sec-label" style="margin-top:60px;">// Or send it from here</h2>
 
     <form class="form" data-contact action="https://formsubmit.co/brendonkirk86@gmail.com" method="post">
       <input type="hidden" name="_subject" value="New message from brendonjameskirk.com" />
@@ -164,11 +146,10 @@
 
 <footer class="footer" role="contentinfo">
   <div class="footer-inner">
-    <p class="tagline">© 2026 · Empowering solutions <b>through technology</b></p>
+    <p class="tagline">© 2026 Brendon James Kirk · Empowering solutions <b>through technology</b></p>
     <nav aria-label="Footer">
       <a href="blog.html">Blog</a>
       <a href="projects.html">Projects</a>
-      <a href="journey.html">Journey</a>
       <a href="contact.html">Contact</a>
       <a href="arcade.html">Arcade</a>
       <a href="lab.html">Lab</a>
@@ -177,7 +158,6 @@
   </div>
 </footer>
 
-<script src="js/bg-cells.js" defer></script>
 <script src="js/site.js" defer></script>
 </body>
 </html>

@@ -1,37 +1,8 @@
-// site.js — shared behaviour: mobile nav, glow tracking, scroll reveals, typewriter.
+// site.js — shared behaviour: scroll reveals, count-up stats, print buttons, contact form.
 (function () {
   'use strict';
 
-  // ----- Mobile nav overlay -----
-  const burger = document.querySelector('.nav-burger');
-  const overlay = document.querySelector('.mobile-nav');
-  if (burger && overlay) {
-    const close = overlay.querySelector('.close');
-    burger.addEventListener('click', () => {
-      overlay.classList.add('open');
-      burger.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    });
-    const shut = () => {
-      overlay.classList.remove('open');
-      burger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    };
-    if (close) close.addEventListener('click', shut);
-    overlay.addEventListener('click', (e) => { if (e.target.tagName === 'A') shut(); });
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') shut(); });
-  }
-
-  // ----- Glow-on-hover: track cursor as CSS vars on .glow cards -----
-  document.addEventListener('mousemove', (e) => {
-    for (const el of document.querySelectorAll('.glow')) {
-      const r = el.getBoundingClientRect();
-      if (e.clientX < r.left - 80 || e.clientX > r.right + 80 ||
-          e.clientY < r.top - 80 || e.clientY > r.bottom + 80) continue;
-      el.style.setProperty('--mouse-x', (e.clientX - r.left) + 'px');
-      el.style.setProperty('--mouse-y', (e.clientY - r.top) + 'px');
-    }
-  }, { passive: true });
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ----- Scroll reveals (staggered per sibling group) -----
   const revealed = document.querySelectorAll('.reveal');
@@ -50,29 +21,8 @@
     revealed.forEach((el) => io.observe(el));
   }
 
-  // ----- Scroll progress beam + nav elevation -----
-  const navEl = document.querySelector('.nav');
-  const progress = document.createElement('div');
-  progress.className = 'scroll-progress';
-  progress.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(progress);
-  let scrollQueued = false;
-  const onScroll = () => {
-    if (scrollQueued) return;
-    scrollQueued = true;
-    requestAnimationFrame(() => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
-      if (navEl) navEl.classList.toggle('scrolled', window.scrollY > 8);
-      scrollQueued = false;
-    });
-  };
-  document.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // ----- Count-up stats ([data-count] spans, e.g. home bento tiles) -----
+  // ----- Count-up stats ([data-count] spans) -----
   const counters = document.querySelectorAll('[data-count]');
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (counters.length && !prefersReduced) {
     const cio = new IntersectionObserver((entries) => {
       for (const en of entries) {
@@ -82,7 +32,7 @@
         const target = parseFloat(el.getAttribute('data-count'));
         if (!isFinite(target)) continue;
         const t0 = performance.now();
-        const dur = 1400;
+        const dur = 1200;
         const step = (t) => {
           const p = Math.min((t - t0) / dur, 1);
           const eased = 1 - Math.pow(1 - p, 4); // ease-out quart
@@ -100,26 +50,28 @@
     b.addEventListener('click', () => window.print());
   }
 
-  // ----- Typewriter (index hero) -----
-  const tw = document.querySelector('[data-typewriter]');
-  if (tw) {
-    // name lives in the markup so no-JS visitors and crawlers still see it
-    const text = tw.getAttribute('data-typewriter') || tw.textContent.trim();
-    const reduced = prefersReduced;
-    if (reduced) {
-      tw.textContent = text;
-    } else {
-      tw.textContent = '';
-      let i = 0;
-      const tick = () => {
-        if (i <= text.length) {
-          tw.textContent = text.slice(0, i);
-          i++;
-          setTimeout(tick, i < 4 ? 220 : 55 + Math.random() * 50);
-        }
-      };
-      setTimeout(tick, 350);
-    }
+  // ----- Hero photo: cursor tilt with counter-parallax on the image -----
+  const tiltWrap = document.querySelector('[data-tilt]');
+  if (tiltWrap && !prefersReduced &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const frame = tiltWrap.querySelector('.frame');
+    const img = tiltWrap.querySelector('img');
+    let raf = 0;
+    tiltWrap.addEventListener('mousemove', (e) => {
+      const r = tiltWrap.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        frame.style.transform = 'rotateX(' + (-y * 5).toFixed(2) + 'deg) rotateY(' + (x * 6).toFixed(2) + 'deg)';
+        img.style.translate = (-x * 10).toFixed(1) + 'px ' + (-y * 10).toFixed(1) + 'px';
+      });
+    });
+    tiltWrap.addEventListener('mouseleave', () => {
+      cancelAnimationFrame(raf);
+      frame.style.transform = '';
+      img.style.translate = '';
+    });
   }
 
   // ----- Contact form: real submission via FormSubmit, inline success, honeypot -----

@@ -2,13 +2,15 @@
 
 Live planning document. Checked off as completed.
 
-## Design system
-- Dark futuristic "cool chrome": slate `#05080d` base, cyan accent `#54c8ff`, cyber-lime highlight `#c8f55a`
-- Fonts: Space Grotesk (headings) + JetBrains Mono (body/meta) via Google Fonts
-- Glassmorphism: `backdrop-filter: blur(16px)` cards + nav
-- Homepage background: interactive WebGL2 Voronoi "Cells" shader (mouse glide + click pulse),
-  chosen by Brendon from the shader wallpaper exploration. Graceful fallback to gradient.
-- Bento grid layouts, glow-on-hover cards (`--mouse-x/--mouse-y`), Intersection Observer reveals
+## Design system (v2 — light editorial, July 2026)
+- Warm paper `#FAF9F6` base, warm ink `#1C1917`, terracotta accent `#9A3412`, olive highlight `#3F6212`
+- Fonts: Fraunces (display serif) + Inter (body) + JetBrains Mono (labels) via Google Fonts
+- No background effects, no glassmorphism, no glow — flat white cards, 1px warm borders
+- Homepage = complete one-page profile (about → experience → skills/certs → projects → writing → contact);
+  doubles as a printable CV (`@media print` + Download CV button). journey.html redirects to /#experience.
+- Numbered section headers, editorial writing list, Intersection Observer reveals (subtle)
+- Audience: recruiters. Availability stated subtly ("right next challenge"), never as an explicit badge.
+- (v1 was dark cool-chrome with a WebGL2 Cells shader — replaced at Brendon's request, preserved in git history)
 
 ## File structure
 ```
