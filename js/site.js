@@ -4,6 +4,24 @@
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ----- Scroll progress beam (scroll-linked, not decorative — always on) -----
+  const progress = document.createElement('div');
+  progress.className = 'scroll-progress';
+  progress.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(progress);
+  let scrollQueued = false;
+  const onScroll = () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+      scrollQueued = false;
+    });
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
   // ----- Scroll reveals (staggered per sibling group) -----
   const revealed = document.querySelectorAll('.reveal');
   if (revealed.length) {
@@ -63,8 +81,8 @@
       const y = (e.clientY - r.top) / r.height - 0.5;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        frame.style.transform = 'rotateX(' + (-y * 5).toFixed(2) + 'deg) rotateY(' + (x * 6).toFixed(2) + 'deg)';
-        img.style.translate = (-x * 10).toFixed(1) + 'px ' + (-y * 10).toFixed(1) + 'px';
+        frame.style.transform = 'rotateX(' + (-y * 8).toFixed(2) + 'deg) rotateY(' + (x * 9).toFixed(2) + 'deg)';
+        img.style.translate = (-x * 16).toFixed(1) + 'px ' + (-y * 16).toFixed(1) + 'px';
       });
     });
     tiltWrap.addEventListener('mouseleave', () => {
