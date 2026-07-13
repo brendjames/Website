@@ -92,6 +92,24 @@
     });
   }
 
+  // ----- Magnetic chips: skill pills lean toward the cursor, spring back on leave -----
+  if (!prefersReduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const clamp = (v, m) => Math.max(-m, Math.min(m, v));
+    for (const chip of document.querySelectorAll('.chip')) {
+      chip.addEventListener('mousemove', (e) => {
+        const r = chip.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width / 2;
+        const y = e.clientY - r.top - r.height / 2;
+        chip.style.translate = clamp(x * 0.22, 7).toFixed(1) + 'px ' + clamp(y * 0.4, 5).toFixed(1) + 'px';
+        chip.style.scale = '1.08';
+      });
+      chip.addEventListener('mouseleave', () => {
+        chip.style.translate = '';
+        chip.style.scale = '';
+      });
+    }
+  }
+
   // ----- Contact form: real submission via FormSubmit, inline success, honeypot -----
   const form = document.querySelector('form[data-contact]');
   if (form) {

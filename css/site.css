@@ -360,14 +360,19 @@ main{ position:relative; z-index:1; }
 }
 .article > footer .by{ font-size:13px; color: var(--ink-faint); font-style:italic; font-family: var(--serif); }
 
-/* ---------- Chips (skills, languages) ---------- */
+/* ---------- Chips (skills, languages) — magnetic: they lean toward the cursor ---------- */
 .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
 .chip{
   font-size:13px; padding:6px 14px; border-radius:999px;
   border:1px solid var(--line); color: var(--ink-dim); background:#fff;
-  transition: border-color .25s ease, color .25s ease;
+  transition: border-color .25s ease, color .25s ease, background .25s ease,
+              box-shadow .25s ease, translate .18s ease-out, scale .3s var(--ease-out);
 }
-.chip:hover{ border-color: var(--line-bright); color: var(--ink); }
+.chip:hover{
+  border-color: var(--accent); color: var(--accent-deep);
+  background: rgba(154,52,18,0.05);
+  box-shadow: 0 4px 14px -6px rgba(154,52,18,0.35);
+}
 .chip b{ color: var(--ink); font-weight:500; }
 .chip.core{ background: var(--bg-2); border-color: var(--line-bright); color: var(--ink); font-weight:500; }
 
