@@ -22,6 +22,31 @@
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // ----- Sliding nav indicator: glides to the hovered/focused link, rests on the current page -----
+  const navList = document.querySelector('.nav-links');
+  if (navList) {
+    const ind = document.createElement('span');
+    ind.className = 'nav-ind';
+    ind.setAttribute('aria-hidden', 'true');
+    navList.appendChild(ind);
+    navList.classList.add('has-ind');
+    const current = navList.querySelector('a[aria-current="page"]');
+    const moveTo = (a) => {
+      if (!a) { ind.style.opacity = '0'; return; }
+      const r = a.getBoundingClientRect();
+      const p = navList.getBoundingClientRect();
+      ind.style.left = (r.left - p.left + 10) + 'px';
+      ind.style.width = Math.max(r.width - 20, 12) + 'px';
+      ind.style.opacity = '1';
+    };
+    navList.addEventListener('mouseover', (e) => { const a = e.target.closest('a'); if (a) moveTo(a); });
+    navList.addEventListener('mouseleave', () => moveTo(current));
+    navList.addEventListener('focusin', (e) => { const a = e.target.closest('a'); if (a) moveTo(a); });
+    navList.addEventListener('focusout', () => moveTo(current));
+    window.addEventListener('resize', () => moveTo(current), { passive: true });
+    moveTo(current);
+  }
+
   // ----- Scroll reveals (staggered per sibling group) -----
   const revealed = document.querySelectorAll('.reveal');
   if (revealed.length) {

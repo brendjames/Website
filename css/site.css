@@ -70,6 +70,7 @@ body::after{
 @keyframes fadeIn{ from{ opacity:0; } }
 @keyframes fadeRise{ from{ opacity:0; transform: translateY(16px); } }
 @keyframes blurRise{ from{ opacity:0; transform: translateY(20px); filter: blur(8px); } }
+@keyframes blurIn{ from{ opacity:0; filter: blur(7px); } } /* no movement — reduced-motion safe */
 @keyframes growLine{ from{ transform: scaleX(0); } }
 
 /* ---------- Skip link ---------- */
@@ -114,7 +115,16 @@ body::after{
   background: var(--ink); color: var(--bg);
   font-family: var(--serif); font-size:13px; font-weight:600;
 }
-.nav-links{ display:flex; gap:2px; list-style:none; }
+.nav-links{ display:flex; gap:2px; list-style:none; position:relative; }
+/* sliding indicator, injected by site.js — glides to the hovered link, rests on the current page */
+.nav-ind{
+  position:absolute; bottom:4px; height:2px; border-radius:2px;
+  background: var(--accent); opacity:0; pointer-events:none;
+}
+@media (prefers-reduced-motion: no-preference){
+  .nav-ind{ transition: left .35s var(--ease-out), width .35s var(--ease-out), opacity .25s ease; }
+}
+.nav-links.has-ind a[aria-current="page"]{ text-decoration:none; }
 .nav-links a{
   display:block; padding:8px 13px; border-radius:8px;
   color: var(--ink-dim); font-size:var(--fs-xs); font-weight:500;
@@ -152,15 +162,24 @@ main{ position:relative; z-index:1; }
   .page-head h1{ animation: blurRise .9s var(--ease-out) .12s both; }
   .page-head .lede{ animation: fadeRise .8s var(--ease-out) .3s both; }
 }
-/* reduced motion still gets a calm opacity-only entrance (WCAG-safe) */
+/* reduced motion still gets a rich blur-to-sharp entrance — nothing moves, so it's WCAG-safe */
 @media (prefers-reduced-motion: reduce){
-  .page-head .kicker{ animation: fadeIn .6s ease both; }
-  .page-head h1{ animation: fadeIn .7s ease .1s both; }
-  .page-head .lede{ animation: fadeIn .7s ease .2s both; }
+  .page-head .kicker{ animation: blurIn .7s ease both; }
+  .page-head h1{ animation: blurIn .9s ease .12s both; }
+  .page-head .lede{ animation: blurIn .9s ease .26s both; }
 }
 
 /* numbered section header */
-.sec{ margin-top: clamp(72px, 9vw, 112px); }
+.sec{ position:relative; margin-top: clamp(72px, 9vw, 112px); }
+/* giant outlined ghost numeral floating behind each section — editorial watermark */
+.sec[data-num]::before{
+  content: attr(data-num);
+  position:absolute; top:-0.18em; right:-6px; z-index:-1;
+  font-family: var(--serif); font-weight:600; line-height:1;
+  font-size: clamp(110px, 16vw, 210px);
+  color: transparent; -webkit-text-stroke: 1.5px var(--line-bright);
+  opacity:.6; pointer-events:none; user-select:none;
+}
 .sec-head{
   position:relative; display:flex; align-items:baseline; gap:16px;
   padding-bottom:18px; margin-bottom:36px;
@@ -245,6 +264,18 @@ main{ position:relative; z-index:1; }
 .btn:active{ transform: translateY(0) scale(.97); }
 .btn.primary{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .btn.primary:hover{ background: var(--accent-deep); border-color: var(--accent-deep); }
+/* light sheen sweeps across primary buttons on hover */
+@media (prefers-reduced-motion: no-preference){
+  .btn.primary{ position:relative; overflow:hidden; }
+  .btn.primary::after{
+    content:""; position:absolute; top:0; bottom:0; left:-45%; width:38%;
+    transform: skewX(-20deg) translateX(-130%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    pointer-events:none;
+  }
+  .btn.primary:hover::after{ animation: sheen .65s ease; }
+}
+@keyframes sheen{ to{ transform: skewX(-20deg) translateX(480%); } }
 .btn[aria-disabled="true"]{
   cursor: not-allowed; opacity:0.45; background: transparent;
   border-color: var(--line); color: var(--ink-dim); transform:none;
@@ -273,6 +304,23 @@ main{ position:relative; z-index:1; }
 .footer nav{ display:flex; flex-wrap:wrap; gap:16px; }
 .footer nav a{ color: var(--ink-faint); font-size:var(--fs-xs); }
 .footer nav a:hover{ color: var(--ink); }
+
+/* ---------- Scroll-scrubbed image parallax (progressive: Chromium/newer browsers) ----------
+   Card thumbnails and article heroes drift inside their frames as you scroll past. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .proj-card .thumb img, .post-card .thumb img, .article-hero img{
+      scale: 1.14;
+      animation: img-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes img-drift{
+  from{ translate: 0 -4.5%; }
+  to{ translate: 0 4.5%; }
+}
 
 /* ---------- Blog cards ---------- */
 .post-grid{
@@ -320,8 +368,11 @@ main{ position:relative; z-index:1; }
 }
 
 /* ---------- Article page ---------- */
-.article-hero{ margin: 36px 0 0; }
-.article-hero img{ width:100%; max-height:440px; object-fit:cover; border-radius: var(--radius); border:1px solid var(--line); }
+.article-hero{
+  margin: 36px 0 0;
+  border-radius: var(--radius); border:1px solid var(--line); overflow:hidden;
+}
+.article-hero img{ width:100%; max-height:440px; object-fit:cover; }
 .article{
   max-width: 720px; margin: 48px auto 0; padding: 0 24px;
 }
@@ -407,7 +458,8 @@ main{ position:relative; z-index:1; }
   :root{ --bg:#fff; --bg-2:#fff; --ink:#111; --ink-dim:#333; --ink-faint:#555; --line:#ddd; }
   body{ background:#fff; font-size:12.5px; }
   body::after{ display:none; }
-  .nav, .footer, .skip-link, .btn, .no-print, .scroll-progress, .curtain{ display:none !important; }
+  .nav, .footer, .skip-link, .btn, .no-print, .scroll-progress, .curtain, .nav-ind{ display:none !important; }
+  .sec[data-num]::before{ display:none; }
   .reveal{ opacity:1 !important; transform:none !important; }
   .sec-head::after, .stat::before, .sec-head .num, .sec-head h2{ transform:none !important; }
   .sec-head .aside{ opacity:1 !important; }
