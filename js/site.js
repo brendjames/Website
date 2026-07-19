@@ -4,6 +4,53 @@
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ----- Theme: stored choice, nav sun/moon toggle, yin-yang door on first visit -----
+  const rootEl = document.documentElement;
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const moonIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+  const sunIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+  let themeToggle = null;
+  const applyTheme = (t) => {
+    if (t === 'dark') rootEl.setAttribute('data-theme', 'dark');
+    else rootEl.removeAttribute('data-theme');
+    if (themeMeta) themeMeta.setAttribute('content', t === 'dark' ? '#161310' : '#FAF9F6');
+    if (themeToggle) {
+      themeToggle.innerHTML = t === 'dark' ? sunIcon : moonIcon;
+      themeToggle.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+  };
+  const setTheme = (t) => { applyTheme(t); try { localStorage.setItem('theme', t); } catch (e) {} };
+  const currentTheme = () => (rootEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+  const navInner = document.querySelector('.nav-inner');
+  if (navInner) {
+    themeToggle = document.createElement('button');
+    themeToggle.type = 'button';
+    themeToggle.className = 'theme-toggle';
+    navInner.appendChild(themeToggle);
+    themeToggle.addEventListener('click', () => setTheme(currentTheme() === 'dark' ? 'light' : 'dark'));
+  }
+  applyTheme(currentTheme());
+
+  const door = document.getElementById('theme-door');
+  if (door && rootEl.classList.contains('gated')) {
+    const choose = (t) => {
+      if (!rootEl.classList.contains('gated')) return;
+      setTheme(t);
+      const curtain = document.querySelector('.curtain');
+      if (curtain) curtain.remove(); // the door itself is the intro this time
+      door.classList.add('opening');
+      rootEl.classList.remove('gated'); // hero choreography resumes as the halves part
+      setTimeout(() => door.remove(), 1000);
+    };
+    for (const b of door.querySelectorAll('[data-theme-pick]')) {
+      b.addEventListener('click', () => choose(b.getAttribute('data-theme-pick')));
+    }
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') choose('light'); });
+  } else if (door) {
+    door.remove();
+  }
+
   // ----- Scroll progress beam (scroll-linked, not decorative — always on) -----
   const progress = document.createElement('div');
   progress.className = 'scroll-progress';
