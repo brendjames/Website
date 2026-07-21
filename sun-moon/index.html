@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day &amp; Night — Brendon James Kirk</title>
+<meta name="description" content="A day/night landing page — raise the sun for light, sink the moon for dark. GSAP-powered." />
+<!-- apply the stored/system theme before first paint (no flash) -->
+<script>
+(function(){try{
+  var t = localStorage.getItem('landing-theme');
+  if(!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', t);
+}catch(e){}})();
+</script>
+<!-- self-hosted brand fonts (Fraunces / Inter / JetBrains Mono), no third-party request -->
+<link rel="stylesheet" href="../css/fonts.css" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#FAF9F6" />
+</head>
+<body>
+
+<div class="page">
+
+  <header class="nav">
+    <a class="brand" href="../index.html"><span class="bk">BK</span><span class="brand-name">Brendon James Kirk</span></a>
+    <span class="nav-hint" aria-hidden="true">tap the sky</span>
+  </header>
+
+  <main class="hero">
+    <p class="eyebrow">Personal site · Vienna</p>
+    <h1 class="title">A site for <em>day</em><br />and <em>night</em>.</h1>
+    <p class="lede">Choose your light. The sun rises, the moon sinks — and the whole world follows.</p>
+
+    <button class="sky-toggle" id="toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+      <span class="sky" aria-hidden="true">
+        <span class="sky-layer sky-day"></span>
+        <span class="sky-layer sky-night"></span>
+        <span class="stars"></span>
+        <span class="body sun"><span class="rays"></span><span class="disc"></span></span>
+        <span class="body moon"><span class="disc"></span></span>
+        <span class="ground"></span>
+      </span>
+    </button>
+
+    <p class="mode-label" id="modeLabel" aria-live="polite">Light mode</p>
+    <p class="mode-sub">Sun rises → light · Moon sinks → dark</p>
+  </main>
+
+  <footer class="foot">
+    <span>Day &amp; night, GSAP-powered</span>
+    <span class="mono">☀ / ☾</span>
+  </footer>
+
+</div>
+
+<!-- GSAP first (classic), then the page script — both at end of body so the DOM is ready -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

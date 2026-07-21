@@ -51,7 +51,7 @@
 }
 </script>
 <style>
-  /* ---- Yin-yang theme door (first visit; html.gated shows it and holds the hero) ---- */
+  /* ---- Sun/Moon theme door (first visit; html.gated shows it and holds the hero) ---- */
   .door{ display:none; }
   html.gated .door{ display:flex; }
   html.gated .curtain{ display:none; }
@@ -60,47 +60,89 @@
     position:fixed; inset:0; z-index:300; overflow:hidden;
   }
   .door-side{
-    flex:1; border:0; cursor:pointer; position:relative;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-    font-family: var(--serif); padding:0;
+    flex:1; border:0; cursor:pointer; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family: var(--serif); padding:0; isolation:isolate;
   }
-  .side-light{ background:#FAF9F6; color:#1C1917; }
-  .side-dark{ background:#161310; color:#EDE7DE; }
-  .door-name{ font-size: clamp(30px, 5vw, 54px); font-weight:600; letter-spacing:-0.01em; }
-  .door-sub{
-    font-family: var(--mono); font-size:11px; letter-spacing:0.28em;
-    text-transform:uppercase; opacity:.55;
+  .side-light{ background:linear-gradient(180deg,#BFE0F2 0%,#DCEBF0 44%,#F7E3C5 100%); color:#1C1917; }
+  .side-dark{ background:linear-gradient(180deg,#241A3A 0%,#1A1730 46%,#100E14 100%); color:#EDE7DE; }
+
+  /* celestial scene behind each label */
+  .door .cel{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .door .sun, .door .moon{
+    position:absolute; left:50%; top:28%;
+    width:clamp(96px,14vw,152px); aspect-ratio:1;
+    margin-left:calc(clamp(96px,14vw,152px) / -2);
   }
+  .door .disc{ position:absolute; inset:0; border-radius:50%; }
+  .side-light .disc{
+    background:radial-gradient(circle at 38% 34%,#FFE7A8,#FFC24C 46%,#F59A2E 100%);
+    box-shadow:0 0 34px 10px rgba(245,160,60,.5), 0 0 100px 30px rgba(245,160,60,.25);
+  }
+  .side-dark .disc{
+    background:radial-gradient(circle at 36% 32%,#FFFDF6,#EDE7DE 52%,#CFC7BA 100%);
+    box-shadow:0 0 28px 8px rgba(237,231,222,.4), 0 0 80px 22px rgba(237,231,222,.2);
+  }
+  .side-dark .disc::before, .side-dark .disc::after{
+    content:""; position:absolute; border-radius:50%; background:rgba(150,140,125,.35);
+  }
+  .side-dark .disc::before{ width:22%; height:22%; top:24%; left:52%; }
+  .side-dark .disc::after{ width:15%; height:15%; top:56%; left:30%; }
+  .door .rays{
+    position:absolute; inset:-36%; border-radius:50%;
+    background:repeating-conic-gradient(from 0deg, rgba(245,170,70,.4) 0 6deg, transparent 6deg 24deg);
+    -webkit-mask:radial-gradient(circle, transparent 46%, #000 47%, #000 62%, transparent 66%);
+            mask:radial-gradient(circle, transparent 46%, #000 47%, #000 62%, transparent 66%);
+  }
+  .side-dark .stars{
+    position:absolute; inset:0; opacity:.85;
+    background-image:
+      radial-gradient(1.4px 1.4px at 18% 24%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 34% 48%,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 52% 16%,#fff,transparent),
+      radial-gradient(1.1px 1.1px at 68% 40%,#fff,transparent),
+      radial-gradient(1.3px 1.3px at 82% 26%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 24% 64%,#fff,transparent),
+      radial-gradient(1.4px 1.4px at 74% 60%,#fff,transparent);
+  }
+  .door .hill{
+    position:absolute; left:-25%; right:-25%; bottom:-24%; height:44%; z-index:1;
+    border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  }
+  .side-light .hill{ background:#E7D8BE; }
+  .side-dark .hill{ background:#120E17; }
+
+  .door-label{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .door-name{ font-size:clamp(30px,5vw,54px); font-weight:600; letter-spacing:-0.01em; }
+  .door-sub{ font-family:var(--mono); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; opacity:.6; }
   .door-side:focus-visible{ outline:3px solid #DE8354; outline-offset:-6px; }
-  @media (max-width: 639px){
-    .door-side{ justify-content:flex-start; padding-top:22vh; }
-  }
-  .door-emblem{
-    position:absolute; left:50%; top:50%; translate:-50% -50%; z-index:2;
-    width: clamp(120px, 18vw, 190px); aspect-ratio:1; pointer-events:none;
-    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.3));
-  }
-  .door-emblem svg{ width:100%; height:100%; }
+
+  .door-seam{ position:absolute; left:50%; top:0; bottom:0; width:1px; z-index:3;
+    background:rgba(255,255,255,.14); pointer-events:none; }
   .door-hint{
-    position:absolute; left:50%; bottom:26px; translate:-50% 0; z-index:2; pointer-events:none;
-    font-family: var(--mono); font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;
-    color:#8A8177; white-space:nowrap;
+    position:absolute; left:50%; bottom:26px; translate:-50% 0; z-index:3; pointer-events:none;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;
+    color:#B9AE9E; white-space:nowrap;
   }
+
+  @media (max-width:639px){
+    .door{ flex-direction:column; }
+    .door .sun, .door .moon{ top:20%; }
+    .door-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:1px; }
+  }
+
   @media (prefers-reduced-motion: no-preference){
-    .door-emblem svg{ animation: spin 30s linear infinite; }
-    .door-emblem{ transition: rotate .7s var(--ease-out); }
-    .side-light:hover ~ .door-emblem{ rotate: -22deg; }
-    .side-dark:hover ~ .door-emblem{ rotate: 22deg; }
+    .side-light .rays{ animation:spin 44s linear infinite; }
+    .door .sun, .door .moon{ transition: top .6s var(--ease-out), scale .6s var(--ease-out); }
+    .side-light:hover .sun{ top:21%; scale:1.06; }
+    .side-dark:hover .moon{ top:21%; scale:1.06; }
     .door-side{ transition: flex .55s var(--ease-out); }
-    .door-side:hover{ flex:1.18; }
-    /* the reveal: halves swing apart, the emblem spins away */
+    .door-side:hover{ flex:1.25; }
+    /* reveal: halves swing apart, chosen body lifts away */
     .door.opening .door-side{ transition: translate .95s cubic-bezier(.76,0,.24,1); }
     .door.opening .side-light{ translate:-101% 0; }
     .door.opening .side-dark{ translate:101% 0; }
-    .door.opening .door-emblem{
-      transition: scale .8s var(--ease-out), opacity .7s ease, rotate .8s var(--ease-out);
-      scale:0; opacity:0; rotate:180deg;
-    }
+    .door.opening .sun, .door.opening .moon{ transition: top .9s var(--ease-out); top:4%; }
   }
   @media (prefers-reduced-motion: reduce){
     .door{ transition: opacity .3s ease; }
@@ -424,23 +466,28 @@
 
 <div class="door" id="theme-door" role="dialog" aria-modal="true" aria-label="Choose light or dark mode">
   <button class="door-side side-light" type="button" data-theme-pick="light">
-    <span class="door-name">Light</span>
-    <span class="door-sub">warm paper</span>
+    <span class="cel" aria-hidden="true">
+      <span class="sun"><span class="rays"></span><span class="disc"></span></span>
+      <span class="hill"></span>
+    </span>
+    <span class="door-label">
+      <span class="door-name">Light</span>
+      <span class="door-sub">sun's up · warm paper</span>
+    </span>
   </button>
   <button class="door-side side-dark" type="button" data-theme-pick="dark">
-    <span class="door-name">Dark</span>
-    <span class="door-sub">after hours</span>
+    <span class="cel" aria-hidden="true">
+      <span class="stars"></span>
+      <span class="moon"><span class="disc"></span></span>
+      <span class="hill"></span>
+    </span>
+    <span class="door-label">
+      <span class="door-name">Dark</span>
+      <span class="door-sub">after hours · moonlit</span>
+    </span>
   </button>
-  <div class="door-emblem" aria-hidden="true">
-    <svg viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="48" fill="#FAF9F6"/>
-      <path d="M50 2 A48 48 0 0 1 50 98 A24 24 0 0 1 50 50 A24 24 0 0 0 50 2 Z" fill="#161310"/>
-      <circle cx="50" cy="26" r="7.5" fill="#161310"/>
-      <circle cx="50" cy="74" r="7.5" fill="#FAF9F6"/>
-      <circle cx="50" cy="50" r="48" fill="none" stroke="#8A8177" stroke-opacity=".5" stroke-width="1.2"/>
-    </svg>
-  </div>
-  <p class="door-hint" aria-hidden="true">choose your side · change it anytime</p>
+  <span class="door-seam" aria-hidden="true"></span>
+  <p class="door-hint" aria-hidden="true">choose your light · change it anytime</p>
 </div>
 
 <div class="curtain" aria-hidden="true"></div>
