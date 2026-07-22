@@ -1,0 +1,15 @@
+name = "bjk-arcade-leaderboard"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# D1 binding. Fill database_id in after `wrangler d1 create bjk-arcade`.
+[[d1_databases]]
+binding = "DB"
+database_name = "bjk-arcade"
+database_id = "REPLACE_WITH_ID_FROM_D1_CREATE"
+
+# Optional: serve the API from your own domain instead of the workers.dev URL.
+# Requires the zone (brendonjameskirk.com) to be on your Cloudflare account.
+# [[routes]]
+# pattern = "api.brendonjameskirk.com/*"
+# custom_domain = true

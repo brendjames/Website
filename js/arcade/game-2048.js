@@ -64,7 +64,7 @@ window.GAMES['2048'] = (function () {
     if (changed) {
       addTile();
       S.setScore(score);
-      if (isStuck()) state = 'dead';
+      if (isStuck()) { state = 'dead'; S.playing(false); }
     }
   }
   function isStuck() {
