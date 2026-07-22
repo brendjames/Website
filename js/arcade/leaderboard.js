@@ -1,22 +1,22 @@
 // leaderboard.js — global top-10 client for the arcade.
-// Talks to the Cloudflare Worker API (see /leaderboard-worker). Until the API
-// base below is filled in, the board stays inert and the arcade behaves exactly
-// as before (on-device best scores only) — nothing breaks.
+// Talks to the same-origin PHP endpoint on the web host (see /api).
+// It probes the endpoint on load: if the API isn't there yet, the board stays
+// quiet and the arcade behaves exactly as before (on-device best scores only).
+// No config edit is needed after uploading api/leaderboard.php — it just works.
 window.Leaderboard = (function () {
   'use strict';
 
   // ============================================================
-  //  CONFIG — after deploying the Worker, put its base URL here
-  //  (no trailing slash), e.g. 'https://api.brendonjameskirk.com'
-  //  or the workers.dev URL wrangler prints on deploy.
-  const API = '';
+  //  Same-origin endpoint (cPanel/PHP). No CORS, no third party.
+  const ENDPOINT = '/api/leaderboard.php';
   // ============================================================
 
   const NAMES = {
     snake: 'Snake', breakout: 'Breakout', duck: 'Duck Hop',
     asteroids: 'Asteroids', '2048': '2048',
   };
-  const enabled = () => !!API;
+  let backendOk = null;                    // null = not probed yet, true/false = known
+  const enabled = () => backendOk === true;
 
   let curGame = 'snake';
   const cache = {};          // game -> [{name, score}]
@@ -31,18 +31,25 @@ window.Leaderboard = (function () {
         lbCongrats = el('lbCongrats');
   let lastFocus = null;
 
-  // ---- API ----
+  // ---- API (a successful read is also how we learn the backend exists) ----
   async function fetchTop(game) {
-    const r = await fetch(API + '/api/leaderboard?game=' + encodeURIComponent(game), {
-      headers: { Accept: 'application/json' },
-    });
-    if (!r.ok) throw new Error('http ' + r.status);
-    const data = await r.json();
-    cache[game] = Array.isArray(data.scores) ? data.scores : [];
-    return cache[game];
+    try {
+      const r = await fetch(ENDPOINT + '?game=' + encodeURIComponent(game), {
+        headers: { Accept: 'application/json' },
+      });
+      if (!r.ok) throw new Error('http ' + r.status);
+      const data = await r.json();
+      if (!data || !Array.isArray(data.scores)) throw new Error('bad_payload');
+      cache[game] = data.scores;
+      backendOk = true;
+      return cache[game];
+    } catch (e) {
+      backendOk = false;
+      throw e;
+    }
   }
   async function submitScore(game, name, score) {
-    const r = await fetch(API + '/api/leaderboard', {
+    const r = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ game: game, name: name, score: score }),
@@ -107,12 +114,6 @@ window.Leaderboard = (function () {
     lbErr.textContent = '';
     lbTitle.textContent = (NAMES[curGame] || curGame) + ' · Top 10';
     open();
-    if (!enabled()) {
-      lbList.innerHTML = '';
-      lbState.className = 'lb-state';
-      lbState.textContent = 'The global leaderboard isn’t switched on yet. Your best scores are saved on this device.';
-      return;
-    }
     lbState.className = 'lb-state';
     lbState.textContent = 'Loading…';
     try {
@@ -120,24 +121,25 @@ window.Leaderboard = (function () {
       renderList(curGame);
       lbState.textContent = '';
     } catch (e) {
+      lbList.innerHTML = '';
       lbState.className = 'lb-state err';
-      lbState.textContent = 'Couldn’t reach the leaderboard. Check your connection and try again.';
+      lbState.textContent = 'The global leaderboard isn’t available right now — your best scores are still saved on this device.';
     }
   }
 
-  // ---- public: called by the shell when a game selection loads (prefetch) ----
+  // ---- public: called by the shell when a game selection loads (prefetch + probe) ----
   function setGame(game) {
     curGame = game || curGame;
-    if (enabled()) fetchTop(curGame).catch(() => {});
+    fetchTop(curGame).catch(() => {});
   }
 
   // ---- public: called by the shell at game over ----
   async function gameOver(game, score) {
     curGame = game || curGame;
-    if (!enabled() || !(score > 0)) return;
+    if (!(score > 0) || backendOk === false) return;
     // make sure we have a current board to judge against
-    if (!cache[curGame]) { try { await fetchTop(curGame); } catch (e) {} }
-    if (!qualifies(curGame, score)) return;
+    if (!cache[curGame]) { try { await fetchTop(curGame); } catch (e) { return; } }
+    if (!enabled() || !qualifies(curGame, score)) return;
 
     pendingScore = score;
     lbTitle.textContent = (NAMES[curGame] || curGame) + ' · Top 10';

@@ -7,3 +7,6 @@ desktop.ini
 node_modules/
 *.tmp
 .claude/settings.local.json
+
+# secrets — real DB credentials live only on the server, never in git
+api/config.php
