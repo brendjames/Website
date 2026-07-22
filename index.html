@@ -383,13 +383,24 @@
   .xp-move b{ color: var(--accent); font-weight:500; }
 
   /* ---- Skills & certifications ---- */
-  .skill-groups{ display:grid; gap:28px 44px; grid-template-columns:1fr; }
+  .skill-groups{ display:grid; gap:34px 52px; grid-template-columns:1fr; }
   @media(min-width: 720px){ .skill-groups{ grid-template-columns:1fr 1fr; } }
+  .skill-group{ padding-top:18px; border-top:1px solid var(--line-bright); }
   .skill-group h3{
-    font-family: var(--sans); font-size:13px; font-weight:600;
-    letter-spacing:0.1em; text-transform:uppercase; color: var(--ink);
+    display:flex; flex-direction:column; gap:4px;
+    font-family: var(--mono); font-size:11px; font-weight:500;
+    letter-spacing:0.22em; text-transform:uppercase; color: var(--accent);
   }
-  .skill-group h3 span{ color: var(--ink-faint); font-weight:400; margin-left:8px; letter-spacing:0.04em; text-transform:none; }
+  .skill-group h3 span{
+    font-family: var(--sans); font-size:13px; font-weight:400; letter-spacing:0.01em;
+    text-transform:none; color: var(--ink-faint); margin:0;
+  }
+  .skill-group .chips{ margin-top:16px; }
+  .skill-legend{
+    margin-top:26px; font-family: var(--mono); font-size:11px; letter-spacing:0.06em;
+    color: var(--ink-faint); display:flex; align-items:center; gap:9px;
+  }
+  .skill-legend .d{ width:6px; height:6px; border-radius:50%; background:var(--accent); flex:0 0 auto; }
 
   .certs{ list-style:none; margin-top:8px; display:grid; grid-template-columns:1fr; gap:0 44px; }
   @media(min-width: 760px){ .certs{ grid-template-columns:1fr 1fr; } }
@@ -742,6 +753,7 @@
           </div>
         </div>
       </div>
+      <p class="skill-legend reveal"><span class="d"></span> Core, day-to-day tools</p>
 
       <h3 class="sec-label" style="margin-top:52px;">// Certifications · 2021 — 2026</h3>
       <ol class="certs reveal">

@@ -462,7 +462,12 @@ main{ position:relative; z-index:1; }
   box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 .chip b{ color: var(--ink); font-weight:500; }
-.chip.core{ background: var(--bg-2); border-color: var(--line-bright); color: var(--ink); font-weight:500; }
+/* core skills: same calm surface as the rest, marked with a small accent dot */
+.chip.core{ color: var(--ink); font-weight:500; }
+.chip.core::before{
+  content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
+  background: var(--accent); margin-right:8px; vertical-align:2px;
+}
 
 /* ---------- Forms (contact) ---------- */
 .form{ max-width: 560px; display:flex; flex-direction:column; gap:22px; margin-top:36px; }
