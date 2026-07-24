@@ -1,0 +1,78 @@
+# brendonjameskirk.com — Apache/LiteSpeed config (cPanel / helloly.at)
+# Security headers, HTTPS, compression and caching for a static, first-party site.
+
+# ---- Force HTTPS ----
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ---- Security headers ----
+<IfModule mod_headers.c>
+  # The whole site is self-hosted and makes no third-party requests, so the
+  # policy is tight. 'unsafe-inline' is required for the inline <style> blocks,
+  # style attributes set by JS, and the pre-paint theme/arcade inline scripts;
+  # everything external is still blocked. If you later add analytics on a
+  # subdomain, add it to script-src and connect-src.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+
+  # Commit to HTTPS for a year (AutoSSL keeps the cert fresh). Remove if you
+  # ever need to serve plain HTTP.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=()"
+
+  # don't advertise the stack
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+</IfModule>
+
+# ---- Compression ----
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# ---- Caching ----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType font/woff2       "access plus 1 year"
+  ExpiresByType image/webp       "access plus 1 year"
+  ExpiresByType image/png        "access plus 1 year"
+  ExpiresByType image/jpeg       "access plus 1 year"
+  ExpiresByType image/svg+xml    "access plus 1 month"
+  ExpiresByType text/css         "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
+  ExpiresByType text/html        "access plus 0 seconds"
+</IfModule>
+<IfModule mod_headers.c>
+  # fonts and images are effectively immutable — cache them hard
+  <FilesMatch "\.(woff2|webp|png|jpe?g)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # HTML always revalidates so content updates show immediately
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# ---- Block access to sensitive / source files ----
+<IfModule mod_authz_core.c>
+  <FilesMatch "\.(sql|md|toml|sh|log)$">
+    Require all denied
+  </FilesMatch>
+  <FilesMatch "^config.*\.php$">
+    Require all denied
+  </FilesMatch>
+  <FilesMatch "^\.">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+# ---- Niceties ----
+Options -Indexes
+ErrorDocument 404 /404.html

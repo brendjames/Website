@@ -182,7 +182,8 @@
     }
   }
 
-  // ----- Contact form: real submission via FormSubmit, inline success, honeypot -----
+  // ----- Contact form: posts to the same-host PHP endpoint, inline success, honeypot,
+  //        mailto fallback if the request fails -----
   const form = document.querySelector('form[data-contact]');
   if (form) {
     form.addEventListener('submit', (e) => {
