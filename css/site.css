@@ -173,6 +173,12 @@ body::after{
   .nav-inner{ padding: 0 16px; }
   .nav-links a{ padding:8px 10px; }
 }
+/* phones: the BK logo is the home link, so drop "Home" and tighten the rest to fit 360px */
+@media (max-width: 480px){
+  .nav-inner{ gap:10px; }
+  .nav-links a{ padding:8px 7px; }
+  .nav-links a[href$="index.html"]{ display:none; }
+}
 
 /* ---------- Layout ---------- */
 .wrap{ max-width: var(--maxw); margin:0 auto; padding: 0 24px; }

@@ -4,7 +4,7 @@
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ----- Theme: stored choice, nav sun/moon toggle, yin-yang door on first visit -----
+  // ----- Theme: stored choice, else the system setting; nav sun/moon toggle -----
   const rootEl = document.documentElement;
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   const moonIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
@@ -32,24 +32,15 @@
   }
   applyTheme(currentTheme());
 
-  const door = document.getElementById('theme-door');
-  if (door && rootEl.classList.contains('gated')) {
-    const choose = (t) => {
-      if (!rootEl.classList.contains('gated')) return;
-      setTheme(t);
-      const curtain = document.querySelector('.curtain');
-      if (curtain) curtain.remove(); // the door itself is the intro this time
-      door.classList.add('opening');
-      rootEl.classList.remove('gated'); // hero choreography resumes as the halves part
-      setTimeout(() => door.remove(), 1000);
-    };
-    for (const b of door.querySelectorAll('[data-theme-pick]')) {
-      b.addEventListener('click', () => choose(b.getAttribute('data-theme-pick')));
-    }
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') choose('light'); });
-  } else if (door) {
-    door.remove();
-  }
+  // until the visitor picks a theme, follow the system setting live
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const onSystemChange = (e) => {
+    let stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (err) {}
+    if (!stored) applyTheme(e.matches ? 'dark' : 'light');
+  };
+  if (systemDark.addEventListener) systemDark.addEventListener('change', onSystemChange);
+  else if (systemDark.addListener) systemDark.addListener(onSystemChange);
 
   // ----- Scroll progress beam (scroll-linked, not decorative — always on) -----
   const progress = document.createElement('div');
@@ -79,7 +70,7 @@
     navList.classList.add('has-ind');
     const current = navList.querySelector('a[aria-current="page"]');
     const moveTo = (a) => {
-      if (!a) { ind.style.opacity = '0'; return; }
+      if (!a || !a.getClientRects().length) { ind.style.opacity = '0'; return; } // none, or hidden on phones
       const r = a.getBoundingClientRect();
       const p = navList.getBoundingClientRect();
       ind.style.left = (r.left - p.left + 10) + 'px';

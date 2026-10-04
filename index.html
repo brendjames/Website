@@ -4,15 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" />
-<script>
-/* runs before first paint: apply the stored theme, or gate first-time visitors behind the door */
-(function(){try{
-  var t = localStorage.getItem('theme');
-  if (t === 'dark') document.documentElement.setAttribute('data-theme','dark');
-  if (!t) document.documentElement.classList.add('gated');
-}catch(e){}})();
-</script>
-<meta name="description" content="Brendon James Kirk — IT support professional in Vienna, Austria. 5,000+ hours of hands-on desktop support, eight certifications, and an upgrade path from a Durban kitchen to a Vienna trading floor." />
+<script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
+<meta name="description" content="Howzit — I'm Brendon James Kirk, an IT support professional in Vienna, Austria, by way of Durban. Read my CV, explore what I've made, or say hello." />
 <title>Brendon James Kirk — IT Support Professional, Vienna</title>
 <link rel="stylesheet" href="css/fonts.css" />
 <link rel="stylesheet" href="css/site.css" />
@@ -24,7 +17,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://bkirk.eu/" />
 <meta property="og:title" content="Brendon James Kirk — IT Support Professional, Vienna" />
-<meta property="og:description" content="5,000+ hours of hands-on desktop support, eight certifications, and an upgrade path from a Durban kitchen to a Vienna trading floor." />
+<meta property="og:description" content="Howzit — I'm Brendon, an IT support professional in Vienna, by way of Durban. Read my CV, explore what I've made, or say hello." />
 <meta property="og:image" content="https://bkirk.eu/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -52,457 +45,109 @@
 }
 </script>
 <style>
-  /* ---- Sun/Moon theme door (first visit; html.gated shows it and holds the hero) ---- */
-  .door{ display:none; }
-  html.gated .door{ display:flex; }
-  html.gated .curtain{ display:none; }
-  html.gated .hero *{ animation-play-state: paused !important; }
-  .door{
-    position:fixed; inset:0; z-index:300; overflow:hidden;
+  /* ---- Nav floats over the sky until you scroll (landing.js adds .solid) ---- */
+  .landing .nav{
+    background: transparent; border-bottom-color: transparent;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    transition: background .35s ease, border-color .35s ease;
   }
-  .door-side{
-    flex:1; border:0; cursor:pointer; position:relative; overflow:hidden;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    font-family: var(--serif); padding:0; isolation:isolate;
-  }
-  .side-light{ background:linear-gradient(180deg,#BFE0F2 0%,#DCEBF0 44%,#F7E3C5 100%); color:#1C1917; }
-  .side-dark{ background:linear-gradient(180deg,#241A3A 0%,#1A1730 46%,#100E14 100%); color:#EDE7DE; }
-
-  /* celestial scene behind each label */
-  .door .cel{ position:absolute; inset:0; z-index:0; pointer-events:none; }
-  .door .sun, .door .moon{
-    position:absolute; left:50%; top:28%;
-    width:clamp(96px,14vw,152px); aspect-ratio:1;
-    margin-left:calc(clamp(96px,14vw,152px) / -2);
-  }
-  .door .disc{ position:absolute; inset:0; border-radius:50%; }
-  .side-light .disc{
-    background:radial-gradient(circle at 38% 34%,#FFE7A8,#FFC24C 46%,#F59A2E 100%);
-    box-shadow:0 0 34px 10px rgba(245,160,60,.5), 0 0 100px 30px rgba(245,160,60,.25);
-  }
-  .side-dark .disc{
-    background:radial-gradient(circle at 36% 32%,#FFFDF6,#EDE7DE 52%,#CFC7BA 100%);
-    box-shadow:0 0 28px 8px rgba(237,231,222,.4), 0 0 80px 22px rgba(237,231,222,.2);
-  }
-  .side-dark .disc::before, .side-dark .disc::after{
-    content:""; position:absolute; border-radius:50%; background:rgba(150,140,125,.35);
-  }
-  .side-dark .disc::before{ width:22%; height:22%; top:24%; left:52%; }
-  .side-dark .disc::after{ width:15%; height:15%; top:56%; left:30%; }
-  .door .rays{
-    position:absolute; inset:-36%; border-radius:50%;
-    background:repeating-conic-gradient(from 0deg, rgba(245,170,70,.4) 0 6deg, transparent 6deg 24deg);
-    -webkit-mask:radial-gradient(circle, transparent 46%, #000 47%, #000 62%, transparent 66%);
-            mask:radial-gradient(circle, transparent 46%, #000 47%, #000 62%, transparent 66%);
-  }
-  .side-dark .stars{
-    position:absolute; inset:0; opacity:.85;
-    background-image:
-      radial-gradient(1.4px 1.4px at 18% 24%,#fff,transparent),
-      radial-gradient(1.2px 1.2px at 34% 48%,#fff,transparent),
-      radial-gradient(1.5px 1.5px at 52% 16%,#fff,transparent),
-      radial-gradient(1.1px 1.1px at 68% 40%,#fff,transparent),
-      radial-gradient(1.3px 1.3px at 82% 26%,#fff,transparent),
-      radial-gradient(1.2px 1.2px at 24% 64%,#fff,transparent),
-      radial-gradient(1.4px 1.4px at 74% 60%,#fff,transparent);
-  }
-  .door .hill{
-    position:absolute; left:-25%; right:-25%; bottom:-24%; height:44%; z-index:1;
-    border-radius:50% 50% 0 0 / 100% 100% 0 0;
-  }
-  .side-light .hill{ background:#E7D8BE; }
-  .side-dark .hill{ background:#120E17; }
-
-  .door-label{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .door-name{ font-size:clamp(30px,5vw,54px); font-weight:600; letter-spacing:-0.01em; }
-  .door-sub{ font-family:var(--mono); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; opacity:.6; }
-  .door-side:focus-visible{ outline:3px solid #DE8354; outline-offset:-6px; }
-
-  .door-seam{ position:absolute; left:50%; top:0; bottom:0; width:1px; z-index:3;
-    background:rgba(255,255,255,.14); pointer-events:none; }
-  .door-hint{
-    position:absolute; left:50%; bottom:26px; translate:-50% 0; z-index:3; pointer-events:none;
-    font-family:var(--mono); font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;
-    color:#B9AE9E; white-space:nowrap;
+  .landing .nav.solid{
+    background: var(--glass-strong); border-bottom-color: var(--line);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   }
 
-  @media (max-width:639px){
-    .door{ flex-direction:column; }
-    .door .sun, .door .moon{ top:20%; }
-    .door-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:1px; }
+  /* ---- Hero: the golden-hour horizon (js/landing.js draws it into #sky) ---- */
+  .hero{
+    --g: clamp(150px, 27vh, 300px);   /* ground band: hills + trees live in here */
+    position:relative; isolation:isolate; overflow:hidden;
+    margin-top:-62px;                 /* slide up under the floating nav */
+    min-height:100vh; min-height:100svh;
+    display:flex; flex-direction:column;
+    /* no-WebGL fallback: the same sky as the shader, with a ground band */
+    background:
+      linear-gradient(to top, var(--bg) 0, #3B2A24 calc(var(--g) * .3), #3B2A24 calc(var(--g) * .55), transparent calc(var(--g) * .55)),
+      linear-gradient(180deg, #BDD5E3 0%, #ECE2D2 48%, #F9D5A8 72%, #F8B771 100%);
   }
+  :root[data-theme="dark"] .hero{
+    background:
+      linear-gradient(to top, var(--bg) 0, #0B0912 calc(var(--g) * .3), #0B0912 calc(var(--g) * .55), transparent calc(var(--g) * .55)),
+      linear-gradient(180deg, #121022 0%, #281E3B 60%, #4A3250 100%);
+  }
+  #sky{
+    position:absolute; inset:0; z-index:-1; display:block;
+    width:100%; height:100%;
+    opacity:0; transition: opacity 1.2s ease;
+  }
+  #sky.ready{ opacity:1; }
 
-  @media (prefers-reduced-motion: no-preference){
-    .side-light .rays{ animation:spin 44s linear infinite; }
-    .door .sun, .door .moon{ transition: top .6s var(--ease-out), scale .6s var(--ease-out); }
-    .side-light:hover .sun{ top:21%; scale:1.06; }
-    .side-dark:hover .moon{ top:21%; scale:1.06; }
-    .door-side{ transition: flex .55s var(--ease-out); }
-    .door-side:hover{ flex:1.25; }
-    /* reveal: halves swing apart, chosen body lifts away */
-    .door.opening .door-side{ transition: translate .95s cubic-bezier(.76,0,.24,1); }
-    .door.opening .side-light{ translate:-101% 0; }
-    .door.opening .side-dark{ translate:101% 0; }
-    .door.opening .sun, .door.opening .moon{ transition: top .9s var(--ease-out); top:4%; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .door{ transition: opacity .3s ease; }
-    .door.opening{ opacity:0; }
-  }
-  .door.opening{ pointer-events:none; }
-  .door.opening .door-hint{ opacity:0; transition: opacity .3s ease; }
-
-  /* ---- Hero ---- */
-  .hero{ position:relative; padding: clamp(56px, 7vw, 96px) 0 0; }
-  .hero-inner{
-    display:grid; gap: clamp(40px, 6vw, 72px);
-    grid-template-columns: 1fr; align-items:center;
-  }
-  @media(min-width: 900px){ .hero-inner{ grid-template-columns: 1.12fr .88fr; } }
+  .hero-copy{ padding-top: calc(62px + clamp(48px, 11vh, 130px)); padding-bottom: 32px; }
   .hero h1{
-    margin-top:20px; font-size: clamp(46px, 6.2vw, 76px); font-weight:600;
-    line-height:1.02; letter-spacing:-0.02em; max-width:14ch;
+    margin-top:18px; max-width:12ch;
+    font-size: clamp(48px, 7vw, 92px); line-height:1.0; letter-spacing:-0.025em;
   }
   .hero h1 em{ font-style:italic; font-weight:500; color: var(--accent); }
-  /* a slow light-sweep shimmers across the accent word */
-  @media (prefers-reduced-motion: no-preference){
-    .hero h1 em{
-      background: linear-gradient(100deg, var(--accent-deep) 25%, #D97742 42%, var(--accent-deep) 58%);
-      background-size: 240% 100%;
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      animation: shimmer 6.5s ease-in-out 2.4s infinite;
-    }
+  .hero .intro{
+    margin-top:22px; max-width:46ch;
+    font-size: clamp(16.5px, 1.6vw, 18.5px); line-height:1.6; color: var(--body);
   }
-  @keyframes shimmer{ 0%{ background-position: 120% 0; } 55%, 100%{ background-position: -70% 0; } }
-  /* masked word-rise: each word lifts out of its own clipping box */
-  .hero h1 .w{
-    display:inline-block; overflow:hidden; vertical-align:top;
-    padding-bottom:.09em; margin-bottom:-.09em;
-  }
-  .hero h1 .w > span{ display:inline-block; }
-  .hero .role{
-    margin-top:22px; font-size:17px; color: var(--ink);
-    max-width:52ch; line-height:1.6;
-  }
-  .hero .role b{ font-weight:600; }
-  .hero .pitch{ margin-top:12px; font-size:16px; color: var(--ink-dim); max-width:56ch; }
-  .hero-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:34px; }
-  .hero-cta .gh{ font-size:14px; font-weight:500; margin-left:4px; }
+  .hero-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:32px; }
+  .hero-cta .soft{ font-size:14px; font-weight:500; margin-left:4px; }
 
-  /* ---- Hero picture: arch frame, curtain reveal, cursor tilt ---- */
-  .hero-pic{
-    position:relative; perspective: 1000px;
-    max-width: 440px; margin-inline: auto; width:100%;
+  .ground{
+    height: var(--g); margin-top:auto;
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom:18px;
   }
-  @media(min-width: 900px){ .hero-pic{ margin-inline: 0 0; justify-self: end; } }
-  /* offset echo frame behind the photo — layered editorial depth */
-  .hero-pic::before{
-    content:""; position:absolute; inset:0; z-index:-1;
-    translate: 18px 18px;
-    border:1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    border-radius: 999px 999px 18px 18px;
-  }
-  .hero-pic .frame{
-    position:relative; overflow:hidden;
-    border-radius: 999px 999px 18px 18px;
-    border:1px solid var(--line-bright);
-    background: var(--bg-2);
-    will-change: transform;
-    transition: transform .35s var(--ease-out);
-    transform-style: preserve-3d;
-  }
-  .hero-pic img{
-    width:100%; height:auto; aspect-ratio: 3/4; object-fit:cover; object-position: 50% 22%;
-    transition: translate .35s var(--ease-out);
-  }
-  .hero-pic .tag{
-    position:absolute; left:50%; bottom:18px; translate:-50% 0;
-    white-space:nowrap;
-    font-family: var(--mono); font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase;
-    color: var(--ink); background: color-mix(in srgb, var(--bg) 92%, transparent);
-    border:1px solid var(--line-bright); border-radius:999px; padding:7px 15px;
+  .scroll-cue{
+    font-family: var(--mono); font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;
+    color: var(--ink-dim); padding:8px 16px; border-radius:999px;
+    border:1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   }
-  /* rotating circular stamp, anchored to the photo's corner */
-  .stamp{
-    position:absolute; left:-26px; bottom:-26px; z-index:2;
-    width: clamp(88px, 9vw, 118px); aspect-ratio:1; pointer-events:none;
-    filter: drop-shadow(0 2px 10px rgba(28,25,23,0.08));
-  }
-  @media (max-width: 899px){
-    .stamp{ left:-12px; bottom:-18px; }
-  }
-  .stamp .ring{ transform-box: view-box; transform-origin: 50% 50%; }
-  .stamp text{
-    font-family: var(--mono); font-size:8.4px; letter-spacing:1.7px;
-    text-transform:uppercase; fill: var(--accent);
-  }
-  .stamp .bk-center{
-    font-family: var(--serif); font-size:17px; font-weight:600;
-    letter-spacing:0; fill: var(--ink);
-  }
+  .scroll-cue:hover{ color: var(--ink); text-decoration:none; border-color: var(--line-bright); }
 
-  /* ---- Intro curtain: an ink panel with a terracotta trailing edge wipes up ---- */
-  .curtain{ display:none; }
+  /* entrance: the words settle in as the light comes up */
   @media (prefers-reduced-motion: no-preference){
-    .curtain{
-      display:block; position:fixed; inset:0; z-index:200; pointer-events:none;
-      background: var(--ink);
-      animation: curtainUp 1.05s cubic-bezier(.76,0,.24,1) .25s forwards;
-    }
-    .curtain::after{
-      content:""; position:absolute; top:100%; left:0; right:0; height:16vh;
-      background: var(--accent);
-    }
+    .hero .kicker{ animation: fadeIn .8s ease .3s both; }
+    .hero .kicker::before{ transform-origin:left; animation: growLine .7s var(--ease-out) .4s both; }
+    .hero h1{ animation: blurRise 1s var(--ease-out) .45s both; }
+    .hero .intro{ animation: fadeRise .9s var(--ease-out) .7s both; }
+    .hero-cta{ animation: fadeRise .9s var(--ease-out) .85s both; }
+    .scroll-cue{ animation: fadeIn 1s ease 1.6s both; }
   }
-  @keyframes curtainUp{ to{ transform: translateY(calc(-100% - 16vh)); visibility:hidden; } }
-
-  /* entrance choreography (CSS-only, so it works without JS) */
-  @media (prefers-reduced-motion: no-preference){
-    .hero .kicker{ animation: fadeIn .8s ease .55s both; }
-    .hero .kicker::before{ transform-origin:left; animation: growLine .7s var(--ease-out) .62s both; }
-    .hero h1 .w > span{
-      transform: translateY(120%) rotate(5deg); transform-origin: 0 100%;
-      animation: riseUp 1s cubic-bezier(.22,1,.36,1) forwards;
-    }
-    .hero h1 .w:nth-child(1) > span{ animation-delay:.68s; }
-    .hero h1 .w:nth-child(2) > span{ animation-delay:.8s; }
-    .hero h1 .w:nth-child(3) > span{ animation-delay:.92s; }
-    .hero .role{ animation: fadeRise .8s var(--ease-out) 1.1s both; }
-    .hero .pitch{ animation: fadeRise .8s var(--ease-out) 1.24s both; }
-    .hero-cta > :nth-child(1){ animation: fadeRise .7s var(--ease-out) 1.4s both; }
-    .hero-cta > :nth-child(2){ animation: fadeRise .7s var(--ease-out) 1.48s both; }
-    .hero-cta > :nth-child(3){ animation: fadeRise .7s var(--ease-out) 1.56s both; }
-    /* the photo: arch unclips from the bottom while the image settles from a deep zoom */
-    .hero-pic .frame{ animation: unveil 1.3s cubic-bezier(.16,1,.3,1) .85s both; }
-    .hero-pic img{ scale: 1.4; animation: settle 1.7s cubic-bezier(.16,1,.3,1) .85s forwards; }
-    .hero-pic::before{ animation: fadeRise .9s var(--ease-out) 1.6s both; }
-    .hero-pic .tag{
-      animation: fadeIn .7s ease 2s both,
-                 bob 4.5s ease-in-out 2.8s infinite alternate;
-    }
-    .stamp{ animation: fadeIn 1s ease 1.8s both; }
-    .stamp .ring{ animation: spin 28s linear infinite; }
-    /* stat numbers pop up after their rule draws */
-    .stat.reveal .n{
-      opacity:0; transform: translateY(45%);
-      transition: opacity .6s ease, transform .7s var(--ease-out);
-      transition-delay: calc(var(--stagger, 0) * 90ms + .15s);
-    }
-    .stat.reveal.visible .n{ opacity:1; transform:none; }
-  }
-  /* reduced motion: a blur-to-sharp cascade — rich, but nothing moves */
   @media (prefers-reduced-motion: reduce){
     .hero-copy > *{ animation: blurIn .8s ease both; }
-    .hero-copy > :nth-child(2){ animation-delay:.1s; }
-    .hero-copy > :nth-child(3){ animation-delay:.2s; }
-    .hero-copy > :nth-child(4){ animation-delay:.3s; }
-    .hero-copy > :nth-child(5){ animation-delay:.4s; }
-    .hero-pic{ animation: blurIn 1.1s ease .3s both; }
-  }
-  @keyframes riseUp{ to{ transform: translateY(0) rotate(0deg); } }
-  @keyframes spin{ to{ transform: rotate(1turn); } }
-  @keyframes unveil{ from{ clip-path: inset(100% 0 0 0); } to{ clip-path: inset(0 0 0 0); } }
-  @keyframes settle{ to{ scale: 1; } }
-  @keyframes bob{ from{ transform: translateY(0); } to{ transform: translateY(-9px); } }
-
-  .stats{
-    margin-top: clamp(56px, 7vw, 84px);
-    display:grid; gap:24px; grid-template-columns: repeat(2, 1fr);
-  }
-  @media(min-width: 720px){ .stats{ grid-template-columns: repeat(4, 1fr); } }
-  .stat{ position:relative; padding-top:16px; }
-  .stat::before{
-    content:""; position:absolute; top:0; left:0; width:100%; height:1px;
-    background: var(--line-bright);
-  }
-  /* stat rules draw in as they reveal */
-  @media (prefers-reduced-motion: no-preference){
-    .stat.reveal::before{ transform: scaleX(0); transform-origin:left; }
-    .stat.reveal.visible::before{
-      transform: scaleX(1);
-      transition: transform .9s var(--ease-out) calc(var(--stagger, 0) * 90ms);
-    }
   }
 
-  /* ---- Skills marquee ---- */
-  .marquee{
-    margin-top: clamp(48px, 6vw, 76px); overflow:hidden;
-    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  /* ---- Where to next ---- */
+  .next{ padding-top: clamp(56px, 8vw, 100px); }
+  .next h2{ margin-top:16px; font-size: clamp(30px, 4vw, 44px); max-width:20ch; }
+  .next .sub{ margin-top:12px; color: var(--ink-dim); max-width:56ch; font-size:16.5px; }
+  .next-grid{ margin-top:36px; display:grid; gap:18px; grid-template-columns:1fr; }
+  @media(min-width: 720px){ .next-grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media(min-width: 1000px){ .next-grid{ grid-template-columns: repeat(4, 1fr); } }
+  .next-card{ display:flex; flex-direction:column; gap:10px; padding:24px 22px 22px; color:inherit; }
+  .next-card:hover{ text-decoration:none; }
+  .next-card .k{
+    font-family: var(--mono); font-size:10.5px; letter-spacing:0.22em;
+    text-transform:uppercase; color: var(--accent);
   }
-  .marquee-track{ display:flex; align-items:center; width:max-content; padding:13px 0; }
-  .marquee-track span{
-    font-family: var(--mono); font-size:12.5px; letter-spacing:0.22em;
-    text-transform:uppercase; color: var(--ink-dim);
-    white-space:nowrap; margin-right:38px;
+  .next-card h3{ font-size:23px; }
+  .next-card p{ color: var(--ink-dim); font-size: var(--fs-sm); line-height:1.6; flex:1; }
+  .next-card .go{ font-size: var(--fs-xs); font-weight:500; color: var(--accent); }
+  /* the CV gets a warm tint: it's the door most visitors came for */
+  .next-card.cv{
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
   }
-  .marquee-track .sep{ color: var(--accent); }
-  @media (prefers-reduced-motion: no-preference){
-    .marquee-track{ animation: marquee 28s linear infinite; }
-    .marquee:hover .marquee-track{ animation-play-state:paused; }
+  @media (hover:hover) and (prefers-reduced-motion: no-preference){
+    .next-card:hover{ translate:0 -3px; box-shadow: 0 12px 30px -16px rgba(28,25,23,0.22); }
   }
-  @keyframes marquee{ to{ transform: translateX(-50%); } }
-  .stat .n{
-    font-family: var(--serif); font-size: clamp(30px, 3.4vw, 40px); font-weight:500;
-    line-height:1; color: var(--ink); font-variant-numeric: tabular-nums;
-  }
-  .stat .n small{ font-size:0.5em; color: var(--accent); font-weight:500; margin-left:2px; }
-  .stat .l{
-    margin-top:8px; font-family: var(--mono); font-size:10.5px;
-    letter-spacing:0.18em; text-transform:uppercase; color: var(--ink-faint);
-  }
-
-  /* ---- About ---- */
-  .about-grid{ max-width: 68ch; }
-  .about-grid .txt p{ color: var(--body); font-size:16.5px; }
-  .about-grid .txt p + p{ margin-top:1.1em; }
-  .about-grid .txt .motto{
-    margin-top:1.5em; font-family: var(--serif); font-style:italic;
-    font-size: clamp(20px, 2.6vw, 26px); line-height:1.4; color: var(--ink);
-    padding-left:22px; border-left:2px solid var(--accent);
-  }
-
-  /* ---- Experience ---- */
-  .xp-list{ list-style:none; }
-  .xp{
-    display:grid; gap:6px 32px; grid-template-columns:1fr;
-    padding: 26px 0 30px; border-top:1px solid var(--line);
-  }
-  .xp:first-child{ border-top:0; padding-top:0; }
-  @media(min-width: 760px){ .xp{ grid-template-columns: 200px 1fr; padding: 30px 0 34px; } }
-  .xp .dates{ font-family: var(--mono); font-size:12px; letter-spacing:0.06em; color: var(--accent); }
-  .xp .place{ margin-top:4px; font-size:12.5px; color: var(--ink-faint); }
-  .xp h3{ font-size: 23px; }
-  .xp .org{ margin-top:4px; font-size:14px; color: var(--ink-dim); }
-  .xp ul{ margin-top:14px; padding-left:1.15em; color:#3D3A36; font-size:14.5px; }
-  .xp ul li + li{ margin-top:6px; }
-  .xp-move{
-    padding: 16px 0; border-top:1px solid var(--line);
-    font-family: var(--mono); font-size:12px; letter-spacing:0.1em;
-    text-transform:uppercase; color: var(--ink-faint);
-  }
-  .xp-move b{ color: var(--accent); font-weight:500; }
-
-  /* ---- Skills & certifications ---- */
-  .skill-groups{ display:grid; gap:34px 52px; grid-template-columns:1fr; }
-  @media(min-width: 720px){ .skill-groups{ grid-template-columns:1fr 1fr; } }
-  .skill-group{ padding-top:18px; border-top:1px solid var(--line-bright); }
-  .skill-group h3{
-    display:flex; flex-direction:column; gap:4px;
-    font-family: var(--mono); font-size:11px; font-weight:500;
-    letter-spacing:0.22em; text-transform:uppercase; color: var(--accent);
-  }
-  .skill-group h3 span{
-    font-family: var(--sans); font-size:13px; font-weight:400; letter-spacing:0.01em;
-    text-transform:none; color: var(--ink-faint); margin:0;
-  }
-  .skill-group .chips{ margin-top:16px; }
-  .skill-legend{
-    margin-top:26px; font-family: var(--mono); font-size:11px; letter-spacing:0.06em;
-    color: var(--ink-faint); display:flex; align-items:center; gap:9px;
-  }
-  .skill-legend .d{ width:6px; height:6px; border-radius:50%; background:var(--accent); flex:0 0 auto; }
-
-  .certs{ list-style:none; margin-top:8px; display:grid; grid-template-columns:1fr; gap:0 44px; }
-  @media(min-width: 760px){ .certs{ grid-template-columns:1fr 1fr; } }
-  .certs li{
-    display:flex; align-items:baseline; justify-content:space-between; gap:16px;
-    padding:13px 2px; border-bottom:1px solid var(--line);
-  }
-  .certs .name{ font-weight:500; font-size:14.5px; color: var(--ink); }
-  .certs .org{ display:block; font-size:12.5px; color: var(--ink-faint); font-weight:400; margin-top:1px; }
-  .certs .when{ font-family: var(--mono); font-size:12px; color: var(--accent); white-space:nowrap; }
-
-  /* ---- Projects ---- */
-  .proj-grid{ display:grid; gap:22px; grid-template-columns:1fr; }
-  @media(min-width: 720px){ .proj-grid{ grid-template-columns:1fr 1fr; } }
-  .proj-card{ display:flex; flex-direction:column; }
-  .proj-card .thumb{ aspect-ratio: 16/9; overflow:hidden; border-bottom:1px solid var(--line); }
-  .proj-card .thumb img{ width:100%; height:100%; object-fit:cover; transition: transform .5s ease; }
-  @media (prefers-reduced-motion: no-preference){
-    .proj-card:hover .thumb img{ transform: scale(1.03); }
-  }
-  .proj-card .thumb .ph{
-    height:100%;
-    background:
-      radial-gradient(90% 120% at 15% 90%, rgba(154,52,18,0.12), transparent 55%),
-      radial-gradient(110% 130% at 85% 10%, rgba(63,98,18,0.14), transparent 60%),
-      var(--bg-2);
-    display:grid; place-items:center;
-  }
-  .proj-card .thumb .ph span{
-    font-family: var(--mono); font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
-    color: var(--ink-faint);
-  }
-  .proj-card .body{ padding:22px 24px 24px; display:flex; flex-direction:column; gap:10px; flex:1; }
-  .proj-card .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .proj-card h3{ font-size:22px; }
-  .proj-card p{ color: var(--ink-dim); font-size:var(--fs-sm); flex:1; }
-  .proj-card .go{ font-size:var(--fs-xs); font-weight:500; }
-
-  /* ---- Writing ---- */
-  .writing-list{ list-style:none; border-top:1px solid var(--line); }
-  .w-row{ border-bottom:1px solid var(--line); }
-  .w-row a{
-    display:grid; gap:2px 28px; grid-template-columns:1fr; align-items:baseline;
-    padding:16px 2px; color:inherit;
-  }
-  @media(min-width: 720px){ .w-row a{ grid-template-columns: 150px 1fr auto; padding:18px 2px; } }
-  .w-row a:hover{ text-decoration:none; background: color-mix(in srgb, var(--ink) 3%, transparent); }
-  .w-row .date{ font-family: var(--mono); font-size:11.5px; letter-spacing:0.08em; color: var(--ink-faint); }
-  .w-row .title{
-    font-family: var(--serif); font-size:19px; font-weight:500; color: var(--ink); line-height:1.3;
-    transition: transform .35s var(--ease-out), color .2s ease;
-  }
-  .w-row a:hover .title{ color: var(--accent-deep); transform: translateX(7px); }
-  .w-row .cat{
-    font-family: var(--mono); font-size:10.5px; letter-spacing:0.16em;
-    text-transform:uppercase; color: var(--ink-faint);
-  }
-  @media(max-width: 719px){ .w-row .cat{ display:none; } }
-  .writing-more{ margin-top:22px; }
-
-  /* ---- Contact ---- */
-  .contact-sec h2{ font-size: clamp(38px, 6vw, 64px); line-height:1.05; max-width:16ch; }
-  .contact-sec .say{ margin-top:18px; color: var(--ink-dim); max-width:54ch; font-size:16.5px; }
-  .contact-meta{
-    margin-top:30px; display:flex; flex-wrap:wrap; gap:8px 22px;
-    font-size:14px; color: var(--ink-dim);
-  }
-  .contact-meta a{ font-weight:500; }
 </style>
 </head>
-<body>
+<body class="landing">
 
 <a class="skip-link" href="#main">Skip to content</a>
-
-<div class="door" id="theme-door" role="dialog" aria-modal="true" aria-label="Choose light or dark mode">
-  <button class="door-side side-light" type="button" data-theme-pick="light">
-    <span class="cel" aria-hidden="true">
-      <span class="sun"><span class="rays"></span><span class="disc"></span></span>
-      <span class="hill"></span>
-    </span>
-    <span class="door-label">
-      <span class="door-name">Light</span>
-      <span class="door-sub">sun's up · warm paper</span>
-    </span>
-  </button>
-  <button class="door-side side-dark" type="button" data-theme-pick="dark">
-    <span class="cel" aria-hidden="true">
-      <span class="stars"></span>
-      <span class="moon"><span class="disc"></span></span>
-      <span class="hill"></span>
-    </span>
-    <span class="door-label">
-      <span class="door-name">Dark</span>
-      <span class="door-sub">after hours · moonlit</span>
-    </span>
-  </button>
-  <span class="door-seam" aria-hidden="true"></span>
-  <p class="door-hint" aria-hidden="true">choose your light · change it anytime</p>
-</div>
-
-<div class="curtain" aria-hidden="true"></div>
 
 <header class="nav" role="banner">
   <div class="nav-inner">
@@ -510,6 +155,7 @@
     <nav role="navigation" aria-label="Main">
       <ul class="nav-links">
         <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="path.html">Path</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -519,406 +165,63 @@
 </header>
 
 <main id="main" role="main" tabindex="-1">
-  <div class="wrap">
 
-    <section class="hero" aria-label="Introduction">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <p class="kicker">Vienna, Austria · ex Durban, South Africa</p>
-          <h1 aria-label="Brendon James Kirk"><span class="w"><span>Brendon</span></span> <span class="w"><span><em>James</em></span></span> <span class="w"><span>Kirk</span></span></h1>
-          <p class="role">IT support professional — currently <b>Desktop Support Admin at Trayport, a TMX company</b>, where I'm the sole IT for a 70-user energy-trading office.</p>
-          <p class="pitch">I resolve everyday technical friction with speed and empathy. I don't just fix problems — I build the upgrade path that moves systems forward. And I'm always interested in the right next challenge.</p>
-          <div class="hero-cta no-print">
-            <a class="btn primary" href="mailto:brendonkirk86@gmail.com">Email me</a>
-            <button class="btn" type="button" data-print>Download CV (PDF)</button>
-            <a class="gh" href="https://github.com/brendjames">github.com/brendjames ↗</a>
-          </div>
-        </div>
-        <div class="hero-pic no-print" data-tilt>
-          <div class="frame">
-            <picture>
-              <source media="(max-width: 899px)" srcset="assets/bj-mobile.webp" />
-              <img src="assets/bj.webp" alt="Brendon Kirk surfing a wave while holding a duck, sharks visible underwater" fetchpriority="high" width="1200" height="1789" />
-            </picture>
-            <span class="tag">Yes, that's a duck</span>
-          </div>
-          <div class="stamp" aria-hidden="true">
-            <svg viewBox="0 0 100 100">
-              <defs>
-                <path id="stamp-circle" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" fill="none" />
-              </defs>
-              <g class="ring">
-                <text><textPath href="#stamp-circle">Empowering solutions · through technology ·&#160;</textPath></text>
-              </g>
-              <text x="50" y="56" text-anchor="middle" class="bk-center">BK</text>
-            </svg>
-          </div>
-        </div>
+  <section class="hero" aria-labelledby="hello">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="wrap hero-copy">
+      <p class="kicker">Vienna, Austria · ex Durban, South Africa</p>
+      <h1 id="hello">Howzit, I'm <em>Brendon</em>.</h1>
+      <p class="intro">IT support professional in Vienna, and the sole IT for a 70-person energy-trading office. I resolve everyday technical friction with speed and empathy — and I'm as good with humans as with hardware.</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="path.html">View my CV</a>
+        <a class="btn" href="projects.html">Things I've made</a>
+        <a class="soft" href="contact.html">or just say howzit →</a>
       </div>
+    </div>
+    <div class="ground">
+      <a class="scroll-cue" href="#next">Where to next ↓</a>
+    </div>
+  </section>
 
-      <div class="stats" aria-label="Key numbers">
-        <div class="stat reveal">
-          <p class="n"><span data-count="5000">5,000</span><small>+ hrs</small></p>
-          <p class="l">End-user support</p>
-        </div>
-        <div class="stat reveal">
-          <p class="n"><span data-count="8">8</span></p>
-          <p class="l">Certifications</p>
-        </div>
-        <div class="stat reveal">
-          <p class="n"><span data-count="3">3</span></p>
-          <p class="l">Languages</p>
-        </div>
-        <div class="stat reveal">
-          <p class="n"><span data-count="2">2</span></p>
-          <p class="l">Continents</p>
-        </div>
-      </div>
+  <section class="wrap next" id="next" aria-labelledby="next-title">
+    <p class="kicker reveal">Where to next</p>
+    <h2 id="next-title" class="reveal">Come in, have a look around.</h2>
+    <p class="sub reveal">The full CV, a few things I've built, and stories from the road between Durban and Vienna.</p>
+    <div class="next-grid">
+      <a class="card next-card cv reveal" href="path.html">
+        <span class="k">01 · Path</span>
+        <h3>My CV</h3>
+        <p>From a Durban kitchen to a Vienna trading floor: experience, skills and eight certifications. Prints cleanly as a PDF.</p>
+        <span class="go">Read my path →</span>
+      </a>
+      <a class="card next-card reveal" href="projects.html">
+        <span class="k">02 · Projects</span>
+        <h3>Things I've made</h3>
+        <p>An interactive map of 177,000 Kruger sightings, a WebGL shader lab and five hand-built arcade games.</p>
+        <span class="go">See the work →</span>
+      </a>
+      <a class="card next-card reveal" href="blog.html">
+        <span class="k">03 · Writing</span>
+        <h3>Stories &amp; perspectives</h3>
+        <p>Travel essays from South Africa and thoughts on technology and culture.</p>
+        <span class="go">Read the blog →</span>
+      </a>
+      <a class="card next-card reveal" href="contact.html">
+        <span class="k">04 · Contact</span>
+        <h3>Say howzit</h3>
+        <p>A role you think I'd fit, a tech question, or a proper bunny chow recommendation in Vienna — I'll answer.</p>
+        <span class="go">Get in touch →</span>
+      </a>
+    </div>
+  </section>
 
-      <div class="marquee no-print" aria-hidden="true">
-        <div class="marquee-track">
-          <span>Windows</span><span class="sep">·</span>
-          <span>Active Directory</span><span class="sep">·</span>
-          <span>Azure</span><span class="sep">·</span>
-          <span>Jira</span><span class="sep">·</span>
-          <span>ServiceNow</span><span class="sep">·</span>
-          <span>Python</span><span class="sep">·</span>
-          <span>Java</span><span class="sep">·</span>
-          <span>Docker</span><span class="sep">·</span>
-          <span>SQL</span><span class="sep">·</span>
-          <span>Linux</span><span class="sep">·</span>
-          <span>Onboarding &amp; Training</span><span class="sep">·</span>
-          <span>Windows</span><span class="sep">·</span>
-          <span>Active Directory</span><span class="sep">·</span>
-          <span>Azure</span><span class="sep">·</span>
-          <span>Jira</span><span class="sep">·</span>
-          <span>ServiceNow</span><span class="sep">·</span>
-          <span>Python</span><span class="sep">·</span>
-          <span>Java</span><span class="sep">·</span>
-          <span>Docker</span><span class="sep">·</span>
-          <span>SQL</span><span class="sep">·</span>
-          <span>Linux</span><span class="sep">·</span>
-          <span>Onboarding &amp; Training</span><span class="sep">·</span>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="sec" data-num="01" aria-label="About">
-      <div class="sec-head reveal">
-        <span class="num">01</span>
-        <h2>About</h2>
-        <span class="aside">Who I am</span>
-      </div>
-      <div class="about-grid">
-        <div class="txt reveal">
-          <p>I'm a technology enthusiast who has spent the last decade making things run — kitchens, embroidery production lines, a photography studio, and now the IT backbone of a trading office. That route taught me something most support engineers learn late: the hard part is rarely the hardware. It's the person standing next to it, having a bad day.</p>
-          <p>The path here wasn't standard. A chef's certificate in Durban. An operations role in Cape Town where I brought the latest technology into a creative business. A move to Vienna in 2019, a night-shift warehouse job at UPS that funded a full-time retraining into software and data — Harvard's CS50x, six months of full-time Java, Python, Google Data Analytics. Since 2024 I've been Trayport's sole IT presence in Vienna: first line to final fix.</p>
-          <p>I'm as good with humans as with hardware, and I bring the same energy to both.</p>
-          <p class="motto">"Empowering solutions through technology."</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="experience" class="sec" data-num="02" aria-label="Experience">
-      <div class="sec-head reveal">
-        <span class="num">02</span>
-        <h2>Experience</h2>
-        <span class="aside">2012 — Present</span>
-      </div>
-      <ol class="xp-list">
-        <li class="xp reveal">
-          <div>
-            <p class="dates">01/2024 — Present</p>
-            <p class="place">Vienna, Austria</p>
-          </div>
-          <div>
-            <h3>Desktop Support Admin</h3>
-            <p class="org">Trayport, a TMX company — sole IT for the Vienna office</p>
-            <ul>
-              <li>Full-lifecycle support for a 70-user energy-trading hub — first line to final fix</li>
-              <li>Planned and completed a full Linux → Windows migration</li>
-              <li>Upskilling end-users to integrate AI workflows into daily operations</li>
-              <li>Onboarding &amp; offboarding, Active Directory, access &amp; asset management</li>
-              <li>Jira &amp; ServiceNow ticketing, system maintenance &amp; security</li>
-            </ul>
-          </div>
-        </li>
-        <li class="xp reveal">
-          <div>
-            <p class="dates">2021 — 2023</p>
-            <p class="place">Vienna, Austria</p>
-          </div>
-          <div>
-            <h3>The retraining arc — software &amp; data</h3>
-            <p class="org">everyone codes · Harvard CS50x · University of Michigan · Google</p>
-            <ul>
-              <li>Java Advanced (full-time, 6 months) &amp; Principles of Software Design</li>
-              <li>CS50x — Harvard's introduction to computer science</li>
-              <li>Python for Everybody · Google Data Analytics</li>
-            </ul>
-          </div>
-        </li>
-        <li class="xp reveal">
-          <div>
-            <p class="dates">05/2020 — 06/2022</p>
-            <p class="place">Vienna, Austria</p>
-          </div>
-          <div>
-            <h3>Warehouse Worker</h3>
-            <p class="org">UPS — United Parcel Service</p>
-            <ul>
-              <li>Funded the tech pivot and German language acquisition through nighttime logistics and sorting</li>
-            </ul>
-          </div>
-        </li>
-        <li class="xp-move reveal">Cape Town <b>→</b> Vienna · Moved to Austria, November 2019</li>
-        <li class="xp reveal">
-          <div>
-            <p class="dates">02/2015 — 10/2019</p>
-            <p class="place">Cape Town, South Africa</p>
-          </div>
-          <div>
-            <h3>Operations Manager</h3>
-            <p class="org">Claire Gunn Photography</p>
-            <ul>
-              <li>Managed and updated websites and social media; assisted on photoshoots</li>
-              <li>Brought the latest technology into day-to-day operations</li>
-              <li>Photo editing and photographic database management</li>
-            </ul>
-          </div>
-        </li>
-        <li class="xp reveal">
-          <div>
-            <p class="dates">06/2012 — 01/2015</p>
-            <p class="place">Cape Town, South Africa</p>
-          </div>
-          <div>
-            <h3>Production Manager</h3>
-            <p class="org">Ahead Gear — embroidery department</p>
-            <ul>
-              <li>Managed staff and planned production to meet deadlines</li>
-              <li>Serviced and maintained the embroidery machines</li>
-            </ul>
-          </div>
-        </li>
-      </ol>
-    </section>
-
-    <section id="skills" class="sec" data-num="03" aria-label="Skills and certifications">
-      <div class="sec-head reveal">
-        <span class="num">03</span>
-        <h2>Skills &amp; Certifications</h2>
-        <span class="aside">The toolbox</span>
-      </div>
-      <div class="skill-groups">
-        <div class="skill-group reveal">
-          <h3>Support &amp; Systems <span>desktop, identity, ITSM</span></h3>
-          <div class="chips">
-            <span class="chip core">Windows</span>
-            <span class="chip">Linux</span>
-            <span class="chip core">Active Directory</span>
-            <span class="chip">Jira</span>
-            <span class="chip">ServiceNow</span>
-            <span class="chip">Asset &amp; access management</span>
-          </div>
-        </div>
-        <div class="skill-group reveal">
-          <h3>Code <span>languages &amp; frameworks</span></h3>
-          <div class="chips">
-            <span class="chip core">Python</span>
-            <span class="chip core">Java</span>
-            <span class="chip">Spring Boot</span>
-            <span class="chip">Flask</span>
-            <span class="chip">HTML</span>
-            <span class="chip">CSS</span>
-          </div>
-        </div>
-        <div class="skill-group reveal">
-          <h3>Cloud &amp; Data <span>platforms &amp; tooling</span></h3>
-          <div class="chips">
-            <span class="chip core">Azure</span>
-            <span class="chip">SQL</span>
-            <span class="chip">MySQL</span>
-            <span class="chip">MongoDB</span>
-            <span class="chip">Pandas</span>
-            <span class="chip">NumPy</span>
-          </div>
-        </div>
-        <div class="skill-group reveal">
-          <h3>Practice <span>how I work</span></h3>
-          <div class="chips">
-            <span class="chip core">Docker</span>
-            <span class="chip">Scrum</span>
-            <span class="chip">Agile</span>
-            <span class="chip">Onboarding &amp; training</span>
-          </div>
-        </div>
-      </div>
-      <p class="skill-legend reveal"><span class="d"></span> Core, day-to-day tools</p>
-
-      <h3 class="sec-label" style="margin-top:52px;">// Certifications · 2021 — 2026</h3>
-      <ol class="certs reveal">
-        <li>
-          <span class="name">Claude 101 <span class="org">Anthropic</span></span>
-          <span class="when">03/2026</span>
-        </li>
-        <li>
-          <span class="name">Google AI Essentials <span class="org">Google</span></span>
-          <span class="when">06/2025</span>
-        </li>
-        <li>
-          <span class="name">Azure Fundamentals (AZ-900) <span class="org">Microsoft</span></span>
-          <span class="when">08/2023</span>
-        </li>
-        <li>
-          <span class="name">Java Advanced <span class="org">everyone codes · 6 months, full-time</span></span>
-          <span class="when">2023</span>
-        </li>
-        <li>
-          <span class="name">Java: Principles of Software Design <span class="org">everyone codes</span></span>
-          <span class="when">2022</span>
-        </li>
-        <li>
-          <span class="name">CS50x — Introduction to Computer Science <span class="org">Harvard University</span></span>
-          <span class="when">2022</span>
-        </li>
-        <li>
-          <span class="name">Python for Everybody <span class="org">University of Michigan</span></span>
-          <span class="when">2022</span>
-        </li>
-        <li>
-          <span class="name">Google Data Analytics <span class="org">Google</span></span>
-          <span class="when">2021</span>
-        </li>
-      </ol>
-
-      <h3 class="sec-label" style="margin-top:52px;">// Languages</h3>
-      <div class="chips reveal">
-        <span class="chip"><b>English</b> · C2 native</span>
-        <span class="chip"><b>Afrikaans</b> · B2</span>
-        <span class="chip"><b>German</b> · A2/B1 and climbing</span>
-        <span class="chip">Driver's licence · Code B</span>
-      </div>
-    </section>
-
-    <section id="projects" class="sec no-print" data-num="04" aria-label="Selected work">
-      <div class="sec-head reveal">
-        <span class="num">04</span>
-        <h2>Selected work</h2>
-        <a class="aside" href="projects.html">All projects →</a>
-      </div>
-      <div class="proj-grid">
-        <article class="card proj-card reveal">
-          <div class="thumb"><img src="assets/img/posts/kruger.webp" alt="A herd of elephants crossing a river in Kruger National Park" loading="lazy" width="1280" height="577" /></div>
-          <div class="body">
-            <div class="top"><h3>Kruger: data on the wild</h3><span class="badge"><span class="dot"></span>Live</span></div>
-            <p>177,000+ wildlife sightings shared on @LatestKruger since 2012, geocoded onto the park's real road network in Python and played back on an interactive WebGL map.</p>
-            <div class="go"><a href="kruger_tings.html">Explore the map →</a> <span aria-hidden="true">·</span> <a href="blog/travel-kruger.html">Read the story</a></div>
-          </div>
-        </article>
-        <article class="card proj-card reveal">
-          <div class="thumb"><img src="assets/img/proj/lab.webp" alt="The Music shader from the lab — a molten core wearing the audio spectrum as a rainbow crown" loading="lazy" width="1200" height="675" /></div>
-          <div class="body">
-            <div class="top"><h3>Shader Lab</h3><span class="badge"><span class="dot"></span>Live</span></div>
-            <p>Fifteen interactive WebGL2 wallpapers — auroras, a music visualiser, a Milkdrop homage. Framework-free.</p>
-            <a class="go" href="lab.html">Enter the lab →</a>
-          </div>
-        </article>
-        <article class="card proj-card reveal">
-          <div class="thumb"><img src="assets/img/proj/arcade.webp" alt="Duck Hop's title screen — the duck gliding over a dusk sea at sunset" loading="lazy" width="1200" height="675" /></div>
-          <div class="body">
-            <div class="top"><h3>The Arcade</h3><span class="badge"><span class="dot"></span>Live</span></div>
-            <p>Five hand-built canvas games — Snake, Breakout, Duck Hop, Asteroids and 2048. No frameworks, no ads.</p>
-            <a class="go" href="arcade.html">Insert coin →</a>
-          </div>
-        </article>
-        <article class="card proj-card reveal">
-          <div class="thumb"><div class="ph"><span>Agents · 01</span></div></div>
-          <div class="body">
-            <div class="top"><h3>Agents Collection</h3><span class="badge lime"><span class="dot"></span>In progress</span></div>
-            <p>A curated, growing collection of AI agents and automation workflows — what's possible when intelligence becomes modular.</p>
-            <span class="go" style="color:var(--ink-faint);">Coming soon</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="writing" class="sec no-print" data-num="05" aria-label="Writing">
-      <div class="sec-head reveal">
-        <span class="num">05</span>
-        <h2>Writing</h2>
-        <span class="aside">8 essays</span>
-      </div>
-      <ul class="writing-list reveal">
-        <li class="w-row"><a href="blog/perspective-ai.html">
-          <span class="date">Aug 2025</span>
-          <span class="title">I Built This Website to Escape AI Slop. I Used AI to Do It.</span>
-          <span class="cat">Perspective</span>
-        </a></li>
-        <li class="w-row"><a href="blog/perspective-durban2vienna.html">
-          <span class="date">2025</span>
-          <span class="title">Howzit, Grüß Gott! A Saffa's Guide to Surviving and Thriving in Vienna</span>
-          <span class="cat">Perspective</span>
-        </a></li>
-        <li class="w-row"><a href="blog/perspective-america.html">
-          <span class="date">2025</span>
-          <span class="title">The Unintentional Empire: How American Culture Shapes the World Without Trying</span>
-          <span class="cat">Perspective</span>
-        </a></li>
-        <li class="w-row"><a href="blog/travel-kruger.html">
-          <span class="date">2025</span>
-          <span class="title">The Kruger Roar: A Safari for Your Soul</span>
-          <span class="cat">Travel</span>
-        </a></li>
-        <li class="w-row"><a href="blog/travel-capetown.html">
-          <span class="date">2025</span>
-          <span class="title">Cape Town Calling: Your Guide to the World's Most Breathtaking City</span>
-          <span class="cat">Travel</span>
-        </a></li>
-        <li class="w-row"><a href="blog/travel-durban.html">
-          <span class="date">2025</span>
-          <span class="title">Surf, Spice, and Zulu Soul: Why Durban Should Be Your Next Adventure</span>
-          <span class="cat">Travel</span>
-        </a></li>
-        <li class="w-row"><a href="blog/travel-wildcoast.html">
-          <span class="date">2025</span>
-          <span class="title">Cows on the Beach &amp; Hills of Green: Discovering the Magic of the Transkei</span>
-          <span class="cat">Travel</span>
-        </a></li>
-        <li class="w-row"><a href="blog/travel-wilderness.html">
-          <span class="date">2025</span>
-          <span class="title">The Garden Route's Green Heart: Why Wilderness Will Steal Your Soul</span>
-          <span class="cat">Travel</span>
-        </a></li>
-      </ul>
-      <p class="writing-more"><a href="blog.html">Visit the blog →</a></p>
-    </section>
-
-    <section id="contact" class="sec contact-sec" data-num="06" aria-label="Contact">
-      <div class="sec-head reveal">
-        <span class="num">06</span>
-        <h2>Contact</h2>
-        <span class="aside">Inbox open</span>
-      </div>
-      <h2 class="reveal" style="font-family:var(--serif);">Say howzit.</h2>
-      <p class="say reveal">Whether it's a role you think I'd fit, a technical question, or a proper bunny chow recommendation in Vienna — I'll answer.</p>
-      <div class="hero-cta no-print reveal">
-        <a class="btn primary" href="mailto:brendonkirk86@gmail.com">Email me</a>
-      </div>
-      <p class="contact-meta reveal">
-        <a href="mailto:brendonkirk86@gmail.com">brendonkirk86@gmail.com</a>
-        <a href="https://github.com/brendjames">github.com/brendjames</a>
-        <span>Vienna, Austria · CET/CEST</span>
-      </p>
-    </section>
-
-  </div>
 </main>
 
 <footer class="footer" role="contentinfo">
   <div class="footer-inner">
     <p class="tagline">© 2026 Brendon James Kirk · Empowering solutions <b>through technology</b></p>
     <nav aria-label="Footer">
+      <a href="path.html">Path</a>
       <a href="blog.html">Blog</a>
       <a href="projects.html">Projects</a>
       <a href="contact.html">Contact</a>
@@ -931,5 +234,6 @@
 </footer>
 
 <script src="js/site.js" defer></script>
+<script src="js/landing.js" defer></script>
 </body>
 </html>

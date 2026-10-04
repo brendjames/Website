@@ -2,7 +2,9 @@
 
 Personal website of **Brendon James Kirk**, IT support professional in Vienna, Austria.
 
-The homepage is a one-page CV that prints cleanly to PDF. Around it sit a blog, a WebGL2 shader lab and a hand-built canvas arcade. Everything is plain HTML, CSS and JavaScript: no frameworks, no build step, and no requests to third-party servers.
+The homepage is a warm landing page over a hand-written WebGL golden-hour scene; the one-page CV
+(which prints cleanly to PDF) lives at `path.html`. Around them sit a blog, an interactive Kruger
+sightings map, a WebGL2 shader lab and a hand-built canvas arcade. Everything is plain HTML, CSS and JavaScript: no frameworks, no build step, and no requests to third-party servers.
 
 ## Run locally
 
@@ -15,7 +17,9 @@ npx http-server -p 5501 -c-1 .
 ## Structure
 
 ```
-index.html            Home: one-page CV (about, experience, skills, projects, writing, contact)
+index.html            Landing: golden-hour WebGL horizon (js/landing.js) + where-to-next cards
+path.html             The CV: about, experience, skills, projects, writing, contact; prints as PDF
+kruger_tings.html     Interactive Kruger sightings map (built by geo/; edit the template there)
 blog.html, blog/      Blog index + 8 posts
 projects.html         Project showcase
 contact.html          Email / GitHub / location (no form; the site has no backend)
@@ -23,10 +27,11 @@ legal.html            Imprint (§ 25 MedienG) and privacy policy (GDPR)
 lab.html, js/lab/     Shader Lab: 15 interactive WebGL2 wallpapers
 arcade.html, js/arcade/  The Arcade: 5 canvas games with local high scores
 404.html              Not-found page (root-absolute paths so it works at any depth)
-journey.html          Redirect to /#experience (old URL)
+journey.html          Redirect to path.html#experience (old URL)
 css/site.css          Shared design system: light editorial + dark theme, print-as-CV
 css/fonts.css         Self-hosted fonts (assets/fonts)
-js/site.js            Theme door/toggle, reveals, counters, print button
+js/site.js            Theme (system-aware) + toggle, reveals, counters, print button
+geo/                  Kruger map pipeline (Python), not published
 api/                  Arcade leaderboard (PHP + MySQL), not used on GitHub Pages
 ops/                  Server config for the old domain's redirect
 ```
