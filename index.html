@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" />
 <script>
 /* runs before first paint: apply the stored theme, or gate first-time visitors behind the door */
 (function(){try{
@@ -19,12 +20,12 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
 <meta name="theme-color" content="#FAF9F6" />
-<link rel="canonical" href="https://brendonjameskirk.com/" />
+<link rel="canonical" href="https://bkirk.eu/" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://brendonjameskirk.com/" />
+<meta property="og:url" content="https://bkirk.eu/" />
 <meta property="og:title" content="Brendon James Kirk — IT Support Professional, Vienna" />
 <meta property="og:description" content="5,000+ hours of hands-on desktop support, eight certifications, and an upgrade path from a Durban kitchen to a Vienna trading floor." />
-<meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
+<meta property="og:image" content="https://bkirk.eu/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="alternate" type="application/rss+xml" title="Brendon James Kirk — Blog" href="feed.xml" />
@@ -33,8 +34,8 @@
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Brendon James Kirk",
-  "url": "https://brendonjameskirk.com/",
-  "image": "https://brendonjameskirk.com/assets/bj.webp",
+  "url": "https://bkirk.eu/",
+  "image": "https://bkirk.eu/assets/bj.webp",
   "jobTitle": "Desktop Support Admin",
   "worksFor": { "@type": "Organization", "name": "Trayport, a TMX company" },
   "email": "mailto:brendonkirk86@gmail.com",
@@ -810,9 +811,9 @@
         <article class="card proj-card reveal">
           <div class="thumb"><img src="assets/img/posts/kruger.webp" alt="A herd of elephants crossing a river in Kruger National Park" loading="lazy" width="1280" height="577" /></div>
           <div class="body">
-            <div class="top"><h3>Kruger: data on the wild</h3><span class="badge"><span class="dot"></span>Published</span></div>
-            <p>A travel essay and photo journal from Kruger National Park — including a data analysis of 13,900+ wildlife sightings.</p>
-            <a class="go" href="blog/travel-kruger.html">Read the story →</a>
+            <div class="top"><h3>Kruger: data on the wild</h3><span class="badge"><span class="dot"></span>Live</span></div>
+            <p>177,000+ wildlife sightings shared on @LatestKruger since 2012, geocoded onto the park's real road network in Python and played back on an interactive WebGL map.</p>
+            <div class="go"><a href="kruger_tings.html">Explore the map →</a> <span aria-hidden="true">·</span> <a href="blog/travel-kruger.html">Read the story</a></div>
           </div>
         </article>
         <article class="card proj-card reveal">
@@ -903,7 +904,6 @@
       <p class="say reveal">Whether it's a role you think I'd fit, a technical question, or a proper bunny chow recommendation in Vienna — I'll answer.</p>
       <div class="hero-cta no-print reveal">
         <a class="btn primary" href="mailto:brendonkirk86@gmail.com">Email me</a>
-        <a class="btn" href="contact.html">Use the contact form</a>
       </div>
       <p class="contact-meta reveal">
         <a href="mailto:brendonkirk86@gmail.com">brendonkirk86@gmail.com</a>

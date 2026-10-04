@@ -10,3 +10,9 @@ node_modules/
 
 # secrets — real DB credentials live only on the server, never in git
 api/config.php
+
+# Kruger map: raw scraped tweets stay local (third-party content), only the
+# built map is published; Python caches from running the geo/ scripts
+kruger_sightings_share.csv
+tweets_full.csv
+__pycache__/

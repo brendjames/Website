@@ -1,4 +1,4 @@
-# memory.md — brendonjameskirk.com build plan
+# memory.md — bkirk.eu build plan
 
 Live planning document. Checked off as completed.
 

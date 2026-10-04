@@ -15,7 +15,7 @@ return array(
 
     // Browser origins allowed to POST scores (same-origin in practice).
     'origins' => array(
-        'https://brendonjameskirk.com',
-        'https://www.brendonjameskirk.com',
+        'https://bkirk.eu',
+        'https://www.bkirk.eu',
     ),
 );

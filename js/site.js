@@ -1,4 +1,4 @@
-// site.js — shared behaviour: scroll reveals, count-up stats, print buttons, contact form.
+// site.js — shared behaviour: scroll reveals, count-up stats, print buttons.
 (function () {
   'use strict';
 
@@ -180,47 +180,5 @@
         chip.style.scale = '';
       });
     }
-  }
-
-  // ----- Contact form: posts to the same-host PHP endpoint, inline success, honeypot,
-  //        mailto fallback if the request fails -----
-  const form = document.querySelector('form[data-contact]');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      const hp = form.querySelector('input[name="_honey"]');
-      if (hp && hp.value) { e.preventDefault(); return; } // honeypot tripped
-      if (!form.checkValidity()) return; // browser shows validation
-      e.preventDefault();
-
-      const ok = document.querySelector('.form-success');
-      const btn = form.querySelector('button[type="submit"]');
-      const btnLabel = btn ? btn.textContent : '';
-      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-
-      fetch(form.action, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: new FormData(form),
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error('Request failed');
-          if (ok) ok.classList.add('show');
-          form.reset();
-        })
-        .catch(() => {
-          // network hiccup or endpoint unreachable — fall back to a real mail client
-          const name = encodeURIComponent(form.querySelector('#name').value);
-          const email = encodeURIComponent(form.querySelector('#email').value);
-          const msg = encodeURIComponent(form.querySelector('#message').value);
-          const subject = encodeURIComponent('Hello from brendonjameskirk.com');
-          const body = msg + '%0A%0A%E2%80%94 ' + name + ' (' + email + ')';
-          window.location.href = 'mailto:brendonkirk86@gmail.com?subject=' + subject + '&body=' + body;
-          if (ok) ok.classList.add('show');
-          form.reset();
-        })
-        .finally(() => {
-          if (btn) { btn.disabled = false; btn.textContent = btnLabel; }
-        });
-    });
   }
 })();

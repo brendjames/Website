@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" />
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <meta name="description" content="Get in touch with Brendon James Kirk — IT support professional in Vienna, Austria." />
 <title>Contact — Brendon James Kirk</title>
@@ -12,12 +13,12 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
 <meta name="theme-color" content="#FAF9F6" />
-<link rel="canonical" href="https://brendonjameskirk.com/contact.html" />
+<link rel="canonical" href="https://bkirk.eu/contact.html" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://brendonjameskirk.com/contact.html" />
+<meta property="og:url" content="https://bkirk.eu/contact.html" />
 <meta property="og:title" content="Contact — Brendon James Kirk" />
 <meta property="og:description" content="Get in touch with Brendon James Kirk — IT support professional in Vienna, Austria." />
-<meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
+<meta property="og:image" content="https://bkirk.eu/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
 <style>
@@ -106,37 +107,6 @@
       </div>
     </div>
 
-    <h2 class="sec-label" style="margin-top:60px;">// Or send it from here</h2>
-
-    <form class="form" data-contact action="/api/contact.php" method="post">
-      <!-- honeypot: real humans never see or fill this -->
-      <div class="hp-field" aria-hidden="true">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="_honey" tabindex="-1" autocomplete="off" />
-      </div>
-
-      <div class="field">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required autocomplete="name" placeholder="Your name" />
-      </div>
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" />
-      </div>
-      <div class="field">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" required placeholder="What's on your mind?"></textarea>
-      </div>
-
-      <p class="form-success" role="status">Thanks — your message is on its way. I'll get back to you soon.</p>
-
-      <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6;">Your name, email and message are sent straight to my inbox and used only to answer you — nothing is stored or shared, details in the <a href="legal.html">privacy policy</a>. Prefer not to use a form? <a href="mailto:brendonkirk86@gmail.com">Email me directly</a>.</p>
-
-      <div>
-        <button class="btn primary" type="submit">Send message</button>
-      </div>
-    </form>
-
   </div>
 </main>
 
@@ -156,12 +126,5 @@
 </footer>
 
 <script src="js/site.js" defer></script>
-<script>
-/* no-JS submit path: contact.php redirects back with ?sent=1 — show the notice */
-(function(){try{
-  var p = new URLSearchParams(location.search);
-  if (p.get('sent') === '1') { var s = document.querySelector('.form-success'); if (s) s.classList.add('show'); }
-}catch(e){}})();
-</script>
 </body>
 </html>

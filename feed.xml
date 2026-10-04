@@ -2,72 +2,72 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>Brendon James Kirk — Blog</title>
-  <link>https://brendonjameskirk.com/blog.html</link>
+  <link>https://bkirk.eu/blog.html</link>
   <description>Travel essays from South Africa and perspectives on technology and culture, by Brendon James Kirk.</description>
   <language>en</language>
   <lastBuildDate>Fri, 10 Jul 2026 00:00:00 GMT</lastBuildDate>
-  <atom:link href="https://brendonjameskirk.com/feed.xml" rel="self" type="application/rss+xml" />
+  <atom:link href="https://bkirk.eu/feed.xml" rel="self" type="application/rss+xml" />
 
   <item>
     <title>I Built This Website to Escape AI Slop. I Used AI to Do It.</title>
-    <link>https://brendonjameskirk.com/blog/perspective-ai.html</link>
-    <guid>https://brendonjameskirk.com/blog/perspective-ai.html</guid>
+    <link>https://bkirk.eu/blog/perspective-ai.html</link>
+    <guid>https://bkirk.eu/blog/perspective-ai.html</guid>
     <description>The internet is drowning in AI slop. I built a refuge with the very machine causing the flood — a manifesto for Vibe Coding.</description>
     <pubDate>Sat, 09 Aug 2025 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>Howzit, Grüß Gott! A Saffa's Guide to Surviving and Thriving in Vienna</title>
-    <link>https://brendonjameskirk.com/blog/perspective-durban2vienna.html</link>
-    <guid>https://brendonjameskirk.com/blog/perspective-durban2vienna.html</guid>
+    <link>https://bkirk.eu/blog/perspective-durban2vienna.html</link>
+    <guid>https://bkirk.eu/blog/perspective-durban2vienna.html</guid>
     <description>Trading Durban humidity for Viennese winters: culture shock, the German language labyrinth, and what I gained along the way.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>The Unintentional Empire: How American Culture Shapes the World Without Trying</title>
-    <link>https://brendonjameskirk.com/blog/perspective-america.html</link>
-    <guid>https://brendonjameskirk.com/blog/perspective-america.html</guid>
+    <link>https://bkirk.eu/blog/perspective-america.html</link>
+    <guid>https://bkirk.eu/blog/perspective-america.html</guid>
     <description>How American fashion, slang, and media shape the world without a single directive — an empire by accident.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>Cape Town Calling: Your Guide to the World's Most Breathtaking City</title>
-    <link>https://brendonjameskirk.com/blog/travel-capetown.html</link>
-    <guid>https://brendonjameskirk.com/blog/travel-capetown.html</guid>
+    <link>https://bkirk.eu/blog/travel-capetown.html</link>
+    <guid>https://bkirk.eu/blog/travel-capetown.html</guid>
     <description>Table Mountain, penguin parties, Bo-Kaap colour, and the Cape Winelands — a love letter to the Mother City.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>Surf, Spice, and Zulu Soul: Why Durban Should Be Your Next Adventure</title>
-    <link>https://brendonjameskirk.com/blog/travel-durban.html</link>
-    <guid>https://brendonjameskirk.com/blog/travel-durban.html</guid>
+    <link>https://bkirk.eu/blog/travel-durban.html</link>
+    <guid>https://bkirk.eu/blog/travel-durban.html</guid>
     <description>The Golden Mile, bunny chow, Zulu heritage and the Dragon Mountains — why Durbs deserves your next city break.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>The Kruger Roar: A Safari for Your Soul</title>
-    <link>https://brendonjameskirk.com/blog/travel-kruger.html</link>
-    <guid>https://brendonjameskirk.com/blog/travel-kruger.html</guid>
+    <link>https://bkirk.eu/blog/travel-kruger.html</link>
+    <guid>https://bkirk.eu/blog/travel-kruger.html</guid>
     <description>A kingdom the size of a country, the magic hours of the game drive, and what 13,900 sightings reveal about the wild.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>Cows on the Beach &amp; Hills of Green: Discovering the Magic of the Transkei</title>
-    <link>https://brendonjameskirk.com/blog/travel-wildcoast.html</link>
-    <guid>https://brendonjameskirk.com/blog/travel-wildcoast.html</guid>
+    <link>https://bkirk.eu/blog/travel-wildcoast.html</link>
+    <guid>https://bkirk.eu/blog/travel-wildcoast.html</guid>
     <description>The Wild Coast: dirt roads, Xhosa heartland, the legend of Hole in the Wall, and a freedom that is increasingly rare.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
   <item>
     <title>The Garden Route's Green Heart: Why Wilderness Will Steal Your Soul</title>
-    <link>https://brendonjameskirk.com/blog/travel-wilderness.html</link>
-    <guid>https://brendonjameskirk.com/blog/travel-wilderness.html</guid>
+    <link>https://bkirk.eu/blog/travel-wilderness.html</link>
+    <guid>https://bkirk.eu/blog/travel-wilderness.html</guid>
     <description>Paddling tea-coloured rivers, hiking to hidden waterfalls, and slowing down in the emerald gem of the Garden Route.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>

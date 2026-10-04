@@ -1,0 +1,17 @@
+# Old domain → new domain, for the cPanel host (helloly.at).
+# Upload this file to the brendonjameskirk.com public_html as ".htaccess"
+# (replacing the old one) after the site is live on bkirk.eu.
+#
+# Every old URL lands on the same page at bkirk.eu with a permanent (301)
+# redirect, so links on CVs, LinkedIn and past applications keep working and
+# search engines move their ranking to the new domain.
+#
+# /.well-known/ is left alone so AutoSSL can keep renewing the certificate:
+# the old site sent an HSTS header, so browsers that visited it will only ever
+# reach it over HTTPS — it needs a valid cert for the redirect to work.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteRule ^(.*)$ https://bkirk.eu/$1 [R=301,L]
+</IfModule>

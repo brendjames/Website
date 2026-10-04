@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" />
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <meta name="description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, a hand-built HTML5 arcade, and a growing collection of AI agents." />
 <title>Projects — Brendon James Kirk</title>
@@ -12,12 +13,12 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
 <meta name="theme-color" content="#FAF9F6" />
-<link rel="canonical" href="https://brendonjameskirk.com/projects.html" />
+<link rel="canonical" href="https://bkirk.eu/projects.html" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://brendonjameskirk.com/projects.html" />
+<meta property="og:url" content="https://bkirk.eu/projects.html" />
 <meta property="og:title" content="Projects — Brendon James Kirk" />
 <meta property="og:description" content="Projects by Brendon James Kirk — travel essays, data analysis, an interactive WebGL2 shader lab, a hand-built HTML5 arcade, and a growing collection of AI agents." />
-<meta property="og:image" content="https://brendonjameskirk.com/assets/bj.webp" />
+<meta property="og:image" content="https://bkirk.eu/assets/bj.webp" />
 <meta property="og:site_name" content="Brendon James Kirk" />
 <meta name="twitter:card" content="summary_large_image" />
 <style>
@@ -45,7 +46,7 @@
   .proj-card .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .proj-card h2{ font-size:24px; }
   .proj-card p{ color: var(--ink-dim); font-size:var(--fs-sm); flex:1; }
-  .proj-card .cta{ margin-top:6px; }
+  .proj-card .cta{ margin-top:6px; display:flex; flex-wrap:wrap; gap:10px; }
 </style>
 </head>
 <body>
@@ -83,11 +84,12 @@
         <div class="body">
           <div class="top">
             <h2>Kruger: A Safari Through the Wild</h2>
-            <span class="badge"><span class="dot"></span>Published</span>
+            <span class="badge"><span class="dot"></span>Live</span>
           </div>
-          <p>A travel essay and photo journal from Kruger National Park, South Africa — including a data analysis of 13,900+ wildlife sightings.</p>
+          <p>An interactive map of 177,000+ wildlife sightings shared on @LatestKruger since 2012 — each one geocoded onto Kruger's real road network in Python and played back over time on a WebGL map. It grew out of a travel essay and photo journal from the park.</p>
           <div class="cta">
-            <a class="btn primary" href="blog/travel-kruger.html">Read the Story</a>
+            <a class="btn primary" href="kruger_tings.html">Explore the Map</a>
+            <a class="btn" href="blog/travel-kruger.html">Read the Story</a>
           </div>
         </div>
       </article>

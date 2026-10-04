@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<title>Kruger Tings — Brendon James Kirk</title>
+<meta name="description" content="An interactive map of 177,000+ wildlife sightings shared on @LatestKruger since 2012, placed on Kruger National Park's real road network. Press play to watch them appear over time.">
+<link rel="canonical" href="https://bkirk.eu/kruger_tings.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bkirk.eu/kruger_tings.html">
+<meta property="og:title" content="Kruger Tings — Brendon James Kirk">
+<meta property="og:description" content="An interactive map of 177,000+ wildlife sightings shared on @LatestKruger since 2012, placed on Kruger National Park's real road network. Press play to watch them appear over time.">
+<meta property="og:image" content="https://bkirk.eu/assets/img/posts/kruger.webp">
+<meta property="og:site_name" content="Brendon James Kirk">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  /* ---------- a bright safari morning ---------- */
+  :root {
+    color-scheme: light;
+    --page: #f6f1e6;          /* warm cream */
+    --surface-1: #fffdf8;
+    --surface-2: #f1eadb;
+    --text-primary: #2b2418;
+    --text-secondary: #574b38;
+    --text-muted: #7a6c55;
+    --grid: #ece4d3;
+    --baseline: #cfc4ad;
+    --border: rgba(43, 36, 24, 0.12);
+    --accent: #8a6a2c;
+    /* validated all-pairs for colour-blind separation, on both themes */
+    /* 5 groups: normal-vision floor passes; closest colour-blind pair (red/green, dE 6.2) is
+       legal because every group also has its own dot shape */
+    --series-1: #c08820;      /* Lions: lion gold, diamond */
+    --series-2: #8f55d6;      /* Leopards: violet, square */
+    --series-3: #179c7a;      /* Cheetahs: green, triangle */
+    --series-4: #cc4450;      /* Wild dogs & hyenas: red clay, down-triangle */
+    --series-5: #4a95d6;      /* Everything else: waterhole blue, circle */
+    --neutral-bar: #9a8452;   /* dry grass, >= 3:1 on the cards */
+    --panel-bg: rgba(255, 253, 248, 0.92);
+    --chip-bg: rgba(255, 253, 248, 0.94);
+    --tip-bg: #fffdf8;
+    --btn-hover: #e9e0cc;
+    --shadow: 0 2px 10px rgba(80, 60, 30, 0.10);
+    --hero-bg: linear-gradient(180deg, #e2eef1 0%, #edf0e5 42%, #f6f1e6 100%);
+    --label: #4a4030;
+    --label-halo: 0 0 3px #fffdf8, 0 0 2px #fffdf8, 0 0 1px #fffdf8;
+    --horizon-glow: radial-gradient(ellipse 55% 150% at 72% 100%, rgba(242, 190, 110, 0.42),
+                    rgba(242, 205, 150, 0.14) 45%, transparent 72%);
+    --tree: #4f4b2b;
+    --ground: #e3d7b2;
+    --tuft: #b3a270;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --radius: 12px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--text-primary); }
+  body { font-size: 15px; line-height: 1.5; overflow-x: clip; }
+  a { color: var(--text-secondary); }
+
+  .page { max-width: 1480px; margin: 0 auto; padding: 24px 16px 40px; }
+  .tile { min-width: 0; }
+  .tile .label { color: var(--text-muted); font-size: 12px; }
+  .tile .value { font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .tile.big .value { font-size: 24px; line-height: 1.1; }
+  .tile .sub { color: var(--text-muted); font-size: 11.5px; }
+
+  /* ---- full-screen map ---- */
+  .hero { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: var(--hero-bg); }
+  .map-box { position: absolute; inset: 0; overflow: hidden; }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #gl.dragging { cursor: grabbing; }
+  .m-hint { display: none; }
+  .horizon { position: relative; height: 174px; width: 100vw; margin: -24px 0 8px calc(50% - 50vw); background: var(--horizon-glow); }
+  .horizon svg { position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; display: block; }
+  .camp-label { position: absolute; transform: translate(8px, -50%); font-size: 12px; color: var(--label);
+                pointer-events: none; white-space: nowrap; text-shadow: var(--label-halo); }
+  .camp-label::before { content: ""; position: absolute; left: -8px; top: 50%; width: 5px; height: 5px;
+                        margin-top: -2.5px; border-radius: 50%; background: var(--label); }
+  .panel { background: var(--panel-bg); border: 1px solid var(--border); border-radius: var(--radius);
+           box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+  .hud-left { position: absolute; left: 16px; top: 16px; width: 380px; max-width: calc(100% - 32px); padding: 12px 16px;
+              max-height: calc(100% - 180px); overflow-y: auto; }
+  .best { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 13px; }
+  .best-prompt { color: var(--text-secondary); }
+  .best-title { font-family: var(--serif); font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .best-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .best-h { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .best-row { display: flex; justify-content: space-between; gap: 6px; width: 100%; margin-bottom: 2px; padding: 3px 7px;
+              border: 0; border-radius: 6px; cursor: pointer; text-align: left; font: inherit; font-size: 12.5px;
+              color: var(--text-primary);
+              background: linear-gradient(to right, rgba(154, 132, 82, 0.24) var(--w), transparent var(--w)); }
+  .best-row:hover { outline: 1px solid var(--accent); }
+  .best-row.best-extra { cursor: default; background: none; color: var(--text-muted); font-style: italic; }
+  .best-row.best-extra:hover { outline: none; }
+  .best-row .n { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .best-when { margin-top: 8px; color: var(--text-secondary); font-size: 12.5px; }
+  .best-note { margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
+  .tt-ic { font-size: 15px; line-height: 1; }
+  .ph { border-radius: 50%; object-fit: cover; flex: none; vertical-align: middle;
+        box-shadow: 0 0 0 2px #fffdf8, 0 1px 4px rgba(40, 30, 15, 0.35); }
+  .tooltip .tt-title { align-items: center; gap: 8px; }
+  .best-title { display: flex; align-items: center; gap: 10px; }
+  .tile .value .ph { margin-right: 4px; }
+  .hud-left .home { display: inline-block; margin-bottom: 6px; font-size: 12px; color: var(--text-muted); text-decoration: none; }
+  .hud-left .home:hover { color: var(--accent); text-decoration: underline; }
+  .hud-left .kicker { font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--accent); }
+  .hud-left h1 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: 0.3px; }
+  .hud-left p { margin: 2px 0 8px; color: var(--text-secondary); font-size: 13px; }
+  .hud-left p.how { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12.5px; }
+  .tiles { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 18px; }
+  .hud-right { position: absolute; right: 16px; top: 16px; display: flex; flex-wrap: wrap; gap: 6px;
+               justify-content: flex-end; align-items: center; max-width: 50%; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 9px; border-radius: 999px;
+          border: 1px solid var(--border); background: var(--chip-bg); color: var(--text-primary);
+          font: inherit; font-size: 13px; cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(4px); }
+  .chip .sw { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+  .sw.shape-square { border-radius: 1.5px !important; transform: scale(0.85); }
+  .sw.shape-diamond { border-radius: 1.5px !important; transform: rotate(45deg) scale(0.75); }
+  .sw.shape-tri { border-radius: 0 !important; clip-path: polygon(50% 4%, 98% 92%, 2% 92%); }
+  .sw.shape-tridown { border-radius: 0 !important; clip-path: polygon(2% 8%, 98% 8%, 50% 96%); }
+  .chip .ic { font-size: 14px; line-height: 1; }
+  .chip[aria-pressed="false"] { color: var(--text-muted); opacity: 0.75; }
+  .chip[aria-pressed="false"] .sw { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--text-muted); }
+  .chip.species-pill { background: var(--surface-2); font-weight: 600; }
+  .key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 6px 14px; border-radius: 999px;
+         background: var(--chip-bg); border: 1px solid var(--border); box-shadow: var(--shadow);
+         font-size: 12.5px; color: var(--text-secondary); }
+  .key-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .key .sw { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .hud-right { width: 250px; }
+  .pickers { width: 100%; display: grid; grid-template-columns: 1fr; gap: 5px; align-items: center;
+             padding: 8px 10px; border-radius: var(--radius); background: var(--panel-bg); border: 1px solid var(--border);
+             box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+  .pickers .frow { display: contents; }
+  .frow { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; }
+  .flabel { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+  .pickers .picker { width: 100%; max-width: none; min-width: 0; box-shadow: none; padding: 5px 10px; }
+  .picker { font: inherit; font-size: 13px; color: var(--text-primary); background: var(--chip-bg);
+            border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px; box-shadow: var(--shadow);
+            cursor: pointer; max-width: 230px; }
+  .picker.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); font-weight: 600; }
+  /* animal menus with portraits (the real <select> stays underneath, invisible) */
+  .pk { position: relative; min-width: 0; }
+  .pk-native { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .pk-btn { display: flex; align-items: center; gap: 8px; text-align: left; }
+  .pk-btn .pk-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pk-caret { color: var(--text-muted); font-size: 11px; }
+  .pk-list { position: absolute; right: 0; top: calc(100% + 4px); width: 290px; max-height: min(420px, 60vh); overflow-y: auto;
+             z-index: 30; padding: 4px; border-radius: var(--radius); border: 1px solid var(--border);
+             background: var(--surface-1); box-shadow: 0 10px 30px rgba(40, 30, 15, 0.22); }
+  .pk-opt { display: flex; align-items: center; gap: 9px; width: 100%; padding: 4px 8px; border: 0; border-radius: 8px;
+            background: none; font: inherit; font-size: 13.5px; color: var(--text-primary); text-align: left; cursor: pointer; }
+  .pk-opt:hover, .pk-opt:focus-visible { background: var(--surface-2); outline: none; }
+  .pk-opt.sel { font-weight: 600; background: var(--surface-2); }
+  .pk-opt.dim { color: var(--text-muted); }
+  .pk-opt .n { margin-left: auto; color: var(--text-muted); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+  .pk-dot { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 26px; height: 26px;
+            border-radius: 50%; background: var(--surface-2); color: var(--text-muted); font-size: 12px; font-weight: 600;
+            box-shadow: 0 0 0 1px var(--border); }
+  .chip:focus-visible, button:focus-visible, a.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hint { position: absolute; right: 20px; bottom: 152px; color: var(--text-muted); font-size: 12px; pointer-events: none;
+          text-shadow: var(--label-halo); }
+
+  .timeline { position: absolute; left: 16px; right: 16px; bottom: 16px; padding: 8px 12px 8px; }
+  .tl-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .btn { font: inherit; font-size: 13px; color: var(--text-primary); background: var(--surface-2);
+         border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: var(--btn-hover); }
+  .btn.primary { min-width: 92px; font-weight: 600; }
+  .btn.icon { padding: 4px 10px; font-size: 15px; }
+  select.btn { padding-right: 6px; }
+  .tl-date { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--text-secondary); font-size: 14px; }
+  .tl-note { color: var(--text-muted); font-size: 12px; margin-top: 3px; }
+  .speed-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+  #stop[hidden] { display: none; }
+  .timeline.collapsed #tl, .timeline.collapsed .tl-note { display: none; }
+  .hero.tl-collapsed .hint { bottom: 76px; }
+  #tl { width: 100%; height: 56px; display: block; cursor: pointer; touch-action: none; }
+
+  /* ---- phones: normal page flow; one finger scrolls the page, two fingers move the map ---- */
+  @media (max-width: 700px) {
+    .hero { height: auto; overflow: visible; display: flex; flex-direction: column; gap: 8px;
+            padding: 8px; background: var(--page); }
+    .hero > * { position: static; }
+    .hud-left { order: 1; width: auto; max-width: none; max-height: none; overflow: visible; padding: 10px 14px; }
+    .hud-left p#subtitle { display: none; }
+    .hud-left h1 { font-size: 19px; }
+    .map-box { order: 2; position: relative; inset: auto; height: 64vh; height: 64svh; min-height: 360px;
+               border: 1px solid var(--border); border-radius: var(--radius); background: var(--hero-bg); }
+    #gl { touch-action: pan-y; }
+    .m-hint { display: block; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+              background: var(--panel-bg); border: 1px solid var(--border); border-radius: 999px;
+              padding: 4px 12px; font-size: 12px; color: var(--text-secondary); white-space: nowrap;
+              pointer-events: none; transition: opacity 0.4s; }
+    .m-hint.gone { opacity: 0; }
+    .hud-right { order: 3; width: auto; max-width: none; justify-content: flex-start; }
+    .pickers { grid-template-columns: 1fr 1fr; width: 100%; }
+    .pickers .picker { max-width: none; }
+    .flabel { grid-column: 1 / -1; text-align: left; }
+    .picker { flex: 1 1 150px; max-width: none; }
+    /* phones: the list opens as a full-width sheet at the bottom of the screen */
+    .pk-list { position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 62vh; }
+    .timeline { order: 4; padding: 8px 10px; }
+    .tl-row { gap: 6px; }
+    .tl-date { font-size: 13px; }
+    .tl-row a.btn, .tl-note, .hint { display: none; }
+    #tl { height: 44px; }
+    .camp-label { font-size: 11px; }
+    .page { padding-top: 12px; }
+  }
+  /* full screen on a phone: the map fills what the controls leave */
+  .hero:fullscreen { height: 100%; }
+  @media (max-width: 700px) { .hero:fullscreen .map-box { flex: 1; height: auto; } }
+
+  /* ---- charts ---- */
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; align-items: start; }
+  @media (max-width: 480px) { .charts { grid-template-columns: 1fr; } }
+  .section-title { font-family: var(--serif); font-size: 26px; font-weight: 600; margin: 0 0 2px; }
+  .section-sub { color: var(--text-muted); margin: 0 0 16px; font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+          box-shadow: var(--shadow); padding: 16px 18px 12px; min-width: 0; }
+  .card h2 { font-family: var(--serif); font-size: 19px; font-weight: 600; margin: 0; }
+  .card .sub { color: var(--text-secondary); font-size: 13.5px; margin: 2px 0 10px; }
+  .card svg { display: block; width: 100%; overflow: visible; }
+  .card details { margin-top: 6px; color: var(--text-muted); font-size: 12.5px; }
+  .card details summary { display: inline-block; cursor: pointer; list-style: none; padding: 4px 12px; margin-top: 4px;
+                          border: 1px solid var(--border); border-radius: 999px; background: var(--surface-2);
+                          color: var(--text-secondary); font-size: 12.5px; }
+  .card details summary::-webkit-details-marker { display: none; }
+  .card details[open] summary { margin-bottom: 4px; }
+  .filter-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 16px; padding: 10px 14px;
+                   border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-2);
+                   color: var(--text-secondary); font-size: 14px; }
+  .filter-banner b { color: var(--text-primary); }
+  .disclaimer { margin: 0 0 16px; font-size: 13px; color: var(--text-muted); }
+  .card table { width: 100%; border-collapse: collapse; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .card td, .card th { padding: 3px 6px; border-bottom: 1px solid var(--grid); text-align: left; color: var(--text-secondary); }
+  .card td.n, .card th.n { text-align: right; }
+  .bar-hit { cursor: pointer; }
+  /* bars and labels sit on top of each row's click area: let clicks pass through to it */
+  .card svg path, .card svg text { pointer-events: none; }
+  .bar-hit:hover + .bar, .bar.active { filter: brightness(1.12) saturate(1.1); }
+  .axis text, .lbl { fill: var(--text-muted); font-size: 11.5px; }
+  .val { fill: var(--text-secondary); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .cat { fill: var(--text-secondary); font-size: 12.5px; }
+  .cat.active { fill: var(--text-primary); font-weight: 600; }
+
+  .tooltip { position: fixed; z-index: 10; pointer-events: none; background: var(--tip-bg); color: var(--text-primary);
+             border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 13px;
+             max-width: min(320px, calc(100vw - 16px)); box-shadow: 0 8px 28px rgba(40, 30, 15, 0.22); display: none; }
+  .tooltip .tt-title { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .tooltip .tt-row { color: var(--text-secondary); }
+  .tooltip .tt-muted { color: var(--text-muted); }
+  .tooltip .sw { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  footer { margin-top: 24px; color: var(--text-muted); font-size: 12.5px; max-width: 980px; }
+  footer p { margin: 5px 0; }
+</style>
+
+</head>
+<body>
+<section class="hero" id="hero" aria-label="Map of sightings">
+  <div class="map-box">
+    <canvas id="gl" aria-label="Map of Kruger National Park with sightings"></canvas>
+    <div id="labels"></div>
+    <div class="m-hint" id="mHint">Two fingers to zoom &amp; move · tap an icon</div>
+  </div>
+  <div class="hud-left panel">
+    <a class="home" href="index.html">&larr; bkirk.eu</a>
+    <div class="kicker">Kruger National Park</div>
+    <h1>Kruger tings</h1>
+    <p id="subtitle">Every dot is an animal sighting shared on @LatestKruger</p>
+    <div class="tiles" id="tiles"></div>
+    <p class="how">Press <b>&#9654; Play</b> to watch the sightings appear over time. Hover over (or tap) an icon to see what was seen.</p>
+    <div class="best" id="best"></div>
+  </div>
+  <div class="hud-right">
+    <div id="legend" style="display:contents"></div>
+    <div class="pickers" id="pickers"></div>
+    <button class="btn icon" id="reset" title="Reset view" aria-label="Reset map view">&#x27F2;</button>
+    <button class="btn icon" id="fs" title="Full-screen map (press Esc to come back)" aria-label="Full-screen map">&#x26F6;</button>
+  </div>
+  <div class="hint">Scroll to zoom · drag to pan · double-click to reset</div>
+  <div class="timeline panel">
+    <div class="tl-row">
+      <button class="btn primary" id="play">&#9654; Play</button>
+      <label class="speed-label">Play speed
+        <select class="btn" id="speed">
+          <option value="2">slow &#8211; 2 days per second</option>
+          <option value="7" selected>1 week per second</option>
+          <option value="30">1 month per second</option>
+          <option value="91">3 months per second</option>
+          <option value="365">fast &#8211; 1 year per second</option>
+        </select>
+      </label>
+      <button class="btn" id="stop" hidden title="Stop playing and show all sightings again">&#9632; Stop</button>
+      <span class="tl-date" id="tlDate"></span>
+      <a class="btn" href="#charts">Charts &#8595;</a>
+      <button class="btn icon" id="tlToggle" title="Hide the timeline (more room for the map)" aria-label="Hide timeline">&#9662;</button>
+    </div>
+    <canvas id="tl" aria-label="Sightings per week; click or drag to jump in time"></canvas>
+    <div class="tl-note">Sightings per week · click or drag to jump in time · the thicker line along the bottom marks the periods collected so far</div>
+  </div>
+</section>
+
+<div class="page">
+  <div class="horizon" aria-hidden="true">
+    <svg viewBox="0 -24 1440 174" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#f2b35a" stop-opacity="0.95"/>
+          <stop offset="0.6" stop-color="#e08a3a" stop-opacity="0.55"/>
+          <stop offset="1" stop-color="#e08a3a" stop-opacity="0"/>
+        </radialGradient>
+        <symbol id="acacia" viewBox="0 0 200 110">
+          <path d="M4 34 C18 22 48 14 80 15 C104 10 150 12 178 22 C190 26 198 32 196 36 C180 40 160 38 146 41 C128 38 110 42 96 40 C78 43 54 40 40 42 C24 42 10 40 4 34 Z"/>
+          <path d="M58 21 C72 9 118 5 142 14 C124 19 92 19 58 21 Z"/>
+          <path d="M97 110 C98 90 99 76 94 62 C90 52 80 44 70 40 L73 38 C84 42 94 50 99 58 C104 50 114 44 128 40 L130 42 C118 48 106 56 104 66 C102 80 103 96 104 110 Z"/>
+        </symbol>
+      </defs>
+      <circle cx="1040" cy="132" r="70" fill="url(#sun)"/>
+      <circle cx="1040" cy="132" r="26" fill="#f0b25c" opacity="0.85"/>
+      <g fill="var(--tree)">
+      <use href="#acacia" x="35" y="50" width="150" height="82"/>
+      <use href="#acacia" x="280" y="77" width="100" height="55"/>
+      <use href="#acacia" x="525" y="6" width="230" height="126"/>
+      <use href="#acacia" x="843" y="64" width="124" height="68"/>
+      <use href="#acacia" x="1140" y="28" width="190" height="104"/>
+      <use href="#acacia" x="1335" y="82" width="90" height="50"/>
+      </g>
+      <path fill="var(--ground)" d="M0 131 C120 126 240 130 360 125 S600 129 720 124 S960 130 1080 125 S1320 129 1440 126 L1440 150 L0 150 Z"/>
+      <path fill="none" stroke="var(--tuft)" stroke-width="1.6" stroke-linecap="round" d="M651 132 l-1.2 -7.9 M651 132 l1.9 -6.3 M651 132 l0 -8.7 M731 132 l-2.6 -8.1 M731 132 l2.0 -6.5 M731 132 l0 -8.9 M907 132 l-2.8 -9.6 M907 132 l1.6 -7.6 M907 132 l0 -10.5 M131 132 l-1.6 -9.7 M131 132 l1.1 -7.7 M131 132 l0 -10.6 M1414 132 l-1.7 -10.8 M1414 132 l2.2 -8.6 M1414 132 l0 -11.8 M227 132 l-1.9 -4.1 M227 132 l1.1 -3.3 M227 132 l0 -4.5 M274 132 l-2.9 -5.7 M274 132 l1.9 -4.6 M274 132 l0 -6.3 M634 132 l-2.0 -9.9 M634 132 l2.3 -7.9 M634 132 l0 -10.9 M720 132 l-2.1 -8.6 M720 132 l1.6 -6.9 M720 132 l0 -9.5 M1437 132 l-1.3 -11.0 M1437 132 l2.4 -8.8 M1437 132 l0 -12.1 M454 132 l-2.4 -5.6 M454 132 l1.1 -4.5 M454 132 l0 -6.2 M1103 132 l-1.3 -6.8 M1103 132 l1.8 -5.4 M1103 132 l0 -7.5 M1380 132 l-3.0 -9.9 M1380 132 l1.4 -7.9 M1380 132 l0 -10.9 M1311 132 l-1.0 -7.3 M1311 132 l1.8 -5.8 M1311 132 l0 -8.0 M105 132 l-1.4 -8.4 M105 132 l1.5 -6.7 M105 132 l0 -9.2 M125 132 l-1.1 -6.3 M125 132 l2.5 -5.1 M125 132 l0 -7.0 M170 132 l-2.8 -5.7 M170 132 l1.1 -4.6 M170 132 l0 -6.3 M1148 132 l-1.9 -5.2 M1148 132 l1.9 -4.2 M1148 132 l0 -5.8 M275 132 l-2.7 -9.1 M275 132 l2.3 -7.3 M275 132 l0 -10.0 M168 132 l-2.6 -6.9 M168 132 l1.5 -5.6 M168 132 l0 -7.6 M1398 132 l-2.4 -9.6 M1398 132 l2.8 -7.7 M1398 132 l0 -10.6 M303 132 l-1.3 -6.8 M303 132 l2.3 -5.4 M303 132 l0 -7.4 M144 132 l-2.6 -10.9 M144 132 l1.5 -8.7 M144 132 l0 -12.0 M1113 132 l-2.4 -6.3 M1113 132 l1.1 -5.0 M1113 132 l0 -6.9 M130 132 l-2.5 -8.1 M130 132 l2.2 -6.5 M130 132 l0 -8.9 M535 132 l-1.1 -7.2 M535 132 l2.0 -5.7 M535 132 l0 -7.9 M827 132 l-2.6 -10.1 M827 132 l1.3 -8.1 M827 132 l0 -11.1 M1308 132 l-2.5 -9.7 M1308 132 l1.4 -7.8 M1308 132 l0 -10.7 M1065 132 l-2.6 -10.6 M1065 132 l2.9 -8.5 M1065 132 l0 -11.6 M1270 132 l-2.2 -8.2 M1270 132 l1.2 -6.6 M1270 132 l0 -9.0 M56 132 l-2.5 -10.7 M56 132 l2.4 -8.6 M56 132 l0 -11.8 M370 132 l-1.8 -9.8 M370 132 l1.6 -7.8 M370 132 l0 -10.7 M253 132 l-2.9 -9.0 M253 132 l1.5 -7.2 M253 132 l0 -9.9 M805 132 l-1.8 -10.0 M805 132 l1.6 -8.0 M805 132 l0 -11.0 M1321 132 l-3.0 -5.4 M1321 132 l1.5 -4.3 M1321 132 l0 -6.0 M642 132 l-2.6 -4.4 M642 132 l1.7 -3.5 M642 132 l0 -4.9 M824 132 l-2.3 -4.9 M824 132 l2.8 -3.9 M824 132 l0 -5.4 M1412 132 l-1.6 -8.6 M1412 132 l2.2 -6.9 M1412 132 l0 -9.5 M202 132 l-3.0 -4.2 M202 132 l2.8 -3.4 M202 132 l0 -4.7 M1009 132 l-3.0 -10.7 M1009 132 l2.3 -8.6 M1009 132 l0 -11.8 M694 132 l-2.4 -9.1 M694 132 l3.0 -7.3 M694 132 l0 -10.0 M108 132 l-1.5 -7.8 M108 132 l2.8 -6.3 M108 132 l0 -8.6 M1061 132 l-1.4 -8.9 M1061 132 l2.8 -7.1 M1061 132 l0 -9.8 M507 132 l-1.2 -8.8 M507 132 l2.7 -7.0 M507 132 l0 -9.7 M601 132 l-1.3 -9.5 M601 132 l2.1 -7.6 M601 132 l0 -10.5 M900 132 l-1.8 -6.7 M900 132 l2.2 -5.3 M900 132 l0 -7.3 M115 132 l-1.0 -8.5 M115 132 l2.8 -6.8 M115 132 l0 -9.3 M1049 132 l-1.5 -6.7 M1049 132 l2.2 -5.4 M1049 132 l0 -7.4 M634 132 l-2.8 -9.9 M634 132 l2.5 -7.9 M634 132 l0 -10.9 M43 132 l-2.0 -8.2 M43 132 l1.5 -6.6 M43 132 l0 -9.0 M1006 132 l-1.8 -7.5 M1006 132 l2.8 -6.0 M1006 132 l0 -8.2 M368 132 l-2.4 -4.1 M368 132 l2.4 -3.3 M368 132 l0 -4.5 M292 132 l-1.2 -5.2 M292 132 l2.3 -4.1 M292 132 l0 -5.7 M636 132 l-2.3 -10.2 M636 132 l2.3 -8.2 M636 132 l0 -11.3 M286 132 l-1.4 -7.0 M286 132 l2.8 -5.6 M286 132 l0 -7.7 M1268 132 l-1.8 -6.7 M1268 132 l1.6 -5.4 M1268 132 l0 -7.4 M196 132 l-1.3 -7.5 M196 132 l2.7 -6.0 M196 132 l0 -8.2 M1024 132 l-2.4 -10.7 M1024 132 l1.3 -8.5 M1024 132 l0 -11.7 M649 132 l-2.6 -5.9 M649 132 l1.8 -4.7 M649 132 l0 -6.5 M901 132 l-2.4 -7.5 M901 132 l2.7 -6.0 M901 132 l0 -8.2 M1414 132 l-2.9 -7.2 M1414 132 l1.1 -5.7 M1414 132 l0 -7.9 M1257 132 l-1.6 -4.3 M1257 132 l2.1 -3.4 M1257 132 l0 -4.7 M445 132 l-3.0 -9.5 M445 132 l1.3 -7.6 M445 132 l0 -10.5 M655 132 l-1.3 -4.2 M655 132 l1.5 -3.3 M655 132 l0 -4.6 M203 132 l-1.7 -4.3 M203 132 l1.9 -3.5 M203 132 l0 -4.8 M907 132 l-1.4 -8.6 M907 132 l2.9 -6.9 M907 132 l0 -9.4 M986 132 l-2.0 -5.4 M986 132 l1.4 -4.3 M986 132 l0 -5.9 M16 132 l-1.6 -7.3 M16 132 l1.4 -5.8 M16 132 l0 -8.0 M392 132 l-1.6 -6.4 M392 132 l2.0 -5.1 M392 132 l0 -7.1 M885 132 l-2.2 -9.3 M885 132 l2.6 -7.4 M885 132 l0 -10.2 M1305 132 l-1.1 -4.6 M1305 132 l2.4 -3.7 M1305 132 l0 -5.1 M187 132 l-1.7 -7.2 M187 132 l2.8 -5.7 M187 132 l0 -7.9 M543 132 l-1.2 -8.0 M543 132 l2.6 -6.4 M543 132 l0 -8.8 M1360 132 l-1.7 -7.2 M1360 132 l1.4 -5.8 M1360 132 l0 -8.0 M1040 132 l-1.7 -9.7 M1040 132 l2.4 -7.8 M1040 132 l0 -10.7 M307 132 l-1.0 -10.3 M307 132 l3.0 -8.2 M307 132 l0 -11.3 M773 132 l-2.4 -9.5 M773 132 l2.8 -7.6 M773 132 l0 -10.5 M1232 132 l-2.8 -6.4 M1232 132 l1.9 -5.2 M1232 132 l0 -7.1 M792 132 l-2.0 -9.4 M792 132 l1.1 -7.5 M792 132 l0 -10.3 M1165 132 l-1.4 -4.4 M1165 132 l1.3 -3.6 M1165 132 l0 -4.9 M482 132 l-2.7 -9.5 M482 132 l1.3 -7.6 M482 132 l0 -10.5 M744 132 l-1.3 -9.1 M744 132 l2.4 -7.3 M744 132 l0 -10.0 M1362 132 l-1.1 -7.4 M1362 132 l1.2 -6.0 M1362 132 l0 -8.2 M319 132 l-2.4 -7.7 M319 132 l2.5 -6.1 M319 132 l0 -8.5 M920 132 l-1.3 -7.7 M920 132 l2.1 -6.1 M920 132 l0 -8.4 M449 132 l-1.3 -6.7 M449 132 l2.8 -5.3 M449 132 l0 -7.3 M300 132 l-1.1 -10.0 M300 132 l2.0 -8.0 M300 132 l0 -11.0 M825 132 l-1.9 -5.4 M825 132 l2.0 -4.3 M825 132 l0 -5.9 M872 132 l-1.1 -4.2 M872 132 l2.0 -3.4 M872 132 l0 -4.6 M577 132 l-1.9 -9.6 M577 132 l2.0 -7.7 M577 132 l0 -10.6"/>
+    </svg>
+  </div>
+    <h2 class="section-title">Field notes</h2>
+    <p class="section-sub">What people saw, and when and where they saw it.</p>
+    <p class="disclaimer">&#9888;&#65039; These sightings are shared by members of the public. They aren't checked, so their accuracy depends on the people who report them. Busy roads also get more reports than quiet ones.</p>
+    <div class="filter-banner" id="filterBanner"></div>
+    <main class="charts" id="charts">
+      <div class="card" id="c-species"><h2>Which animals are recorded most</h2>
+        <div class="sub">The top 20 · tap a bar to see only that animal on the map. Common animals such as impala are
+          seldom posted, so this shows what people report, not how many animals there are.</div><div class="body"></div></div>
+      <div class="card" id="c-hour"><h2>What time of day</h2>
+        <div class="sub">Sightings by the hour the animal was seen</div><div class="body"></div></div>
+      <div class="card" id="c-camp"><h2>Best places to look</h2>
+        <div class="sub">Sightings by nearest camp · tap one to show only sightings within 15 km of it on the map</div><div class="body"></div></div>
+      <div class="card" id="c-rating"><h2>How good was the view?</h2>
+        <div class="sub">Rating given by the person who spotted it (0 = barely seen, 5 = perfect)</div><div class="body"></div></div>
+      <div class="card" id="c-month"><h2>Which months</h2>
+        <div class="sub">Sightings by month of the year</div><div class="body"></div></div>
+    </main>
+
+  <footer id="footer"></footer>
+</div>
+<div class="tooltip" id="tt"></div>
+
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script id="photos" type="application/json">/*__PHOTOS__*/</script>
+<script>
+"use strict";
+// ============================================================================
+// Data
+// ============================================================================
+const D = JSON.parse(document.getElementById("data").textContent);
+const C = D.cols, N = C.day.length;
+// Five groups, derived from species: the big cats split into lions, leopards and cheetahs.
+const GROUPS = ["Lions", "Leopards", "Cheetahs", "Wild dogs & hyenas", "Everything else"];
+const GROUP_SHAPES = ["diamond", "square", "tri", "tridown", "circle"];
+const SPECIES_TO_GROUP = { "Lion": 0, "Leopard": 1, "Cheetah": 2, "Wild dog": 3, "Hyena": 3 };
+
+// Species for the pickers, recognised from each sighting's headline ("2 Martial Eagles in a tree").
+// [name, menu (m = mammals, b = birds, r = reptiles & more), pattern]. Where two patterns match, the
+// one that starts first wins, then the longer one: "Verreaux's eagle owl" beats "eagle", "leopard
+// tortoise" beats "leopard".
+const KINDS = [
+  // ---- mammals ----
+  ["Lion", "m", String.raw`\blion(?:s|ess\w*)?\b|\bpride\b`],
+  ["Leopard", "m", String.raw`\ble+o+pard?s?\b`],
+  ["Cheetah", "m", String.raw`\bch[ea]{1,3}t(?:ah|ha)h?s?\b`],
+  ["Wild dog", "m", String.raw`\bwil+d?\s*-?\s*dogs?\b|painted\s+(?:dog|wolf|wolves)`],
+  ["Spotted hyena", "m", String.raw`\bhy[aeiy]{1,3}n[ae]s?\b|\bclan\b`],
+  ["Elephant", "m", String.raw`\bele+pha+nn?ts?\b|\bellies?\b|\btuskers?\b`],
+  ["Buffalo", "m", String.raw`\bbuf+al+o(?:e?s)?\b|\bdagga\s*boys?\b`],
+  ["Hippo", "m", String.raw`\bhip+o+(?:potamus|potami|potamuses|s)?\b`],
+  ["Giraffe", "m", String.raw`\bgir+af+e?s?\b`],
+  ["Zebra", "m", String.raw`\bzebras?\b`],
+  ["Blue wildebeest", "m", String.raw`\bwildebeests?\b|\bgnus?\b`],
+  ["Kudu", "m", String.raw`\bkudus?\b`],
+  ["Sable antelope", "m", String.raw`\bsables?\b|\bsale\s+antelopes?\b`],
+  ["Roan antelope", "m", String.raw`\broans?\b`],
+  ["Eland", "m", String.raw`\belands?\b`],
+  ["Nyala", "m", String.raw`\bnyalas?\b`],
+  ["Waterbuck", "m", String.raw`\bwaterbucks?\b`],
+  ["Impala", "m", String.raw`\bimpalas?\b`],
+  ["Tsessebe", "m", String.raw`\bts+[ea]+s+e+bes?\b`],
+  ["Bushbuck", "m", String.raw`\bbushbucks?\b`],
+  ["Reedbuck", "m", String.raw`\breed\s*bucks?\b`],
+  ["Steenbok", "m", String.raw`\bste+n?bo[ck]s?\b`],
+  ["Klipspringer", "m", String.raw`\bklips?p?r?ingers?\b`],
+  ["Common duiker", "m", String.raw`\bduikers?\b`],
+  ["Sharpe's grysbok", "m", String.raw`\bgrysboks?\b`],
+  ["Warthog", "m", String.raw`\bwarthogs?\b|\bpumbas?\b`],
+  ["Black-backed jackal", "m", String.raw`\bblack[\s-]*backed\s+j+a+ck[ae]ls?\b`],
+  ["Side-striped jackal", "m", String.raw`\bside[\s-]*striped\s+jackals?\b`],
+  ["Jackal (type not given)", "m", String.raw`\bj+a+ck[ae](?:ls?)?\b`],
+  ["Honey badger", "m", String.raw`\bhoney\s*ba\w*\b|\bratels?\b`],
+  ["Serval", "m", String.raw`\bservals?\b`],
+  ["Caracal", "m", String.raw`\bcaracals?\b`],
+  ["African wild cat", "m", String.raw`\bwild\s*cats?\b`],
+  ["African civet", "m", String.raw`\bcivets?\b`],
+  ["Genet", "m", String.raw`\bgenets?\b`],
+  ["Mongoose", "m", String.raw`\bmongoo?s(?:e|es)\b|\bmongeese\b`],
+  ["Chacma baboon", "m", String.raw`\bbaboons?\b`],
+  ["Vervet monkey", "m", String.raw`\bvervets?\b|\bmonkeys?\b`],
+  ["Cape clawless otter", "m", String.raw`\botters?\b`],
+  ["Porcupine", "m", String.raw`\bporcupines?\b`],
+  ["Scrub hare", "m", String.raw`\bhares?\b`],
+  ["Tree squirrel", "m", String.raw`\bsquirrels?\b`],
+  ["Aardvark", "m", String.raw`\baardvarks?\b`],
+  ["Pangolin", "m", String.raw`\bpangolins?\b`],
+  ["Bushbaby", "m", String.raw`\bbush\s*bab(?:y|ies)\b|\bgalagos?\b`],
+  ["Aardwolf", "m", String.raw`\baardwol(?:f|ves)\b`],
+  ["Lichtenstein's hartebeest", "m", String.raw`\bhartebeests?\b`],
+  ["Rock dassie", "m", String.raw`\bdassies?\b|\bhyrax(?:es)?\b`],
+  ["Bat", "m", String.raw`\bbats?\b`],
+  ["Brown hyena", "m", String.raw`\bbrown\s+hy[a]?enas?\b`],
+  // ---- birds ----
+  ["Southern ground hornbill", "b", String.raw`\bground[\s-]*horn[\s-]*b?il+s?\b|\bgroundhorbil+s?\b`],
+  ["Yellow-billed hornbill", "b", String.raw`\byellow[\s-]*billed\s+hornbills?\b`],
+  ["Red-billed hornbill", "b", String.raw`\bred[\s-]*billed\s+hornbills?\b`],
+  ["African grey hornbill", "b", String.raw`\bgr[ae]y\s+hornbills?\b`],
+  ["Trumpeter hornbill", "b", String.raw`\btrumpeter\s+hornbills?\b`],
+  ["Hornbill (other)", "b", String.raw`\bhorn[\s-]?bil+s?\b`],
+  ["Bateleur", "b", String.raw`\bbateleurs?\b`],
+  ["African fish eagle", "b", String.raw`\bfish[\s-]*eagles?\b`],
+  ["Martial eagle", "b", String.raw`\bmartial\s+eagles?\b`],
+  ["Tawny eagle", "b", String.raw`\bt(?:aw|wa)ny\s+eagles?\b`],
+  ["Wahlberg's eagle", "b", String.raw`\bwahlberg'?s?\s+eagles?\b`],
+  ["African hawk eagle", "b", String.raw`\bhawk[\s-]*eagles?\b`],
+  ["Brown snake eagle", "b", String.raw`\bbrown\s+snake[\s-]*eagles?\b`],
+  ["Black-chested snake eagle", "b", String.raw`\bblack[\s-]*chested\s+snake[\s-]*eagles?\b`],
+  ["Snake eagle (other)", "b", String.raw`\bsnake[\s-]*eagles?\b`],
+  ["Eagle (other)", "b", String.raw`\beagles?\b`],
+  ["Verreaux's eagle owl", "b", String.raw`\b(?:verreaux'?s?\s+|giant\s+)?eagle[\s-]*owls?\b`],
+  ["Pearl-spotted owlet", "b", String.raw`\bpearl[\s-]*spotted\s+owl(?:et+e?)?s?\b`],
+  ["Scops owl", "b", String.raw`\bscops\b`],
+  ["Barn owl", "b", String.raw`\bbarn\s+owls?\b`],
+  ["Owl (other)", "b", String.raw`\bowl(?:et+e?)?s?\b`],
+  ["White-backed vulture", "b", String.raw`\bwhite[\s-]*backed\s+vultures?\b`],
+  ["Lappet-faced vulture", "b", String.raw`\blappet[\s-]*faced\s+vultures?\b|\blappet\b`],
+  ["Hooded vulture", "b", String.raw`\bhooded\s+vultures?\b`],
+  ["Cape vulture", "b", String.raw`\bcape\s+vultures?\b`],
+  ["Vulture (other)", "b", String.raw`\bvultures?\b`],
+  ["Kori bustard", "b", String.raw`\bkori\b`],
+  ["Black-bellied bustard", "b", String.raw`\bblack[\s-]*bellied\s+bustards?\b`],
+  ["Red-crested korhaan", "b", String.raw`\bko?rhaans?\b`],
+  ["Bustard (other)", "b", String.raw`\bbustards?\b`],
+  ["Ostrich", "b", String.raw`\bostrich(?:es|s|e)?\b`],
+  ["Secretarybird", "b", String.raw`\bsecretary(?:\s*birds?)?\b`],
+  ["Saddle-billed stork", "b", String.raw`\bsaddle[\s-]*billed\s+storks?\b|\bsaddlebills?\b`],
+  ["Marabou stork", "b", String.raw`\bmarabous?\b`],
+  ["Woolly-necked stork", "b", String.raw`\bwoolly[\s-]*necked\b`],
+  ["Yellow-billed stork", "b", String.raw`\byellow[\s-]*billed\s+storks?\b`],
+  ["Stork (other)", "b", String.raw`\bstorks?\b`],
+  ["African openbill", "b", String.raw`\bopenbills?\b|\bopen[\s-]*billed\b`],
+  ["Goliath heron", "b", String.raw`\bgoliath\b`],
+  ["Grey heron", "b", String.raw`\bgr[ae]y\s+herons?\b`],
+  ["Green-backed heron", "b", String.raw`\bgreen[\s-]*backed\s+herons?\b`],
+  ["Heron (other)", "b", String.raw`\bherons?\b|\begrets?\b|\bbitterns?\b`],
+  ["Hamerkop", "b", String.raw`\bhamm?erkops?\b`],
+  ["African spoonbill", "b", String.raw`\bspoonbills?\b`],
+  ["Lilac-breasted roller", "b", String.raw`\blilac[\s-]*breasted\s+rollers?\b`],
+  ["European roller", "b", String.raw`\beuropean\s+rollers?\b`],
+  ["Roller (other)", "b", String.raw`\brollers?\b`],
+  ["Pied kingfisher", "b", String.raw`\bpied\s+kingfishers?\b`],
+  ["Giant kingfisher", "b", String.raw`\bgiant\s+kingfishers?\b`],
+  ["Brown-hooded kingfisher", "b", String.raw`\bbrown[\s-]*hooded\s+kingfishers?\b`],
+  ["Woodland kingfisher", "b", String.raw`\bwoodland\s+kingfishers?\b`],
+  ["Malachite kingfisher", "b", String.raw`\bmalachite\s+kingfishers?\b`],
+  ["Kingfisher (other)", "b", String.raw`\bkingfis[hg]ers?\b`],
+  ["Bee-eater", "b", String.raw`\bbee[\s-]*eaters?\b`],
+  ["Guineafowl", "b", String.raw`\bguinea[\s-]*fowls?\b`],
+  ["Francolin / spurfowl", "b", String.raw`\bfrancolins?\b|\bspurfowls?\b`],
+  ["Coucal", "b", String.raw`\bc[ao]u?cals?\b`],
+  ["Dark chanting goshawk", "b", String.raw`\bchanting\s+goshawks?\b`],
+  ["African harrier-hawk", "b", String.raw`\bharrier[\s-]*hawks?\b`],
+  ["Crested barbet", "b", String.raw`\bbarbets?\b`],
+  ["Green pigeon", "b", String.raw`\bgreen\s+pigeons?\b`],
+  ["Brown-headed parrot", "b", String.raw`\bparrots?\b`],
+  ["Woodpecker", "b", String.raw`\bwoodpeckers?\b`],
+  ["Osprey", "b", String.raw`\bospreys?\b`],
+  ["Water thick-knee", "b", String.raw`\bthick[\s-]*knees?\b|\bdikkops?\b`],
+  ["African finfoot", "b", String.raw`\bfinfoots?\b`],
+  ["Lapwing / plover", "b", String.raw`\bplovers?\b|\blapwings?\b`],
+  ["Sandgrouse", "b", String.raw`\bsandgrouses?\b`],
+  ["African hoopoe", "b", String.raw`\bhoopoes?\b`],
+  ["Finches & waxbills", "b", String.raw`\bfinch(?:es)?\b|\bfirefinch(?:es)?\b|\bwaxbills?\b`],
+  ["Duck / goose", "b", String.raw`\bducks?\b|\bgeese\b|\bgoose\b`],
+  ["Other birds", "b", String.raw`\bbirds?\b|\bhawks?\b|\bfalcons?\b|\bkites?\b|\bbuz+ards?\b|\bcranes?\b|\bpelicans?\b|\bibis(?:es)?\b|\bflamingos?\b|\bskimmers?\b|\bstonechats?\b|\bstarlings?\b|\bdoves?\b|\bflycatchers?\b|\bkestrels?\b|\bsnipes?\b|\bbuntings?\b|\blarks?\b|\bweavers?\b|\bshrikes?\b|\bdrongos?\b|\boxpeckers?\b|\bsparrows?\b`],
+  // ---- reptiles & more ----
+  ["Nile crocodile", "r", String.raw`\bcroc(?:odile)?s?\b`],
+  ["Leopard tortoise", "r", String.raw`\bleopard\s+tortoises?\b`],
+  ["Tortoise (other)", "r", String.raw`\btortoises?\b`],
+  ["Terrapin", "r", String.raw`\bterrapins?\b`],
+  ["Water monitor", "r", String.raw`\b(?:water|nile)\s+monitors?\b`],
+  ["Rock monitor", "r", String.raw`\brock\s+monitors?\b`],
+  ["Monitor lizard (other)", "r", String.raw`\bmonitors?\b|\bleguaans?\b|\blikkewaans?\b`],
+  ["Rock python", "r", String.raw`\bpythons?\b`],
+  ["Black mamba", "r", String.raw`\bmambas?\b`],
+  ["Puff adder", "r", String.raw`\bpuf+\s*add(?:er|a)s?\b`],
+  ["Boomslang", "r", String.raw`\bboomslangs?\b`],
+  ["Snake (other)", "r", String.raw`\bsnakes?\b|\bcobras?\b|\badders?\b`],
+  ["Chameleon", "r", String.raw`\bchameleons?\b`],
+  ["Lizard (other)", "r", String.raw`\baga?mas?\b|\blizards?\b|\bskinks?\b`],
+  ["Frog", "r", String.raw`\bfrogs?\b|\btoads?\b`],
+  ["Fish", "r", String.raw`\bfish\b|\btigerfish\b`],
+  ["Insects & scorpions", "r", String.raw`\bbeetles?\b|\bscorpions?\b|\bbutterfl(?:y|ies)\b|\bmoths?\b|\bspiders?\b`],
+  ["Snail", "r", String.raw`\bsnails?\b`],
+  ["Something else (sunrises, roads, rain…)", "r", String.raw`$^`],   // fallback, never matches
+];
+const KIND_OTHER = KINDS.length - 1;
+
+// One picture per animal. "A+B" draws B small in the corner (there is no cheetah emoji).
+const KIND_ICON = {
+  "Lion": "🦁", "Leopard": "🐆", "Cheetah": "🐆+💨", "Wild dog": "🐕", "Spotted hyena": "🐺", "Brown hyena": "🐺",
+  "Aardwolf": "🐺", "Elephant": "🐘", "Buffalo": "🐃", "Hippo": "🦛", "Giraffe": "🦒", "Zebra": "🦓",
+  "Blue wildebeest": "🐂", "Warthog": "🐗", "Black-backed jackal": "🦊", "Side-striped jackal": "🦊",
+  "Jackal (type not given)": "🦊", "Honey badger": "🦡", "Serval": "🐈", "Caracal": "🐈", "African wild cat": "🐈",
+  "African civet": "🦝", "Genet": "🦝", "Chacma baboon": "🐒", "Vervet monkey": "🐒", "Cape clawless otter": "🦦",
+  "Porcupine": "🦔", "Scrub hare": "🐇", "Tree squirrel": "🐿️",
+  "Nile crocodile": "🐊", "Leopard tortoise": "🐢", "Tortoise (other)": "🐢", "Terrapin": "🐢",
+  "Water monitor": "🦎", "Rock monitor": "🦎", "Monitor lizard (other)": "🦎", "Chameleon": "🦎", "Lizard (other)": "🦎",
+  "Rock python": "🐍", "Black mamba": "🐍", "Puff adder": "🐍", "Boomslang": "🐍", "Snake (other)": "🐍",
+  "Frog": "🐸", "Fish": "🐟", "Insects & scorpions": "🦂", "Snail": "🐌",
+  "Something else (sunrises, roads, rain…)": "🌅",
+};
+const RAPTOR = /eagle|vulture|bateleur|osprey|goshawk|harrier|secretary/i, OWL = /owl/i,
+      WADER = /stork|heron|hamerkop|spoonbill|openbill|thick-knee|lapwing/i, FOWL = /bustard|korhaan|guineafowl|francolin|sandgrouse/i;
+function iconOf(k) {
+  const [name, menu] = KINDS[k];
+  if (KIND_ICON[name]) return KIND_ICON[name];
+  if (menu === "m") return /bok|buck|kudu|sable|roan|eland|nyala|impala|tsessebe|klipspringer|duiker|grysbok|hartebeest/i.test(name) ? "🦌" : "🐾";
+  if (OWL.test(name)) return "🦉";
+  if (RAPTOR.test(name)) return "🦅";
+  if (WADER.test(name)) return "🦩";
+  if (FOWL.test(name)) return "🐓";
+  if (/duck|goose/i.test(name)) return "🦆";
+  if (/parrot/i.test(name)) return "🦜";
+  if (/pigeon/i.test(name)) return "🕊️";
+  return "🐦";
+}
+const iconText = k => iconOf(k).replace("+", "");
+
+// Portraits made with Gemini (geo/animals). Catch-all entries borrow the closest species.
+const PHOTOS = (() => { try { return JSON.parse(document.getElementById("photos").textContent); } catch (e) { return {}; } })();
+const PHOTO_OF = {
+  "Lion": "lion", "Leopard": "leopard", "Cheetah": "cheetah", "Wild dog": "wild_dog", "Spotted hyena": "spotted_hyena",
+  "Elephant": "elephant", "Buffalo": "buffalo", "Hippo": "hippo", "Giraffe": "giraffe", "Zebra": "zebra",
+  "Kudu": "kudu", "Sable antelope": "sable", "Roan antelope": "roan", "Eland": "eland", "Nyala": "nyala",
+  "Waterbuck": "waterbuck", "Impala": "impala", "Tsessebe": "tsessebe", "Klipspringer": "klipspringer",
+  "Warthog": "warthog", "Black-backed jackal": "bb_jackal", "Side-striped jackal": "ss_jackal",
+  "Jackal (type not given)": "bb_jackal", "Honey badger": "honey_badger", "Serval": "serval",
+  "African civet": "civet", "Chacma baboon": "baboon", "Southern ground hornbill": "ground_hornbill",
+  "Bateleur": "bateleur", "African fish eagle": "fish_eagle", "Martial eagle": "martial_eagle",
+  "Tawny eagle": "tawny_eagle", "Eagle (other)": "tawny_eagle", "Verreaux's eagle owl": "eagle_owl",
+  "Owl (other)": "eagle_owl", "Pearl-spotted owlet": "owlet", "White-backed vulture": "vulture",
+  "Vulture (other)": "vulture", "Kori bustard": "kori", "Ostrich": "ostrich", "Secretarybird": "secretarybird",
+  "Saddle-billed stork": "saddlebill", "Nile crocodile": "crocodile", "Rock python": "python",
+  "Blue wildebeest": "wildebeest", "Reedbuck": "reedbuck", "Steenbok": "steenbok", "Sharpe's grysbok": "grysbok",
+  "Caracal": "caracal", "African wild cat": "wildcat", "Mongoose": "mongoose", "Cape clawless otter": "otter",
+  "Porcupine": "porcupine", "Pangolin": "pangolin", "Yellow-billed hornbill": "yb_hornbill",
+  "Hornbill (other)": "yb_hornbill", "Wahlberg's eagle": "wahlbergs_eagle", "African hawk eagle": "hawk_eagle",
+  "Brown snake eagle": "brown_snake_eagle", "Snake eagle (other)": "brown_snake_eagle", "Scops owl": "scops_owl",
+  "Lappet-faced vulture": "lappet_vulture", "Marabou stork": "marabou", "Lilac-breasted roller": "roller",
+  "Roller (other)": "roller", "Pied kingfisher": "pied_kingfisher", "Kingfisher (other)": "pied_kingfisher",
+  "Leopard tortoise": "leopard_tortoise", "Tortoise (other)": "leopard_tortoise", "Water monitor": "monitor",
+  "Monitor lizard (other)": "monitor", "Black mamba": "black_mamba", "Boomslang": "boomslang",
+  "Chameleon": "chameleon",
+  "Bushbuck": "bushbuck", "Common duiker": "duiker", "Genet": "genet", "Vervet monkey": "vervet",
+  "Scrub hare": "scrub_hare", "Tree squirrel": "squirrel", "Aardvark": "aardvark", "Bushbaby": "bushbaby",
+  "Aardwolf": "aardwolf", "Lichtenstein's hartebeest": "hartebeest", "Rock dassie": "dassie", "Bat": "bat",
+  "Brown hyena": "brown_hyena", "Red-billed hornbill": "rb_hornbill", "African grey hornbill": "grey_hornbill",
+  "Trumpeter hornbill": "trumpeter_hornbill", "Black-chested snake eagle": "bc_snake_eagle", "Barn owl": "barn_owl",
+  "Hooded vulture": "hooded_vulture", "Cape vulture": "cape_vulture", "Black-bellied bustard": "bb_bustard",
+  "Red-crested korhaan": "korhaan", "Bustard (other)": "kori", "Woolly-necked stork": "woolly_stork",
+  "Yellow-billed stork": "yb_stork", "Stork (other)": "yb_stork", "African openbill": "openbill",
+  "Goliath heron": "goliath_heron", "Grey heron": "grey_heron", "Green-backed heron": "gb_heron",
+  "Heron (other)": "grey_heron", "Hamerkop": "hamerkop", "African spoonbill": "spoonbill",
+  "European roller": "euro_roller", "Giant kingfisher": "giant_kingfisher", "Brown-hooded kingfisher": "bh_kingfisher",
+  "Woodland kingfisher": "woodland_kingfisher", "Malachite kingfisher": "malachite_kingfisher",
+  "Bee-eater": "bee_eater", "Guineafowl": "guineafowl", "Francolin / spurfowl": "spurfowl", "Coucal": "coucal",
+  "Dark chanting goshawk": "goshawk", "African harrier-hawk": "harrier_hawk", "Crested barbet": "barbet",
+  "Green pigeon": "green_pigeon", "Brown-headed parrot": "parrot", "Woodpecker": "woodpecker", "Osprey": "osprey",
+  "Water thick-knee": "thick_knee", "African finfoot": "finfoot", "Lapwing / plover": "lapwing",
+  "Sandgrouse": "sandgrouse", "African hoopoe": "hoopoe", "Finches & waxbills": "waxbill", "Duck / goose": "duck",
+  "Terrapin": "terrapin", "Rock monitor": "rock_monitor", "Puff adder": "puff_adder", "Snake (other)": "puff_adder",
+  "Lizard (other)": "rock_monitor", "Frog": "frog", "Fish": "fish", "Insects & scorpions": "beetle", "Snail": "snail",
+};
+const photoOf = k => PHOTOS[PHOTO_OF[KINDS[k][0]]] || null;
+const iconKey = k => photoOf(k) ? "photo:" + PHOTO_OF[KINDS[k][0]] : iconOf(k);
+// a round portrait where we have one, otherwise the emoji
+const iconHTML = (k, px) => photoOf(k)
+  ? `<img class="ph" src="${photoOf(k)}" width="${px}" height="${px}" alt="">`
+  : `<span class="tt-ic" style="font-size:${Math.round(px * 0.7)}px">${iconText(k)}</span>`;
+const KIND_COUNT = new Array(KINDS.length).fill(0);
+const KIND_RE = KINDS.map(([, , rx]) => new RegExp(rx, "i"));
+const kindCache = new Map();
+function kindOf(raw) {
+  if (kindCache.has(raw)) return kindCache.get(raw);
+  const text = raw.replace(/(\d)([a-z])/gi, "$1 $2");
+  let best = KIND_OTHER, at = Infinity, len = 0;
+  for (let k = 0; k < KIND_OTHER; k++) {
+    const m = KIND_RE[k].exec(text);
+    if (m && (m.index < at || (m.index === at && m[0].length > len))) { best = k; at = m.index; len = m[0].length; }
+  }
+  kindCache.set(raw, best);
+  return best;
+}
+C.kind = C.title.map(kindOf);
+for (const k of C.kind) KIND_COUNT[k]++;
+D.species_group = D.dicts.species.map(name => SPECIES_TO_GROUP[name] ?? 4);
+C.g = C.sp.map(k => D.species_group[k]);
+const css = getComputedStyle(document.documentElement);
+const GROUP_COLORS = ["--series-1", "--series-2", "--series-3", "--series-4", "--series-5"].map(v => css.getPropertyValue(v).trim());
+const swatch = (g, extra = "") => `<span class="sw shape-${GROUP_SHAPES[g]}" style="background:${GROUP_COLORS[g]}${extra}"></span>`;
+const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+const KX = 111.32 * Math.cos(-24 * Math.PI / 180), KY = 110.57;
+const kx = lon => (lon - 31.5) * KX, ky = lat => (lat + 24) * KY;
+const EPOCH = Date.UTC(2012, 0, 1);
+const T = new Float32Array(N);                       // days since epoch (fractional)
+for (let i = 0; i < N; i++) T[i] = C.day[i] + C.sec[i] / 86400;
+const placed = [];                                   // indices with coordinates
+for (let i = 0; i < N; i++) if (C.lon[i] !== null) placed.push(i);
+placed.sort((a, b) => KIND_COUNT[C.kind[b]] - KIND_COUNT[C.kind[a]] || a - b);   // rare animals drawn last, on top
+const byTime = Array.from({ length: N }, (_, i) => i).sort((a, b) => T[a] - T[b]);
+const T0 = Math.floor(T[byTime[0]]), T1 = Math.ceil(T[byTime[N - 1]]);
+const fmtDate = d => new Date(EPOCH + d * 86400000).toLocaleDateString("en-GB",
+  { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const fmtN = n => n.toLocaleString("en-US");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+const state = {
+  groups: [true, true, true, true, true],
+  species: -1,         // coarse species (from the species chart)
+  kind: -1,            // exact species (from the pickers)
+  region: "all",       // "all" | "north" | "central" | "south" | "camp:<index into D.camps>"
+  when: 0,             // 0 = all dates, else only the last N months of data
+  season: "all",       // "all" | "wet" | "dry" | "m<0-11>"
+  mode: "all",          // "all" | "replay"
+  now: T1, playing: false, speed: 7,
+  hover: -1,
+};
+let vis = new Uint8Array(N);
+// helpers for the place / time filters
+const MONTH_OF = new Uint8Array(N), PX = new Float32Array(N), PY = new Float32Array(N);
+for (let i = 0; i < N; i++) {
+  MONTH_OF[i] = new Date(EPOCH + C.day[i] * 86400000).getUTCMonth();
+  if (C.lon[i] !== null) { PX[i] = kx(C.lon[i]); PY[i] = ky(C.lat[i]); }
+}
+const REGIONS = {        // rough latitude bands
+  north: { label: "Northern (Olifants & north)", test: lat => lat > -24.1, band: [-24.1, -22.3] },
+  central: { label: "Central (Satara & Orpen area)", test: lat => lat <= -24.1 && lat >= -24.9, band: [-24.9, -24.1] },
+  south: { label: "Southern (Skukuza & south)", test: lat => lat < -24.9, band: [-25.55, -24.9] },
+};
+const CAMP_RADIUS_KM = 15;
+function passesPlace(i) {
+  if (state.region === "all") return true;
+  if (C.lon[i] === null) return false;
+  if (REGIONS[state.region]) return REGIONS[state.region].test(C.lat[i]);
+  const [, lon, lat] = D.camps[+state.region.slice(5)];
+  const dx = PX[i] - kx(lon), dy = PY[i] - ky(lat);
+  return dx * dx + dy * dy <= CAMP_RADIUS_KM * CAMP_RADIUS_KM;
+}
+function passesTime(i) {
+  if (state.when > 0 && T[i] < T1 - state.when * 30.44) return false;
+  const m = MONTH_OF[i];
+  if (state.season === "wet") return m >= 10 || m <= 2;      // Nov-Mar: rainy summer
+  if (state.season === "dry") return m >= 4 && m <= 8;       // May-Sep: dry winter
+  if (state.season !== "all") return m === +state.season.slice(1);
+  return true;
+}
+const passesBase = i => state.groups[C.g[i]] && passesPlace(i) && passesTime(i);
+const anyFilter = () => state.kind >= 0 || state.species >= 0 || state.region !== "all" || state.when > 0 || state.season !== "all";
+function computeVis() {
+  for (let i = 0; i < N; i++)
+    vis[i] = passesBase(i) && (state.species < 0 || C.sp[i] === state.species)
+      && (state.kind < 0 || C.kind[i] === state.kind) ? 1 : 0;
+}
+
+// ============================================================================
+// WebGL map
+// ============================================================================
+const canvas = document.getElementById("gl");
+const gl = canvas.getContext("webgl", { antialias: true, premultipliedAlpha: false });
+if (!gl) document.getElementById("mapWrap").insertAdjacentHTML("beforeend",
+  '<p style="padding:40px;color:#c3c2b7">WebGL is not available in this browser.</p>');
+
+function shader(type, src) {
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(vs, fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, shader(gl.VERTEX_SHADER, vs)); gl.attachShader(p, shader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const loc = {};
+  for (let i = 0, n = gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES); i < n; i++) {
+    const a = gl.getActiveAttrib(p, i); loc[a.name] = gl.getAttribLocation(p, a.name);
+  }
+  for (let i = 0, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i < n; i++) {
+    const u = gl.getActiveUniform(p, i); loc[u.name.replace("[0]", "")] = gl.getUniformLocation(p, u.name);
+  }
+  return { p, loc };
+}
+const VIEW_GLSL = `
+  uniform vec3 u_view;    // scale (px per km), tx, ty (px)
+  uniform vec2 u_res;     // canvas px
+  vec2 toClip(vec2 km) {
+    vec2 px = vec2(km.x * u_view.x + u_view.y, -km.y * u_view.x + u_view.z);
+    return vec2(px.x / u_res.x * 2.0 - 1.0, 1.0 - px.y / u_res.y * 2.0);
+  }`;
+
+// --- thick glowing lines: one quad per segment, extruded in screen space ---
+const lineProg = gl && program(`
+  attribute vec2 a_pos; attribute vec2 a_dir; attribute float a_side;
+  ${VIEW_GLSL}
+  uniform float u_width;
+  varying float v_side;
+  void main() {
+    vec2 c = toClip(a_pos);
+    vec2 d = normalize(vec2(a_dir.x, -a_dir.y) + 1e-9);
+    vec2 n = vec2(-d.y, d.x);
+    c += n * a_side * u_width / u_res;      // width px -> clip (x2 / 2 cancels)
+    v_side = a_side;
+    gl_Position = vec4(c, 0.0, 1.0);
+  }`, `
+  precision mediump float;
+  uniform vec3 u_color; uniform float u_alpha; uniform float u_soft;
+  varying float v_side;
+  void main() {
+    float a = mix(1.0 - smoothstep(0.6, 1.0, abs(v_side)), exp(-v_side * v_side * 3.0), u_soft);
+    gl_FragColor = vec4(u_color * u_alpha * a, u_alpha * a);
+  }`);
+
+function lineBuffer(polylines) {
+  const out = [];
+  for (const line of polylines) {
+    for (let i = 0; i + 1 < line.length; i++) {
+      const ax = kx(line[i][0]), ay = ky(line[i][1]), bx = kx(line[i + 1][0]), by = ky(line[i + 1][1]);
+      const dx = bx - ax, dy = by - ay;
+      // two triangles: a-, a+, b+ / a-, b+, b-
+      out.push(ax, ay, dx, dy, -1, ax, ay, dx, dy, 1, bx, by, dx, dy, 1,
+               ax, ay, dx, dy, -1, bx, by, dx, dy, 1, bx, by, dx, dy, -1);
+    }
+  }
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(out), gl.STATIC_DRAW);
+  return { buf, count: out.length / 5 };
+}
+
+// --- park fill (ear-clipped polygon) ---
+const fillProg = gl && program(`
+  attribute vec2 a_pos; ${VIEW_GLSL}
+  varying vec2 v_km;
+  void main() { v_km = a_pos; gl_Position = vec4(toClip(a_pos), 0.0, 1.0); }`, `
+  precision mediump float;
+  varying vec2 v_km;
+  uniform vec3 u_fill; uniform float u_grainK;
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+  void main() {
+    // dry savanna: olive-brown with a fine and a coarse grain (grass patches)
+    float fine = hash(floor(v_km * 1.6)) * 0.018;
+    float patchy = hash(floor(v_km * 0.35)) * 0.03;
+    vec3 base = u_fill + (fine + vec3(patchy * 0.7, patchy * 0.8, patchy * 0.3)) * u_grainK;
+    gl_FragColor = vec4(base, 1.0);
+  }`);
+function earcut(pts) {                                   // simple O(n^2) ear clipping
+  const idx = pts.map((_, i) => i), tris = [];
+  const area = pts.reduce((s, p, i) => { const q = pts[(i + 1) % pts.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0);
+  if (area < 0) idx.reverse();
+  const cross = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  const inside = (p, a, b, c) => cross(a, b, p) >= 0 && cross(b, c, p) >= 0 && cross(c, a, p) >= 0;
+  let guard = 0;
+  while (idx.length > 3 && guard++ < 100000) {
+    let clipped = false;
+    for (let i = 0; i < idx.length; i++) {
+      const ia = idx[(i + idx.length - 1) % idx.length], ib = idx[i], ic = idx[(i + 1) % idx.length];
+      const a = pts[ia], b = pts[ib], c = pts[ic];
+      if (cross(a, b, c) <= 0) continue;
+      let ok = true;
+      for (const j of idx) if (j !== ia && j !== ib && j !== ic && inside(pts[j], a, b, c)) { ok = false; break; }
+      if (!ok) continue;
+      tris.push(ia, ib, ic); idx.splice(i, 1); clipped = true; break;
+    }
+    if (!clipped) break;
+  }
+  if (idx.length === 3) tris.push(...idx);
+  return tris;
+}
+let fill = null;
+function buildFill() {
+  const verts = [], out = [];
+  for (const ring of D.outline) {
+    const pts = ring.slice(0, -1).map(([lon, lat]) => [kx(lon), ky(lat)]);
+    for (const t of earcut(pts)) out.push(pts[t][0], pts[t][1]);
+  }
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(out), gl.STATIC_DRAW);
+  fill = { buf, count: out.length / 2 };
+}
+
+// --- tings (points) ---
+const ptProg = gl && program(`
+  attribute vec2 a_pos; attribute float a_t; attribute float a_g; attribute float a_vis; attribute float a_icon;
+  ${VIEW_GLSL}
+  uniform float u_now, u_ripple, u_fade, u_replay, u_dpr, u_zoom;
+  uniform mediump float u_day;   // same precision as in the fragment shader
+  uniform vec3 u_colors[5];
+  varying vec3 v_color; varying float v_age01; varying float v_bright; varying float v_ring; varying float v_shape;
+  varying float v_icon; varying float v_iconFrac;
+  void main() {
+    float age = u_now - a_t;
+    v_icon = a_icon;
+    if (a_vis < 0.5 || (u_replay > 0.5 && age < 0.0)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+    int gi = int(a_g + 0.5);
+    v_color = gi == 0 ? u_colors[0] : gi == 1 ? u_colors[1] : gi == 2 ? u_colors[2] : gi == 3 ? u_colors[3] : u_colors[4];
+    v_shape = a_g;
+    float base = (2.2 + 1.4 * clamp(u_zoom, 0.0, 3.0)) * u_dpr;
+    v_age01 = u_replay > 0.5 ? clamp(age / u_ripple, 0.0, 1.0) : 1.0;
+    v_ring = u_replay > 0.5 && age < u_ripple ? 1.0 : 0.0;
+    if (u_day > 0.5) v_bright = u_replay > 0.5 ? mix(0.45, 1.0, exp(-age / u_fade)) : 0.95;
+    else v_bright = u_replay > 0.5 ? mix(0.16, 0.9, exp(-age / u_fade)) : 0.11;
+    float iconSize = clamp(10.0 + 7.0 * u_zoom, 10.0, 40.0) * u_dpr;           // icon size grows as you zoom in
+    float size = v_ring > 0.5 ? max(34.0 * u_dpr, iconSize * 2.2) : u_day > 0.5 ? iconSize : base * 4.0;
+    v_iconFrac = iconSize / size;
+    gl_Position = vec4(toClip(a_pos), 0.0, 1.0);
+    gl_PointSize = size;
+  }`, `
+  precision mediump float;
+  varying vec3 v_color; varying float v_age01; varying float v_bright; varying float v_ring; varying float v_shape;
+  varying float v_icon; varying float v_iconFrac;
+  uniform float u_dpr, u_day;
+  uniform vec2 u_grid;                                     // atlas columns, rows
+  uniform sampler2D u_atlas;
+  // distance-like measure for the group's shape, ~1.0 at the edge of a same-size circle
+  float shapeDist(vec2 q, float shape) {
+    vec2 a = abs(q);
+    if (shape < 0.5) return (a.x + a.y) * 0.78;                              // diamond: lions
+    if (shape < 1.5) return max(a.x, a.y) * 1.12;                            // square: leopards
+    if (shape < 2.5) return max(-q.y, a.x * 0.866 + q.y * 0.5) * 2.1;        // triangle: cheetahs
+    if (shape < 3.5) return max(q.y, a.x * 0.866 - q.y * 0.5) * 2.1;         // down-triangle: dogs & hyenas
+    return length(q);                                                       // circle: everything else
+  }
+  void main() {
+    vec2 q = (gl_PointCoord - 0.5) * 2.0; q.y = -q.y;       // -1..1, y up
+    float r = length(q);                                     // 0 centre .. 1 edge
+    if (u_day > 0.5) {                                       // the animal's icon from the atlas
+      vec2 cell = vec2(mod(v_icon, u_grid.x), floor(v_icon / u_grid.x));
+      vec2 uv = (gl_PointCoord - 0.5) / v_iconFrac + 0.5;    // icon at its normal size, centred
+      vec4 icon = (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+        ? texture2D(u_atlas, (cell + uv) / u_grid) : vec4(0.0);
+      if (v_ring < 0.5) { gl_FragColor = icon * v_bright; return; }
+      // a fresh sighting while playing: its icon with an expanding ring around it
+      float ringA = exp(-pow((r - mix(v_iconFrac, 1.0, v_age01)) / 0.06, 2.0)) * (1.0 - v_age01) * 0.85;
+      vec4 ring = vec4(v_color * ringA, ringA);
+      gl_FragColor = icon + ring * (1.0 - icon.a);
+      return;
+    }
+    if (r > 1.0) discard;
+    float sd = shapeDist(q, v_shape);
+    if (u_day > 0.5) {
+      vec3 col = v_color; float a;
+      if (v_ring > 0.5) {
+        float ring = exp(-pow((r - v_age01) / 0.06, 2.0)) * (1.0 - v_age01);
+        float core = 1.0 - smoothstep(0.10, 0.16, r);
+        a = max(ring * 0.85, core);
+      } else {
+        a = (1.0 - smoothstep(0.78, 0.95, sd)) * v_bright;
+        col = mix(v_color, v_color * 0.5, smoothstep(0.52, 0.72, sd));  // darker rim for contrast
+      }
+      gl_FragColor = vec4(col * a, a);
+      return;
+    }
+    float a;
+    if (v_ring > 0.5) {
+      // expanding ring + bright core while the ting is fresh
+      float rr = v_age01;
+      float ring = exp(-pow((r - rr) / 0.05, 2.0)) * (1.0 - v_age01);
+      float core = exp(-r * r * 120.0) * 1.2;
+      a = ring * 0.45 + core;
+    } else {
+      a = exp(-r * r * 14.0) * v_bright;                   // soft glow
+      a += exp(-sd * sd * 70.0) * v_bright * 1.2;          // hot core, in the group's shape
+    }
+    gl_FragColor = vec4(v_color * a, a);
+  }`);
+
+let ptBuf = {}, lines = {};
+
+// Icon atlas: every distinct map icon drawn once into a 2048x1024 texture (16 x 8 cells of 128 px).
+// Portraits become round badges with a white ring; animals without one keep their emoji.
+const ATLAS = { cols: 16, rows: 8, cell: 128, index: {}, tex: null };
+function uploadAtlas(cv) {
+  gl.bindTexture(gl.TEXTURE_2D, ATLAS.tex);
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+  gl.generateMipmap(gl.TEXTURE_2D);
+}
+function buildAtlas() {
+  const keys = [...new Set(KINDS.map((k, i) => iconKey(i)))];
+  const C0 = ATLAS.cell;
+  const cv = document.createElement("canvas"); cv.width = ATLAS.cols * C0; cv.height = ATLAS.rows * C0;
+  const g2 = cv.getContext("2d");
+  g2.textAlign = "center"; g2.textBaseline = "middle";
+  const FONT = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif';
+  const centre = n => [(n % ATLAS.cols) * C0 + C0 / 2, Math.floor(n / ATLAS.cols) * C0 + C0 / 2];
+  const photos = [];
+  keys.forEach((key, n) => {
+    ATLAS.index[key] = n;
+    const [cx, cy] = centre(n);
+    if (key.startsWith("photo:")) { photos.push([key.slice(6), cx, cy]); return; }
+    const [main, badge] = key.split("+");
+    g2.shadowColor = "rgba(255, 253, 248, 0.95)"; g2.shadowBlur = 10;           // soft light halo: readable on the map
+    g2.font = `88px ${FONT}`; g2.fillText(main, cx, cy + 2);
+    if (badge) { g2.shadowBlur = 6; g2.font = `44px ${FONT}`; g2.fillText(badge, cx - 34, cy + 30); }
+  });
+  g2.shadowBlur = 0;
+  ATLAS.tex = gl.createTexture();
+  uploadAtlas(cv);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  // portraits decode asynchronously: draw them as they arrive, then refresh the texture once
+  Promise.all(photos.map(([slug, cx, cy]) => new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      const r = C0 / 2 - 6;
+      g2.save(); g2.beginPath(); g2.arc(cx, cy, r, 0, Math.PI * 2); g2.clip();
+      g2.drawImage(img, cx - r, cy - r, r * 2, r * 2); g2.restore();
+      g2.lineWidth = 7; g2.strokeStyle = "#fffdf8"; g2.beginPath(); g2.arc(cx, cy, r, 0, Math.PI * 2); g2.stroke();
+      g2.lineWidth = 2; g2.strokeStyle = "rgba(60, 45, 20, 0.45)"; g2.beginPath(); g2.arc(cx, cy, r + 4, 0, Math.PI * 2); g2.stroke();
+      res();
+    };
+    img.onerror = res;
+    img.src = PHOTOS[slug];
+  }))).then(() => { uploadAtlas(cv); requestDraw(); });
+}
+function buildPoints() {
+  const P = placed.length;
+  const pos = new Float32Array(P * 2), t = new Float32Array(P), g = new Float32Array(P), ic = new Float32Array(P);
+  placed.forEach((i, k) => {
+    pos[2 * k] = kx(C.lon[i]); pos[2 * k + 1] = ky(C.lat[i]); t[k] = T[i]; g[k] = C.g[i]; ic[k] = ATLAS.index[iconKey(C.kind[i])];
+  });
+  const mk = arr => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW); return b; };
+  ptBuf = { pos: mk(pos), t: mk(t), g: mk(g), icon: mk(ic), vis: gl.createBuffer(), count: P, posArr: pos };
+  uploadVis();
+}
+function uploadVis() {
+  const v = new Float32Array(placed.length);
+  placed.forEach((i, k) => { v[k] = vis[i]; });
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf.vis);
+  gl.bufferData(gl.ARRAY_BUFFER, v, gl.DYNAMIC_DRAW);
+}
+
+// --- view (fit, zoom, pan) ---
+const view = { scale: 1, tx: 0, ty: 0, fit: null };
+let W = 0, H = 0, DPR = 1;
+const outlineKm = D.outline.flat().map(([lon, lat]) => [kx(lon), ky(lat)]);
+const bbox = outlineKm.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)],
+  [Infinity, Infinity, -Infinity, -Infinity]);
+function fitView() {
+  // keep the park clear of the timeline panel (bottom) and, on narrow screens, the title panel (top)
+  // phones: the map sits in its own box, nothing overlays it
+  const hero = canvas.getBoundingClientRect();
+  const narrow = window.matchMedia("(max-width: 700px)").matches;
+  const tlBox = document.querySelector(".timeline").getBoundingClientRect();
+  const pad = (narrow ? 12 : 24) * DPR;
+  const top = (narrow ? 12 : 24) * DPR;
+  const bottomPad = (narrow ? 30 : hero.bottom - tlBox.top + 16) * DPR;
+  const s = Math.min((W - 2 * pad) / (bbox[2] - bbox[0]), (H - bottomPad - top) / (bbox[3] - bbox[1]));
+  view.scale = s;
+  view.tx = W / 2 - (bbox[0] + bbox[2]) / 2 * s;
+  view.ty = top + (H - bottomPad - top) / 2 + (bbox[1] + bbox[3]) / 2 * s;
+  view.fit = s;
+}
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const r = canvas.getBoundingClientRect();
+  const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR);
+  if (w === W && h === H) return;
+  const first = !view.fit;
+  W = canvas.width = w; H = canvas.height = h;
+  if (first) fitView(); else { const k = view.scale / view.fit; fitView(); zoomAt(W / 2, H / 2, k); }
+  placeLabels(); requestDraw();
+}
+function zoomAt(px, py, k) {
+  const ns = Math.max(view.fit * 0.8, Math.min(view.fit * 40, view.scale * k));
+  k = ns / view.scale;
+  view.tx = px - (px - view.tx) * k; view.ty = py - (py - view.ty) * k; view.scale = ns;
+}
+const toScreen = (xkm, ykm) => [(xkm * view.scale + view.tx) / DPR, (-ykm * view.scale + view.ty) / DPR];
+
+// camp labels (HTML overlay)
+const labelsEl = document.getElementById("labels");
+const labelEls = D.camps.map(([name]) => { const d = document.createElement("div"); d.className = "camp-label"; d.textContent = name; labelsEl.appendChild(d); return d; });
+// most important first; a label that would overlap one already shown is hidden
+const LABEL_PRIORITY = ["Skukuza", "Satara", "Lower Sabie", "Letaba", "Shingwedzi", "Punda Maria",
+  "Crocodile Bridge", "Olifants", "Orpen", "Pretoriuskop", "Malelane", "Berg-en-Dal", "Mopani",
+  "Tshokwane", "Phalaborwa", "Pafuri"];
+const labelOrder = D.camps.map((c, i) => i).sort((a, b) =>
+  (LABEL_PRIORITY.indexOf(D.camps[a][0]) + 99) % 99 - (LABEL_PRIORITY.indexOf(D.camps[b][0]) + 99) % 99);
+function placeLabels() {
+  const cw = W / DPR, ch = H / DPR, shown = [];
+  for (const i of labelOrder) {
+    const [, lon, lat] = D.camps[i];
+    const [x, y] = toScreen(kx(lon), ky(lat));
+    const el = labelEls[i];
+    el.style.left = x + "px"; el.style.top = y + "px";
+    const w = el.offsetWidth + 10, h = el.offsetHeight;
+    const box = [x - 4, y - h / 2, x + w, y + h / 2];
+    const ok = box[0] > 0 && box[2] < cw && box[1] > 0 && box[3] < ch &&
+      !shown.some(o => box[0] < o[2] && box[2] > o[0] && box[1] < o[3] && box[3] > o[1]);
+    el.style.visibility = ok ? "visible" : "hidden";
+    if (ok) shown.push(box);
+  }
+}
+
+// --- draw ---
+let drawQueued = false;
+function requestDraw() { if (!drawQueued) { drawQueued = true; requestAnimationFrame(frame); } }
+function setView(p) {
+  gl.uniform3f(p.loc.u_view, view.scale, view.tx, view.ty);
+  gl.uniform2f(p.loc.u_res, W, H);
+}
+function drawLines(L, width, color, alpha, soft) {
+  const p = lineProg;
+  gl.useProgram(p.p); setView(p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, L.buf);
+  gl.enableVertexAttribArray(p.loc.a_pos); gl.vertexAttribPointer(p.loc.a_pos, 2, gl.FLOAT, false, 20, 0);
+  gl.enableVertexAttribArray(p.loc.a_dir); gl.vertexAttribPointer(p.loc.a_dir, 2, gl.FLOAT, false, 20, 8);
+  gl.enableVertexAttribArray(p.loc.a_side); gl.vertexAttribPointer(p.loc.a_side, 1, gl.FLOAT, false, 20, 16);
+  gl.uniform1f(p.loc.u_width, width * DPR);
+  gl.uniform3fv(p.loc.u_color, color); gl.uniform1f(p.loc.u_alpha, alpha); gl.uniform1f(p.loc.u_soft, soft);
+  gl.drawArrays(gl.TRIANGLES, 0, L.count);
+  [p.loc.a_pos, p.loc.a_dir, p.loc.a_side].forEach(l => gl.disableVertexAttribArray(l));
+}
+// map styling: [layer, width px, rgb, alpha, soft glow, alpha added per zoom level]
+const MAP_STYLE = { fill: [0.905, 0.893, 0.800], grainK: -1.0, lines: [
+  ["rivers", 1.7, [0.36, 0.60, 0.78], 0.85, 0, 0],
+  ["minor", 0.9, [0.70, 0.52, 0.34], 0.30, 0, 0.08],
+  ["major", 1.3, [0.45, 0.42, 0.38], 0.45, 0, 0.08],
+  ["outline", 14, [0.35, 0.26, 0.12], 0.10, 1, 0],
+  ["outline", 2.2, [0.50, 0.36, 0.16], 0.95, 0, 0]] };
+function draw() {
+  gl.viewport(0, 0, W, H);
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.BLEND);
+  const M = MAP_STYLE;
+  // park fill
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  gl.useProgram(fillProg.p); setView(fillProg);
+  gl.uniform3fv(fillProg.loc.u_fill, M.fill); gl.uniform1f(fillProg.loc.u_grainK, M.grainK);
+  gl.bindBuffer(gl.ARRAY_BUFFER, fill.buf);
+  gl.enableVertexAttribArray(fillProg.loc.a_pos); gl.vertexAttribPointer(fillProg.loc.a_pos, 2, gl.FLOAT, false, 0, 0);
+  gl.drawArrays(gl.TRIANGLES, 0, fill.count);
+  gl.disableVertexAttribArray(fillProg.loc.a_pos);
+  // rivers, roads, outline
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  const zoom = Math.log2(view.scale / view.fit), zp = Math.max(0, zoom);
+  for (const [layer, width, color, alpha, soft, grow] of M.lines)
+    drawLines(lines[layer], width, color, alpha + grow * zp, soft);
+  // tings
+  const p = ptProg;
+  gl.useProgram(p.p); setView(p);
+  const attr = (name, buf, n) => { gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.enableVertexAttribArray(p.loc[name]); gl.vertexAttribPointer(p.loc[name], n, gl.FLOAT, false, 0, 0); };
+  attr("a_pos", ptBuf.pos, 2); attr("a_t", ptBuf.t, 1); attr("a_g", ptBuf.g, 1); attr("a_vis", ptBuf.vis, 1);
+  attr("a_icon", ptBuf.icon, 1);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ATLAS.tex);
+  gl.uniform1i(p.loc.u_atlas, 0); gl.uniform2f(p.loc.u_grid, ATLAS.cols, ATLAS.rows);
+  const replay = state.mode === "replay";
+  gl.uniform1f(p.loc.u_now, state.now);
+  gl.uniform1f(p.loc.u_ripple, state.speed * 0.9);          // ripple lasts ~0.9 s real time
+  gl.uniform1f(p.loc.u_fade, state.speed * 5);
+  gl.uniform1f(p.loc.u_replay, replay ? 1 : 0);
+  gl.uniform1f(p.loc.u_dpr, DPR);
+  gl.uniform1f(p.loc.u_zoom, zoom);
+  gl.uniform1f(p.loc.u_day, 1);
+  gl.uniform3fv(p.loc.u_colors, new Float32Array(GROUP_COLORS.flatMap(hexRgb)));
+  gl.drawArrays(gl.POINTS, 0, ptBuf.count);
+  ["a_pos", "a_t", "a_g", "a_vis", "a_icon"].forEach(n => gl.disableVertexAttribArray(p.loc[n]));
+}
+
+// ============================================================================
+// Replay + feed
+// ============================================================================
+let lastTs = 0;
+function frame(ts) {
+  drawQueued = false;
+  if (state.playing) {
+    const dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.1) : 0;
+    state.now += dt * state.speed;
+    // jump over long empty stretches (e.g. periods not collected) instead of crawling
+    const nxt = nextTingAfter(state.now);
+    if (nxt > state.now + state.speed * 1.5 && nxt < Infinity) state.now = nxt - state.speed * 0.25;
+    if (state.now >= T1) { state.now = T1; setPlaying(false); }
+    drawTimeline(); updateDate();
+    requestDraw();
+  }
+  lastTs = state.playing ? ts : 0;
+  if (gl) draw();
+}
+function nextTingAfter(t) {
+  let lo = 0, hi = N;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (T[byTime[m]] <= t) lo = m + 1; else hi = m; }
+  for (let k = lo; k < N; k++) if (vis[byTime[k]]) return T[byTime[k]];
+  return Infinity;
+}
+const heroEl = document.getElementById("hero");
+document.getElementById("fs").onclick = () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (heroEl.requestFullscreen) heroEl.requestFullscreen();
+};
+const playBtn = document.getElementById("play");
+function setPlaying(on) {
+  state.playing = on;
+  playBtn.textContent = on ? "❚❚ Pause" : "▶ Play";
+  if (on) {
+    if (state.mode !== "replay" || state.now >= T1) { state.mode = "replay"; state.now = T0; }
+    lastTs = 0; requestDraw();
+  }
+  stopBtn.hidden = state.mode !== "replay";
+}
+playBtn.onclick = () => setPlaying(!state.playing);
+document.getElementById("speed").onchange = e => { state.speed = +e.target.value; requestDraw(); };
+const stopBtn = document.getElementById("stop");
+stopBtn.onclick = () => {                       // end the replay: every sighting is shown again
+  state.mode = "all"; state.now = T1; setPlaying(false);
+  drawTimeline(); updateDate(); requestDraw();
+};
+const tlPanel = document.querySelector(".timeline"), tlToggle = document.getElementById("tlToggle");
+tlToggle.onclick = () => {                      // fold the timeline away to give the map more room
+  const collapsed = tlPanel.classList.toggle("collapsed");
+  heroEl.classList.toggle("tl-collapsed", collapsed);
+  tlToggle.innerHTML = collapsed ? "&#9652;" : "&#9662;";
+  tlToggle.title = collapsed ? "Show the timeline" : "Hide the timeline (more room for the map)";
+  const keep = { scale: view.scale, tx: view.tx, ty: view.ty }, atFit = Math.abs(view.scale - view.fit) < 1e-6;
+  fitView();                                     // recompute the park fit for the new free space...
+  if (!atFit) Object.assign(view, keep);         // ...but keep the user's own zoom if they had one
+  placeLabels(); drawTimeline(); requestDraw();
+};
+const dateEl = document.getElementById("tlDate");
+function updateDate() {
+  dateEl.textContent = state.mode === "replay" ? fmtDate(state.now) : `${fmtDate(T0)} – ${fmtDate(T1)}`;
+}
+
+// ============================================================================
+// Timeline strip (canvas 2D)
+// ============================================================================
+const tl = document.getElementById("tl"), tctx = tl.getContext("2d");
+let weekly = [];
+function computeWeekly() {
+  const nb = Math.ceil((T1 - T0) / 7) + 1;
+  weekly = new Array(nb).fill(0);
+  for (let i = 0; i < N; i++) if (vis[i]) weekly[Math.floor((T[i] - T0) / 7)]++;
+}
+function drawTimeline() {
+  const r = tl.getBoundingClientRect(), dpr = DPR;
+  if (tl.width !== Math.round(r.width * dpr)) { tl.width = Math.round(r.width * dpr); tl.height = Math.round(r.height * dpr); }
+  const w = tl.width, h = tl.height, axis = 14 * dpr;
+  tctx.clearRect(0, 0, w, h);
+  const max = Math.max(1, ...weekly);
+  const bw = w / weekly.length;
+  const nowX = state.mode === "replay" ? (state.now - T0) / (T1 - T0) * w : w;
+  for (let b = 0; b < weekly.length; b++) {
+    if (!weekly[b]) continue;
+    const x = b * bw, bh = weekly[b] / max * (h - axis - 4 * dpr);
+    tctx.fillStyle = x <= nowX ? css.getPropertyValue("--text-secondary") : css.getPropertyValue("--baseline");
+    tctx.fillRect(x, h - axis - bh, Math.max(bw - 0.5 * dpr, 0.8 * dpr), bh);
+  }
+  tctx.fillStyle = css.getPropertyValue("--baseline"); tctx.fillRect(0, h - axis, w, 1 * dpr);
+  // periods actually collected so far: brighter 3px band on the baseline
+  tctx.fillStyle = css.getPropertyValue("--text-muted");
+  for (const [a, b] of D.coverage) {
+    const xa = Math.max(0, (a - T0) / (T1 - T0) * w), xb = Math.min(w, (b - T0) / (T1 - T0) * w);
+    if (xb > xa) tctx.fillRect(xa, h - axis - 1 * dpr, xb - xa, 3 * dpr);
+  }
+  tctx.fillStyle = css.getPropertyValue("--text-muted"); tctx.font = `${11 * dpr}px system-ui, sans-serif`;
+  tctx.textBaseline = "top";
+  const y0 = new Date(EPOCH + T0 * 86400000).getUTCFullYear(), y1 = new Date(EPOCH + T1 * 86400000).getUTCFullYear();
+  const step = Math.max(1, Math.ceil((y1 - y0 + 1) / Math.max(1, Math.floor(w / (48 * dpr)))));
+  for (let y = y0 + 1; y <= y1; y += step) {
+    const d = (Date.UTC(y, 0, 1) - EPOCH) / 86400000, x = (d - T0) / (T1 - T0) * w;
+    tctx.fillRect(x, h - axis, 1 * dpr, 4 * dpr);
+    tctx.fillText(String(y), x + 3 * dpr, h - axis + 2 * dpr);
+  }
+  if (state.mode === "replay") {
+    tctx.fillStyle = css.getPropertyValue("--accent"); tctx.fillRect(nowX - dpr, 0, 2 * dpr, h - axis);
+  }
+}
+function scrubTo(ev) {
+  const r = tl.getBoundingClientRect();
+  const f = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+  state.mode = "replay"; state.now = T0 + f * (T1 - T0); stopBtn.hidden = false;
+  drawTimeline(); updateDate(); requestDraw();
+}
+let scrubbing = false;
+tl.addEventListener("pointerdown", e => { scrubbing = true; tl.setPointerCapture(e.pointerId); scrubTo(e); });
+tl.addEventListener("pointermove", e => {
+  if (scrubbing) { scrubTo(e); return; }
+  const r = tl.getBoundingClientRect(), f = (e.clientX - r.left) / r.width;
+  const b = Math.floor(f * weekly.length);
+  if (b >= 0 && b < weekly.length)
+    showTip(e, `<div class="tt-title">Week of ${fmtDate(T0 + b * 7)}</div><div class="tt-row">${fmtN(weekly[b])} sightings</div>`);
+});
+tl.addEventListener("pointerup", () => { scrubbing = false; });
+tl.addEventListener("pointerleave", hideTip);
+
+// ============================================================================
+// Map interaction: zoom, pan, hover
+// ============================================================================
+let drag = null;
+canvas.addEventListener("wheel", e => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  zoomAt((e.clientX - r.left) * DPR, (e.clientY - r.top) * DPR, Math.exp(-e.deltaY * 0.0015));
+  placeLabels(); requestDraw();
+}, { passive: false });
+canvas.addEventListener("pointerdown", e => {
+  if (e.pointerType === "touch") return;              // touch is handled below
+  drag = { x: e.clientX, y: e.clientY, moved: false }; canvas.setPointerCapture(e.pointerId); canvas.classList.add("dragging");
+});
+canvas.addEventListener("pointermove", e => {
+  if (e.pointerType === "touch") return;
+  if (drag) {
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 2) drag.moved = true;
+    view.tx += dx * DPR; view.ty += dy * DPR; drag.x = e.clientX; drag.y = e.clientY;
+    placeLabels(); requestDraw(); hideTip(); return;
+  }
+  hoverAt(e);
+});
+canvas.addEventListener("pointerup", () => { drag = null; canvas.classList.remove("dragging"); });
+canvas.addEventListener("pointerleave", () => { hideTip(); });
+canvas.addEventListener("dblclick", () => { fitView(); placeLabels(); requestDraw(); });
+document.getElementById("reset").onclick = () => { fitView(); placeLabels(); requestDraw(); };
+
+// Touch: one finger scrolls the page (touch-action: pan-y on phones) or taps a ting;
+// two fingers pinch-zoom and pan the map.
+let touch = null;
+const mHint = document.getElementById("mHint");
+function pinchState(ts) {
+  const r = canvas.getBoundingClientRect();
+  const a = ts[0], b = ts[1];
+  return { mx: ((a.clientX + b.clientX) / 2 - r.left) * DPR, my: ((a.clientY + b.clientY) / 2 - r.top) * DPR,
+           d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) };
+}
+canvas.addEventListener("touchstart", e => {
+  hideTip();
+  if (e.touches.length >= 2) {
+    e.preventDefault();
+    touch = { mode: "pinch", p0: pinchState(e.touches), s0: view.scale, tx0: view.tx, ty0: view.ty };
+    mHint.classList.add("gone");
+  } else {
+    const t = e.touches[0];
+    touch = { mode: "tap", x: t.clientX, y: t.clientY, t: performance.now(), moved: false };
+  }
+}, { passive: false });
+canvas.addEventListener("touchmove", e => {
+  if (e.touches.length >= 2) {
+    e.preventDefault();
+    if (!touch || touch.mode !== "pinch") {
+      touch = { mode: "pinch", p0: pinchState(e.touches), s0: view.scale, tx0: view.tx, ty0: view.ty };
+      return;
+    }
+    const p = pinchState(e.touches), p0 = touch.p0;
+    const s = Math.max(view.fit * 0.8, Math.min(view.fit * 40, touch.s0 * p.d / Math.max(p0.d, 1)));
+    // keep the map point under the starting midpoint under the fingers' current midpoint
+    view.tx = p.mx - (p0.mx - touch.tx0) / touch.s0 * s;
+    view.ty = p.my - (p0.my - touch.ty0) / touch.s0 * s;
+    view.scale = s;
+    placeLabels(); requestDraw();
+  } else if (touch && touch.mode === "tap") {
+    const t = e.touches[0];
+    if (Math.hypot(t.clientX - touch.x, t.clientY - touch.y) > 8) touch.moved = true;
+  }
+}, { passive: false });
+canvas.addEventListener("touchend", e => {
+  if (touch && touch.mode === "tap" && !touch.moved && performance.now() - touch.t < 450) {
+    e.preventDefault();                                // no synthetic mouse events / double-tap zoom
+    hoverAt({ clientX: touch.x, clientY: touch.y }, 24);
+  }
+  if (e.touches.length === 0) touch = null;
+  else if (touch && touch.mode === "pinch" && e.touches.length === 1) touch = { mode: "done" };
+}, { passive: false });
+window.addEventListener("scroll", hideTip, { passive: true });
+if (!document.fullscreenEnabled) document.getElementById("fs").style.display = "none";
+document.addEventListener("fullscreenchange", () => setTimeout(() => { fitView(); placeLabels(); requestDraw(); }, 60));
+
+function hoverAt(e, radius) {
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  if (radius === undefined) {                       // icons grow as you zoom in: so does the hover target
+    const iconPx = Math.min(40, Math.max(10, 10 + 7 * Math.log2(view.scale / view.fit)));
+    radius = Math.max(12, iconPx / 2 + 3);
+  }
+  let best = -1, bd = radius * radius;
+  const pos = ptBuf.posArr, replay = state.mode === "replay";
+  for (let k = 0; k < placed.length; k++) {
+    const i = placed[k];
+    if (!vis[i] || (replay && T[i] > state.now)) continue;
+    const x = (pos[2 * k] * view.scale + view.tx) / DPR - mx, y = (-pos[2 * k + 1] * view.scale + view.ty) / DPR - my;
+    const d = x * x + y * y;
+    if (d < bd) { bd = d; best = i; }
+  }
+  if (best < 0) { hideTip(); return; }
+  const i = best, near = D.dicts.near[C.nr[i]] || "";
+  showTip(e, `<div class="tt-title">${iconHTML(C.kind[i], 46)}<span>${esc(C.title[i])}</span></div>
+    <div class="tt-row">${esc(C.loc[i])}${near ? " · near " + esc(near) : ""}</div>
+    <div class="tt-muted">${fmtDate(C.day[i])}${C.time[i] ? " · seen " + esc(C.time[i]) : ""}${C.rt[i] >= 0 ? " · rated " + C.rt[i] + "/5" : ""}</div>`);
+}
+
+// ============================================================================
+// Tooltip
+// ============================================================================
+const tt = document.getElementById("tt");
+function showTip(e, html) {
+  tt.innerHTML = html; tt.style.display = "block";
+  const w = tt.offsetWidth, h = tt.offsetHeight;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+  x = Math.max(8, Math.min(x, innerWidth - w - 8));
+  y = Math.max(8, Math.min(y, innerHeight - h - 8));
+  tt.style.left = x + "px"; tt.style.top = y + "px";
+}
+function hideTip() { tt.style.display = "none"; }
+
+// ============================================================================
+// Legend / filters
+// ============================================================================
+const legendEl = document.getElementById("legend");
+function renderLegend() {
+  legendEl.innerHTML = anyFilter()
+    ? `<button class="chip species-pill" id="clearSp" title="Show all sightings again">&#10005; Clear all filters</button>` : "";
+  const cs = document.getElementById("clearSp");
+  if (cs) cs.onclick = () => {
+    Object.assign(state, { species: -1, kind: -1, region: "all", when: 0, season: "all" });
+    fitView(); placeLabels(); refresh();
+  };
+  syncPickers();
+}
+
+// ---- species pickers: one menu each for mammals, birds, reptiles & more ----
+const pickersEl = document.getElementById("pickers");
+const kindTotals = new Array(KINDS.length).fill(0);
+for (let i = 0; i < N; i++) kindTotals[C.kind[i]]++;
+const MENUS = [["m", "All mammals"], ["b", "All birds"], ["r", "Reptiles & more"]];
+const animalMenus = MENUS.map(([menu, label]) => {
+  const opts = KINDS.map((k, i) => [k[0], k[1], i]).filter(([, m, i]) => m === menu && kindTotals[i] > 0)
+    .sort((a, b) => (a[2] === KIND_OTHER) - (b[2] === KIND_OTHER) || kindTotals[b[2]] - kindTotals[a[2]]);
+  return `<select class="picker" data-menu="${menu}" aria-label="${label}"><option value="-1">${label} &#9662;</option>` +
+    opts.map(([name, , i]) => `<option value="${i}">${esc(name)} (${fmtN(kindTotals[i])})</option>`).join("") + "</select>";
+}).join("");
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const whereMenu = `<select class="picker" id="fWhere" aria-label="Where"><option value="all">Whole park &#9662;</option>` +
+  Object.entries(REGIONS).map(([k, r]) => `<option value="${k}">${r.label}</option>`).join("") +
+  `<optgroup label="Within ${CAMP_RADIUS_KM} km of a camp">` +
+  D.camps.map(([name], i) => [name, i]).sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([name, i]) => `<option value="camp:${i}">Near ${esc(name)}</option>`).join("") + `</optgroup></select>`;
+const whenMenu = `<select class="picker" id="fWhen" aria-label="When"><option value="0">All dates &#9662;</option>
+  <option value="12">Last 12 months</option><option value="6">Last 6 months</option>
+  <option value="3">Last 3 months</option><option value="1">Last month</option></select>`;
+const seasonMenu = `<select class="picker" id="fSeason" aria-label="Time of year"><option value="all">All year &#9662;</option>
+  <option value="wet">Wet season, summer (Nov&#8211;Mar)</option><option value="dry">Dry season, winter (May&#8211;Sep)</option>
+  <optgroup label="One month">${MONTH_NAMES.map((m, i) => `<option value="m${i}">${m}</option>`).join("")}</optgroup></select>`;
+pickersEl.innerHTML = `<div class="frow"><span class="flabel">Animal</span>${animalMenus}</div>
+  <div class="frow"><span class="flabel">Where &amp; when</span>${whereMenu}${whenMenu}${seasonMenu}</div>`;
+pickersEl.querySelectorAll("select[data-menu]").forEach(sel => sel.onchange = () => {
+  state.kind = +sel.value;
+  state.species = -1;
+  if (state.kind >= 0) state.groups = state.groups.map(() => true);   // don't hide the chosen animal
+  refresh();
+});
+document.getElementById("fWhere").onchange = e => {
+  state.region = e.target.value; refresh();
+  if (state.region === "all") { fitView(); placeLabels(); requestDraw(); }
+  else if (REGIONS[state.region]) flyToBand(...REGIONS[state.region].band);
+  else { const [, lon, lat] = D.camps[+state.region.slice(5)]; flyToXY(kx(lon), ky(lat), 5); }
+};
+document.getElementById("fWhen").onchange = e => { state.when = +e.target.value; refresh(); };
+document.getElementById("fSeason").onchange = e => { state.season = e.target.value; refresh(); };
+function flyToBand(latMin, latMax) {           // fit a north-south slice of the park
+  const pts = outlineKm.filter(([, y]) => y >= ky(latMin) && y <= ky(latMax));
+  if (!pts.length) return;
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
+  const sc = Math.min(W * 0.8 / bw, H * 0.68 / bh);
+  flyToXY((Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2, sc / view.fit);
+}
+function updatePickerCounts() {
+  const cnt = new Array(KINDS.length).fill(0);
+  for (let i = 0; i < N; i++) if (passesBase(i)) cnt[C.kind[i]]++;
+  pickersEl.querySelectorAll("select[data-menu] option").forEach(o => {
+    const k = +o.value;
+    if (k < 0) return;
+    o.textContent = `${KINDS[k][0]} (${fmtN(cnt[k])})`;
+    o.style.color = cnt[k] ? "" : "var(--text-muted)";
+  });
+  pickersEl.querySelectorAll("select[data-menu]").forEach(sel => sel._render && sel._render());
+}
+function syncPickers() {
+  const set = (id, v) => { const el = document.getElementById(id); el.value = String(v); el.classList.toggle("active", String(v) !== el.options[0].value); };
+  set("fWhere", state.region); set("fWhen", state.when); set("fSeason", state.season);
+  pickersEl.querySelectorAll("select[data-menu]").forEach(sel => {
+    const mine = state.kind >= 0 && KINDS[state.kind][1] === sel.dataset.menu;
+    sel.value = mine ? String(state.kind) : "-1";
+    sel.classList.toggle("active", mine);
+    if (sel._render) sel._render();
+  });
+}
+
+// Animal menus with a round portrait next to each animal (a browser's own <select> can't show
+// pictures). The real <select> stays underneath and still drives all the filtering.
+function pictureMenu(sel) {
+  const wrap = document.createElement("div"); wrap.className = "pk";
+  sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel);
+  sel.classList.add("pk-native"); sel.tabIndex = -1; sel.setAttribute("aria-hidden", "true");
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "picker pk-btn";
+  btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-label", sel.getAttribute("aria-label"));
+  const list = document.createElement("div");
+  list.className = "pk-list"; list.setAttribute("role", "listbox"); list.hidden = true;
+  wrap.append(btn, list);
+  const face = k => photoOf(k) ? `<img class="ph" src="${photoOf(k)}" width="26" height="26" alt="">`
+                               : `<span class="pk-dot">${esc(KINDS[k][0][0])}</span>`;
+  const split = t => { const m = t.match(/^(.*?)\s*\(([\d,]+)\)$/); return m ? [m[1], m[2]] : [t.replace(/\s*▾$/, ""), ""]; };
+  sel._render = () => {
+    const k = +sel.value, [label] = split(sel.selectedOptions[0].textContent);
+    btn.innerHTML = (k >= 0 ? face(k) : "") + `<span class="pk-text">${esc(label)}</span><span class="pk-caret">&#9662;</span>`;
+    btn.classList.toggle("active", k >= 0);
+  };
+  const close = () => { list.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  const open = () => {
+    list.innerHTML = [...sel.options].map(o => {
+      const k = +o.value, [label, n] = split(o.textContent);
+      return `<button type="button" role="option" data-v="${o.value}" aria-selected="${o.value === sel.value}"
+        class="pk-opt${o.value === sel.value ? " sel" : ""}${o.style.color ? " dim" : ""}">${k >= 0 ? face(k) : `<span class="pk-dot">&#10005;</span>`}
+        <span>${esc(label)}</span>${n ? `<span class="n">${n}</span>` : ""}</button>`;
+    }).join("");
+    list.hidden = false; btn.setAttribute("aria-expanded", "true");
+    (list.querySelector(".sel") || list.firstElementChild).focus();
+  };
+  btn.onclick = () => (list.hidden ? open() : close());
+  btn.onkeydown = e => { if (e.key === "ArrowDown" && list.hidden) { e.preventDefault(); open(); } };
+  list.onclick = e => {
+    const b = e.target.closest(".pk-opt"); if (!b) return;
+    sel.value = b.dataset.v; close(); btn.focus();
+    sel.dispatchEvent(new Event("change"));
+  };
+  list.onkeydown = e => {
+    const items = [...list.querySelectorAll(".pk-opt")], i = items.indexOf(document.activeElement);
+    if (e.key === "Escape") { close(); btn.focus(); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); (items[i + 1] || items[i]).focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); (items[i - 1] || items[i]).focus(); }
+    else if (e.key.length === 1 && /[a-z]/i.test(e.key)) {          // jump to the next animal starting with that letter
+      const from = i + 1, hit = [...items.slice(from), ...items.slice(0, from)]
+        .find(b => b.textContent.trim().toLowerCase().startsWith(e.key.toLowerCase()));
+      if (hit) hit.focus();
+    }
+  };
+  document.addEventListener("click", e => { if (!wrap.contains(e.target)) close(); });
+  sel._render();
+}
+pickersEl.querySelectorAll("select[data-menu]").forEach(pictureMenu);
+
+// ============================================================================
+// SVG charts
+// ============================================================================
+const SVGNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+// bar with 4px rounded data-end, square at the baseline
+function hbarPath(x, y, w, h) {
+  const r = Math.min(4, w / 2, h / 2);
+  return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`;
+}
+function vbarPath(x, y, w, h) {     // y = top, grows up from baseline y+h
+  const r = Math.min(4, w / 2, h / 2);
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(Math.max(v, 1)))); return Math.ceil(v / p / (v / p > 5 ? 2 : 1)) * p * (v / p > 5 ? 2 : 1); }
+
+// Which charts have their table open, so a redraw (resize, new filter) doesn't snap it shut.
+const OPEN_TABLES = new Set();
+function addTable(body, card, items, head) {
+  body.insertAdjacentHTML("beforeend",
+    `<details${OPEN_TABLES.has(card.id) ? " open" : ""}><summary>&#128203; Show as a table</summary>` +
+    `<table><tr><th>${head}</th><th class="n">Sightings</th></tr>` +
+    items.map(d => `<tr><td>${esc(d.label)}</td><td class="n">${fmtN(d.value)}</td></tr>`).join("") + "</table></details>");
+  const det = body.querySelector("details");
+  det.addEventListener("toggle", () => { if (det.open) OPEN_TABLES.add(card.id); else OPEN_TABLES.delete(card.id); });
+}
+
+function hbarChart(card, items, { head, onClick, activeKey, color }) {
+  const body = card.querySelector(".body"); body.innerHTML = "";
+  const width = body.clientWidth || 400;
+  const labelW = Math.min(170, width * 0.38), valueW = 56, rowH = 26, barH = 16;
+  const h = items.length * rowH + 4;
+  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img" }, body);
+  const max = Math.max(1, ...items.map(d => d.value));
+  const plotW = width - labelW - valueW;
+  el("line", { x1: labelW, x2: labelW, y1: 0, y2: h, stroke: css.getPropertyValue("--baseline"), "stroke-width": 1 }, svg);
+  items.forEach((d, k) => {
+    const y = k * rowH + 4, w = Math.max(1, d.value / max * plotW);
+    const t = el("text", { x: labelW - 8, y: y + barH / 2 + 4, "text-anchor": "end", class: "cat" + (d.key === activeKey ? " active" : "") }, svg);
+    const maxL = d.photo ? 19 : 24;                  // leave room for the portrait
+    t.textContent = d.label.length > maxL ? d.label.slice(0, maxL - 1) + "…" : d.label;
+    if (d.photo) el("image", { href: d.photo, x: 0, y: y - 3, width: 22, height: 22,
+                               style: "clip-path: circle(50%)", preserveAspectRatio: "xMidYMid slice" }, svg);
+    const hit = el("rect", { x: 0, y: y - 4, width, height: rowH, fill: "transparent", class: onClick ? "bar-hit" : "" }, svg);
+    el("path", { d: hbarPath(labelW, y, w, barH), fill: d.color || color, class: "bar" + (d.key === activeKey ? " active" : "") }, svg);
+    const v = el("text", { x: labelW + w + 6, y: y + barH / 2 + 4, class: "val" }, svg);
+    v.textContent = fmtN(d.value);
+    const tip = e => showTip(e, `<div class="tt-title">${d.color ? `<span class="sw" style="background:${d.color}"></span>` : ""}${esc(d.label)}</div><div class="tt-row">${fmtN(d.value)} sightings${d.extra ? " · " + d.extra : ""}</div>`);
+    hit.addEventListener("pointermove", tip); hit.addEventListener("pointerdown", tip);
+    hit.addEventListener("pointerleave", hideTip);
+    if (onClick) hit.addEventListener("click", () => onClick(d));
+  });
+  addTable(body, card, items, head);
+}
+
+function colChart(card, items, { head, color, labelEvery = 1, peakLabel = true }) {
+  const body = card.querySelector(".body"); body.innerHTML = "";
+  const width = body.clientWidth || 400, h = 170, left = 44, bottom = 22, top = 16;
+  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img" }, body);
+  const max = niceMax(Math.max(1, ...items.map(d => d.value)));
+  const plotW = width - left - 4, plotH = h - bottom - top;
+  for (let k = 0; k <= 4; k++) {                           // hairline grid + ticks
+    const v = max * k / 4, y = top + plotH - v / max * plotH;
+    el("line", { x1: left, x2: width - 4, y1: y, y2: y, stroke: css.getPropertyValue(k ? "--grid" : "--baseline"), "stroke-width": 1 }, svg);
+    const t = el("text", { x: left - 6, y: y + 4, "text-anchor": "end", class: "lbl" }, svg); t.textContent = fmtN(Math.round(v));
+  }
+  const slot = plotW / items.length, bw = Math.min(24, slot - 2);
+  let peak = 0; items.forEach((d, k) => { if (d.value > items[peak].value) peak = k; });
+  items.forEach((d, k) => {
+    const x = left + k * slot + (slot - bw) / 2, bh = d.value / max * plotH, y = top + plotH - bh;
+    if (bh > 0) el("path", { d: vbarPath(x, y, bw, bh), fill: color }, svg);
+    if (k % labelEvery === 0) { const t = el("text", { x: x + bw / 2, y: h - 6, "text-anchor": "middle", class: "lbl" }, svg); t.textContent = d.short || d.label; }
+    if (peakLabel && k === peak && d.value) { const t = el("text", { x: x + bw / 2, y: y - 4, "text-anchor": "middle", class: "val" }, svg); t.textContent = fmtN(d.value); }
+    const hit = el("rect", { x: left + k * slot, y: top, width: slot, height: plotH, fill: "transparent" }, svg);
+    const tip = e => showTip(e, `<div class="tt-title">${esc(d.label)}</div><div class="tt-row">${fmtN(d.value)} sightings</div>`);
+    hit.addEventListener("pointermove", tip); hit.addEventListener("pointerdown", tip);
+    hit.addEventListener("pointerleave", hideTip);
+  });
+  addTable(body, card, items, head);
+}
+
+let NEUTRAL = css.getPropertyValue("--neutral-bar").trim();
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function describeFilters() {
+  const parts = [];
+  if (state.kind >= 0) parts.push(`${iconText(state.kind)} ${esc(KINDS[state.kind][0])} only`);
+  if (state.region !== "all") parts.push(REGIONS[state.region] ? REGIONS[state.region].label.replace(/ \(.*\)$/, "") + " Kruger"
+    : `within ${CAMP_RADIUS_KM} km of ${esc(D.camps[+state.region.slice(5)][0])}`);
+  if (state.when > 0) parts.push(state.when === 1 ? "the last month" : `the last ${state.when} months`);
+  if (state.season === "wet") parts.push("wet season (Nov–Mar)");
+  else if (state.season === "dry") parts.push("dry season (May–Sep)");
+  else if (state.season !== "all") parts.push(`${MONTH_NAMES[+state.season.slice(1)]} only`);
+  return parts;
+}
+function renderBanner() {
+  const parts = describeFilters(), el = document.getElementById("filterBanner");
+  el.innerHTML = parts.length
+    ? `<span>The charts below show <b>${parts.join(" · ")}</b>.</span><button class="chip species-pill" id="bannerClear">&#10005; Show everything</button>`
+    : `<span>The charts below show <b>all sightings</b>. Use the menus on the map (animal, where &amp; when) to narrow them down.</span>`;
+  const bc = document.getElementById("bannerClear");
+  if (bc) bc.onclick = () => document.getElementById("clearSp").click();
+}
+function renderCharts() {
+  NEUTRAL = css.getPropertyValue("--neutral-bar").trim();
+  const nSp = D.dicts.species.length;
+  const sp = new Array(nSp).fill(0), hr = new Array(24).fill(0), rt = new Array(6).fill(0), mo = new Array(12).fill(0);
+  const nr = new Map(), kc = new Array(KINDS.length).fill(0);
+  for (let i = 0; i < N; i++) {
+    if (!passesBase(i)) continue;
+    sp[C.sp[i]]++;
+    kc[C.kind[i]]++;                                      // animal chart ignores the animal filter
+    if (!vis[i]) continue;
+    if (C.hr[i] >= 0) hr[C.hr[i]]++;
+    if (C.rt[i] >= 0) rt[C.rt[i]]++;
+    mo[new Date(EPOCH + C.day[i] * 86400000).getUTCMonth()]++;
+    if (C.nr[i] >= 0) nr.set(C.nr[i], (nr.get(C.nr[i]) || 0) + 1);
+  }
+  const spItems = kc.map((v, k) => ({ key: k, label: `${photoOf(k) ? "" : iconText(k) + " "}${KINDS[k][0]}`,
+                                          value: v, photo: photoOf(k) }))
+    .filter(d => d.value && d.key !== KIND_OTHER).sort((a, b) => b.value - a.value).slice(0, 20);
+  hbarChart(document.getElementById("c-species"), spItems, {
+    head: "Animal", activeKey: state.kind, color: NEUTRAL,
+    onClick: d => { state.kind = state.kind === d.key ? -1 : d.key; state.species = -1;
+                    state.groups = state.groups.map(() => true); refresh();
+                    heroEl.scrollIntoView({ behavior: "smooth", block: "start" }); },
+  });
+  colChart(document.getElementById("c-hour"), hr.map((v, h) => ({ label: `${String(h).padStart(2, "0")}:00–${String(h).padStart(2, "0")}:59`, short: String(h), value: v })),
+    { head: "Hour", color: NEUTRAL, labelEvery: 3 });
+  colChart(document.getElementById("c-rating"), rt.map((v, r) => ({ label: `${r}/5`, short: `${r}/5`, value: v })),
+    { head: "Rating", color: NEUTRAL });
+  colChart(document.getElementById("c-month"), mo.map((v, m) => ({ label: MONTHS[m], short: MONTHS[m][0], value: v })),
+    { head: "Month", color: NEUTRAL });
+  const top = (m, n) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
+  const campXY = Object.fromEntries(D.camps.map(([n, lon, lat]) => [n.toLowerCase(), [lon, lat]]));
+  hbarChart(document.getElementById("c-camp"), top(nr, 12).map(([k, v]) => ({ key: k, label: D.dicts.near[k], value: v })),
+    { head: "Nearest camp", color: NEUTRAL, onClick: d => {
+        // a camp with known coordinates: filter to within 15 km of it; otherwise just fly there
+        const ci = D.camps.findIndex(([n]) => d.label.toLowerCase().startsWith(n.toLowerCase()));
+        if (ci >= 0) { state.region = `camp:${ci}`; refresh(); flyToXY(kx(D.camps[ci][1]), ky(D.camps[ci][2]), 5); }
+        heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (ci < 0) flyTo(d.label, campXY);
+      } });
+}
+function flyToXY(x, y, zoom = 6) {
+  const target = view.fit * zoom, from = { s: view.scale, tx: view.tx, ty: view.ty };
+  const to = { s: target, tx: W / 2 - x * target, ty: H / 2 + y * target };
+  const t0 = performance.now();
+  (function step(now) {
+    const f = Math.min(1, (now - t0) / 700), e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+    view.scale = from.s + (to.s - from.s) * e; view.tx = from.tx + (to.tx - from.tx) * e; view.ty = from.ty + (to.ty - from.ty) * e;
+    placeLabels(); requestDraw();
+    if (f < 1) requestAnimationFrame(step);
+  })(t0);
+}
+const ROAD_OF = loc => { const m = /^\s*([HS])\s?(\d{1,3})(?:-(\d))?\b/i.exec(loc || "");
+                         return m ? `${m[1].toUpperCase()}${+m[2]}${m[3] ? "-" + m[3] : ""}` : null; };
+const fmtHour = h => `${h % 12 || 12}${h < 12 ? "am" : "pm"}`;
+const bestEl = document.getElementById("best");
+function renderBest() {
+  if (state.kind < 0) {
+    bestEl.innerHTML = `<div class="best-prompt">&#128269; <b>Looking for a particular animal?</b> Pick it from the menus
+      (mammals, birds, reptiles) to see the best places and times to find it.</div>`;
+    return;
+  }
+  const camps = new Map(), roads = new Map(), hr = new Array(24).fill(0), mo = new Array(12).fill(0);
+  let n = 0, noCamp = 0, noRoad = 0;
+  for (let i = 0; i < N; i++) {
+    if (!vis[i]) continue;
+    n++;
+    const near = C.nr[i] >= 0 ? D.dicts.near[C.nr[i]] : null;
+    if (near) camps.set(near, (camps.get(near) || 0) + 1); else noCamp++;
+    const road = ROAD_OF(C.loc[i]);
+    if (road) roads.set(road, (roads.get(road) || 0) + 1); else noRoad++;
+    if (C.hr[i] >= 0) hr[C.hr[i]]++;
+    mo[new Date(EPOCH + C.day[i] * 86400000).getUTCMonth()]++;
+  }
+  const top = m => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const rows = (map, attr, otherLabel, none, noneLabel) => {
+    const list = top(map), max = Math.max(1, ...list.map(d => d[1]));
+    const shown = list.reduce((a, d) => a + d[1], 0), other = n - shown - none;
+    const extra = (label, v) => v > 0 ? `<div class="best-row best-extra"><span>${label}</span><span class="n">${fmtN(v)}</span></div>` : "";
+    return list.map(([k, v]) => `<button class="best-row" data-${attr}="${esc(k)}" style="--w:${Math.round(v / max * 100)}%">
+      <span>${esc(k)}</span><span class="n">${fmtN(v)}</span></button>`).join("")
+      + extra(otherLabel, other) + extra(noneLabel, none);
+  };
+  let bh = -1, bv = 0;                                     // busiest two-hour window
+  for (let h = 0; h < 23; h++) if (hr[h] + hr[h + 1] > bv) { bv = hr[h] + hr[h + 1]; bh = h; }
+  const months = mo.map((v, m) => [m, v]).filter(d => d[1]).sort((a, b) => b[1] - a[1]).slice(0, 3).map(d => MONTHS[d[0]]);
+  bestEl.innerHTML = `<div class="best-title">${iconHTML(state.kind, 58)}<span>Best places to see ${esc(KINDS[state.kind][0].replace(/ \(.*\)$/, ""))}</span></div>
+    <div class="best-note" style="margin: -4px 0 8px">Each column adds up to all ${fmtN(n)} sightings shown.</div>
+    <div class="best-cols">
+      <div><div class="best-h">Near camp</div>${rows(camps, "camp", "Other camps", noCamp, "No camp given")}</div>
+      <div><div class="best-h">On road</div>${rows(roads, "road", "Other roads", noRoad, "No road given")}</div>
+    </div>
+    <div class="best-when">${bh >= 0 ? `Best time: <b>${fmtHour(bh)}–${fmtHour(bh + 2)}</b>` : ""}${bh >= 0 && months.length ? " · " : ""}${months.length ? `Most seen in: <b>${months.join(", ")}</b>` : ""}</div>
+    ${n < 10 ? `<div class="best-note">Only ${n} sighting${n === 1 ? "" : "s"} so far, so treat this as a hint.</div>` : ""}
+    <div class="best-note">Based on sightings shared by visitors: busy roads get more reports, and nothing here is guaranteed.</div>`;
+  bestEl.querySelectorAll("[data-camp]").forEach(b => b.onclick = () => flyTo(b.dataset.camp, CAMP_XY));
+  bestEl.querySelectorAll("[data-road]").forEach(b => b.onclick = () => {
+    let sx = 0, sy = 0, c = 0;                            // centre of this animal's sightings on that road
+    for (const i of placed) if (vis[i] && ROAD_OF(C.loc[i]) === b.dataset.road) { sx += kx(C.lon[i]); sy += ky(C.lat[i]); c++; }
+    if (c) flyToXY(sx / c, sy / c, 5);
+  });
+}
+const CAMP_XY = Object.fromEntries(D.camps.map(([n, lon, lat]) => [n.toLowerCase(), [lon, lat]]));
+function flyTo(name, campXY) {
+  const key = Object.keys(campXY).find(k => name.toLowerCase().startsWith(k) || k.startsWith(name.toLowerCase()));
+  // fall back to the centroid of that camp's tings
+  let x, y;
+  if (key) { x = kx(campXY[key][0]); y = ky(campXY[key][1]); }
+  else {
+    let sx = 0, sy = 0, n = 0;
+    for (const i of placed) if (D.dicts.near[C.nr[i]] === name) { sx += kx(C.lon[i]); sy += ky(C.lat[i]); n++; }
+    if (!n) return; x = sx / n; y = sy / n;
+  }
+  flyToXY(x, y, 6);
+  heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ============================================================================
+// Stats + footer
+// ============================================================================
+function renderTiles() {
+  let n = 0, onMap = 0; const sp = new Map();
+  for (let i = 0; i < N; i++) if (vis[i]) {
+    n++; if (C.lon[i] !== null) onMap++;
+    sp.set(C.kind[i], (sp.get(C.kind[i]) || 0) + 1);
+  }
+  const topSp = [...sp.entries()].sort((a, b) => b[1] - a[1])[0];
+  document.getElementById("tiles").innerHTML = `
+    <div class="tile big"><div class="label">${state.kind >= 0 ? esc(KINDS[state.kind][0]) + " sightings" : "Sightings shown"}</div><div class="value">${fmtN(n)}</div></div>
+    ${state.kind >= 0 ? "" : `<div class="tile"><div class="label">Most seen animal</div><div class="value">${topSp ? `${iconHTML(topSp[0], 22)}${esc(KINDS[topSp[0]][0].replace(/ \(.*\)$/, ""))}` : "–"}</div>
+      ${topSp ? `<div class="sub">${fmtN(topSp[1])} of the ${fmtN(n)} sightings</div>` : ""}</div>`}
+    <div class="tile" title="Share of these sightings with a location we could put on the map"><div class="label">On the map</div><div class="value">${n ? (onMap / n * 100).toFixed(1) : "0.0"}%</div></div>`;
+  document.getElementById("subtitle").textContent =
+    `Every icon is an animal sighting shared on @LatestKruger · ${fmtDate(T0)} – ${fmtDate(T1)}`;
+}
+function renderFooter() {
+  const m = D.methods, total = N;
+  const pct = k => ((m[k] || 0) / total * 100).toFixed(0) + "%";
+  document.getElementById("footer").innerHTML = `
+    <p><b>How tings are placed.</b> Each sighting's location text is matched to OpenStreetMap roads:
+    “H4-2, 1.2km S of S28” is placed 1.2 km south of the H4-2/S28 junction and snapped onto the H4-2 (${pct("offset")});
+    “at the S25 junction” at the junction (${pct("junction")}); a road plus nearest camp at the point of that road closest
+    to the camp (${pct("road+camp")}); a camp alone within ~2 km of it (${pct("camp")}). ${fmtN(m.null || m.None || 0)} sightings had no
+    usable location and appear only in the charts. Positions are approximate.</p>
+    <p><b>Coverage.</b> ${esc(D.coverage_note)}</p>
+    <p>A <i>ting</i> is each time someone posts a Kruger sighting on the Latest Sightings App.</p>
+    <p><b>About the data.</b> These sightings are shared by members of the public ("tingers") through Latest Sightings.
+    They aren't verified, so their accuracy depends on the people who report them. The counts also reflect where people
+    drive and share, not only where the animals are.</p>
+    <p>No rhino sightings appear: Latest Sightings does not share rhino locations, to protect them from poaching.</p>
+    <p>Data: @LatestKruger tweets plus an earlier scrape · map © OpenStreetMap contributors (ODbL) · built ${esc(D.generated)}.</p>`;
+}
+
+// ============================================================================
+// Refresh + boot
+// ============================================================================
+function refresh() {
+  computeVis();
+  if (gl) uploadVis();
+  computeWeekly(); drawTimeline(); renderLegend(); renderCharts(); renderTiles(); renderBest(); renderBanner();
+  updatePickerCounts();
+  requestDraw();
+}
+if (gl) {
+  lines.outline = lineBuffer(D.outline);
+  lines.major = lineBuffer(D.roads.major);
+  lines.minor = lineBuffer(D.roads.minor);
+  lines.rivers = lineBuffer(D.rivers);
+  buildFill();
+  computeVis();
+  buildAtlas();
+  buildPoints();
+}
+renderFooter();
+refresh(); updateDate();
+new ResizeObserver(() => { if (gl) resize(); drawTimeline(); }).observe(canvas);
+// Redraw the charts only when their WIDTH changes (window resize). Height changes, such as opening a
+// table, must not trigger a redraw.
+let rt_ = 0, chartsW = 0;
+new ResizeObserver(entries => {
+  const w = Math.round(entries[0].contentRect.width);
+  if (w === chartsW) return;
+  chartsW = w;
+  clearTimeout(rt_); rt_ = setTimeout(renderCharts, 120);
+}).observe(document.getElementById("charts"));
+</script>
+</body>
+</html>

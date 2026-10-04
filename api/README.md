@@ -1,5 +1,10 @@
 # Arcade leaderboard — cPanel setup (helloly.at)
 
+> **Not active on bkirk.eu.** The site is hosted on GitHub Pages, which can't
+> run PHP, so this folder isn't published and the arcade keeps local high
+> scores only. The steps below apply only if the site moves back to a PHP host
+> (same origin). Serving the API from another domain would also need CORS.
+
 The leaderboard API is a single PHP file that runs on the same host as the
 site, so there is no third party involved and no CORS to configure. The arcade
 switches the board on automatically as soon as this endpoint answers.
@@ -37,7 +42,7 @@ Edit `config.php` with the database name, user and password from step 1.
 Visit this in a browser:
 
 ```
-https://brendonjameskirk.com/api/leaderboard.php?game=snake
+https://bkirk.eu/api/leaderboard.php?game=snake
 ```
 
 Expected (an empty board is correct before anyone plays):

@@ -1,0 +1,13 @@
+# GitHub Pages build settings for bkirk.eu.
+# The site is plain static HTML — none of it uses Jekyll templating. This file
+# only keeps repo-only files (notes, docs, server-side code, data pipelines)
+# off the live site. Dotfiles and dot-folders (.claude/, .gitignore) are never
+# published.
+exclude:
+  - README.md
+  - memory.md
+  - api/
+  - ops/
+  - geo/          # Kruger map pipeline; its output is kruger_tings.html
+  - kruger_sightings_share.csv
+  - tweets_full.csv

@@ -1,0 +1,10 @@
+All animal portraits are done (124) and built into the page (2026-09-26).
+Every animal in the menus has a picture except "Other birds" and "Something else", which keep a letter badge.
+Catch-all entries ("Kingfisher (other)", "Snake (other)" ...) borrow the closest species' portrait.
+To add one: put kt_<slug>.webp (192 px, WebP q82) here, add it to PHOTO_OF in
+kruger_tings.template.html, then run geo\inject_html.py.
+Note: the map's icon atlas (16 x 8 = 128 cells) now uses 126 cells - grow ATLAS.rows if more are added.
+If Gemini's image can't be read by the page script ("tainted canvas"), click its
+"Download full-sized image" button and shrink the file with Pillow (192 px, WebP q82).
+Chrome settings changed for this (switch back afterwards): download folder = C:\data\Kruger\geo\animals,
+"Ask where to save" = off, gemini.google.com allowed to download multiple files.

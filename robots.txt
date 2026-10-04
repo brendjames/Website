@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://brendonjameskirk.com/sitemap.xml
+Sitemap: https://bkirk.eu/sitemap.xml
