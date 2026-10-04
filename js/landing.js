@@ -1,6 +1,9 @@
 // landing.js — the homepage's golden-hour horizon (WebGL) and its floating nav.
 // Day: a low sun over the savanna, drifting clouds, birds, dust in the light.
-// Night (dark theme): the sun sets, stars come out, the moon rises, fireflies.
+// Night (dark theme): the sun sets, the moon rises, fireflies come out, and the
+// southern sky wheels around the south celestial pole: star trails, the Milky
+// Way with the Coalsack, the Southern Cross and the Pointers, shooting stars,
+// and a magnifying lens under the cursor.
 // The theme toggle animates between the two. Without WebGL the CSS sky stays.
 (function () {
   'use strict';
@@ -90,6 +93,86 @@ float tree(vec2 p, float x, float baseY, float s, float flip){
   return smoothstep(aa, -aa, acacia(q));
 }
 
+// ---------- the southern night sky ----------
+const float CRUX = 1.6;   // the Southern Cross's angle around the pole; upright when the page opens
+// Stars sit on rings around the celestial pole, so rotating the sky is just an
+// offset in angle. Cells along each ring stay roughly square, and each star
+// drags a short trail behind it (a fixed angle, like a long-exposure photo).
+vec3 starLayer(float r, float phi, float ringW, float thresh, float gain){
+  vec3 acc = vec3(0.0);
+  float rr = r / ringW;
+  float ri = floor(rr);
+  float fr = rr - ri;
+  float nphi = max(3.0, floor(6.28318 * (ri + 0.5)));
+  float u = fract(phi / 6.28318) * nphi;
+  float ci = floor(u);
+  float arc = 6.28318 * r / nphi;
+  float trailLen = min(r * 0.03, ringW * 1.2);
+  for (int k = 0; k < 2; k++) {             // this cell, plus the trail of the one before
+    vec2 id = vec2(ri, mod(ci - float(k), nphi));
+    float hs = hash(id + ringW * 97.0);
+    if (hs > thresh) {
+      float dr = (fr - (0.2 + 0.6 * hash(id + 3.1))) * ringW;
+      float da = (u - ci + float(k) - (0.2 + 0.6 * hash(id + 7.7))) * arc;
+      float size = ringW * 0.15;
+      float head = smoothstep(size, 0.0, length(vec2(dr, da)));
+      float trail = step(0.0, da) * exp(-3.0 * da / max(trailLen, 1e-4)) * smoothstep(size * 0.7, 0.0, abs(dr));
+      float tw = 0.65 + 0.35 * sin(u_time * (1.0 + hs * 3.0) + hs * 40.0);
+      vec3 tint = mix(vec3(0.78, 0.85, 1.0), vec3(1.0, 0.87, 0.72), hash(id + 5.3));
+      float b = (hs - thresh) / (1.0 - thresh);    // a few bright stars, many faint ones
+      acc += tint * (head * tw + trail * 0.3 * b) * gain * (0.35 + 0.65 * b);
+    }
+  }
+  return acc;
+}
+
+// The Milky Way, in the sky's own (rotating) frame: a band through the Southern
+// Cross, mottled, with dark dust lanes and the Coalsack beside the Cross.
+float milkyWay(vec2 q){
+  vec2 nrm = vec2(cos(CRUX), sin(CRUX));
+  vec2 rel = q - nrm * 0.40;
+  float x = dot(rel, nrm);
+  float along = dot(rel, vec2(-nrm.y, nrm.x));
+  float w = 0.11 + 0.03 * sin(along * 3.0);
+  float core = exp(-x * x / (w * w));
+  float tex = fbm(vec2(along * 5.0, x * 14.0));
+  float dust = smoothstep(0.5, 0.78, fbm(vec2(along * 4.0, x * 26.0) + 5.0)) * exp(-x * x / (w * w * 0.3));
+  float coal = smoothstep(0.06, 0.015, length(q - 0.36 * vec2(cos(CRUX + 0.12), sin(CRUX + 0.12))));
+  return clamp(core * (0.4 + 0.8 * tex) - dust * 0.45 - coal * 0.6, 0.0, 1.0);
+}
+
+// a named star at sky-frame polar (r0, a0): core, halo and a soft four-point glint
+// (the glint is drawn in screen space, like a camera's, so it doesn't turn with the sky)
+vec3 brightStar(vec2 ps, vec2 pole, float spin, float r0, float a0, float b, vec3 tint){
+  vec2 d = ps - (pole + r0 * vec2(cos(a0 - spin), sin(a0 - spin)));
+  float px = 1.0 / u_res.y;
+  float core = exp(-dot(d, d) / (px * px * 3.0));
+  float halo = exp(-length(d) * 110.0) * 0.28;
+  float glint = (exp(-abs(d.x) / px) * exp(-abs(d.y) * 70.0) + exp(-abs(d.y) / px) * exp(-abs(d.x) * 70.0)) * 0.3;
+  float tw = 0.85 + 0.15 * sin(u_time * 2.3 + a0 * 50.0);
+  return tint * b * (core + halo + glint) * tw;
+}
+
+// shooting stars: a few a minute, each one placed by hashing its time slot
+float meteor(vec2 p, float A){
+  float slot = floor(u_time / 6.0);
+  float h = hash(vec2(slot, 4.2));
+  if (h > 0.5) return 0.0;
+  float age = u_time - (slot * 6.0 + h * 6.0);
+  if (age < 0.0 || age > 1.1) return 0.0;
+  vec2 start = vec2(A * (0.15 + 0.7 * hash(vec2(slot, 1.7))), 0.72 + 0.22 * hash(vec2(slot, 9.1)));
+  float ang = -0.45 - 0.6 * hash(vec2(slot, 5.5));
+  vec2 dir = vec2(cos(ang) * (hash(vec2(slot, 2.2)) > 0.5 ? 1.0 : -1.0), sin(ang));
+  vec2 rel = p - (start + dir * 0.6 * age);
+  float behind = -dot(rel, dir);
+  float across = abs(dot(rel, vec2(-dir.y, dir.x)));
+  float len = 0.2 * smoothstep(0.0, 0.25, age);
+  float tail = step(0.0, behind) * smoothstep(len, 0.0, behind) * (1.0 - behind / max(len, 1e-4))
+             * smoothstep(0.0025, 0.0, across);
+  float head = exp(-length(rel) * 260.0);
+  return (tail * 0.9 + head) * smoothstep(0.0, 0.1, age) * smoothstep(1.1, 0.7, age);
+}
+
 // soft points drifting through the air: dust by day, fireflies by night
 float motes(vec2 p, float scale, float seed, vec2 drift){
   vec2 q = p * scale + drift;
@@ -124,32 +207,47 @@ void main(){
   vec3 col = mix(day, nite, n);
   col = mix(col, dusk, 0.6 * sin(3.14159 * n));
 
-  // ---- stars ----
+  // ---- the southern sky, wheeling clockwise around the south celestial pole ----
   float starVis = smoothstep(0.35, 0.9, n) * smoothstep(0.02, 0.25, h);
   if (starVis > 0.0) {
-    for (int L = 0; L < 2; L++) {
-      float sc = L == 0 ? 70.0 : 140.0;
-      vec2 sp = p * sc + float(L) * 17.0;
-      vec2 si = floor(sp);
-      float sh = hash(si);
-      vec2 so = vec2(hash(si + 3.1), hash(si + 7.7)) - 0.5;
-      float sd = length(fract(sp) - 0.5 - so * 0.6);
-      float tw = 0.65 + 0.35 * sin(t * (1.0 + sh * 3.0) + sh * 40.0);
-      float on = step(L == 0 ? 0.92 : 0.9, sh);
-      col += vec3(1.0, 0.95, 0.86) * on * smoothstep(0.14, 0.0, sd) * tw * starVis * (L == 0 ? 0.9 : 0.5);
-    }
+    vec2 pole = vec2(A * mix(0.5, 0.66, wide), g + mix(0.30, 0.22, wide) * (1.0 - g));
+    float spin = t * 0.012;                         // one turn every ~9 minutes
+    // the cursor is a magnifying lens on the sky
+    vec2 dmv = p - vec2(u_mouse.x * A, u_mouse.y);
+    vec2 ps = p - dmv * 0.35 * exp(-dot(dmv, dmv) / 0.006) * u_hover;
+    vec2 d = ps - pole;
+    float r = length(d);
+    float phi = atan(d.y, d.x) + spin;
+    vec2 q = r * vec2(cos(phi), sin(phi));          // the sky's own frame
+
+    float mw = milkyWay(q);
+    col += mix(vec3(0.55, 0.50, 0.70), vec3(0.85, 0.74, 0.66), fbm(q * 4.0)) * mw * 0.14 * starVis;
+    vec3 stars = starLayer(r, phi, 1.0 / 70.0, 0.92 - mw * 0.05, 0.9)
+               + starLayer(r, phi, 1.0 / 140.0, 0.90 - mw * 0.08, 0.5);
+    // Crux (Gacrux, Acrux, Mimosa, Delta, Epsilon) and the Pointers (Beta & Alpha Centauri)
+    stars += brightStar(ps, pole, spin, 0.450, CRUX,         0.85, vec3(1.0, 0.80, 0.66));
+    stars += brightStar(ps, pole, spin, 0.350, CRUX + 0.005, 1.00, vec3(0.86, 0.91, 1.0));
+    stars += brightStar(ps, pole, spin, 0.405, CRUX + 0.095, 0.90, vec3(0.82, 0.88, 1.0));
+    stars += brightStar(ps, pole, spin, 0.410, CRUX - 0.09,  0.60, vec3(0.88, 0.92, 1.0));
+    stars += brightStar(ps, pole, spin, 0.385, CRUX - 0.04,  0.35, vec3(1.0, 0.88, 0.75));
+    stars += brightStar(ps, pole, spin, 0.400, CRUX + 0.37,  0.95, vec3(0.84, 0.90, 1.0));
+    stars += brightStar(ps, pole, spin, 0.390, CRUX + 0.55,  1.10, vec3(1.0, 0.94, 0.80));
+    col += stars * starVis;
   }
 
   // ---- moon (rises as the sun sets) ----
   // on phones the text fills the sky, so sun and moon sit low, half behind the far hills
   float moonUp = smoothstep(0.35, 1.0, n);
-  float moonRest = mix(g * 0.74, g + 0.42 * (1.0 - g), wide);
-  vec2 moonP = vec2(A * mix(0.74, 0.80, wide) - par * 0.02, mix(g - 0.2, moonRest, moonUp));
+  float moonRest = mix(g * 0.74, g + 0.25 * (1.0 - g), wide);
+  vec2 moonP = vec2(A * mix(0.74, 0.84, wide) - par * 0.02, mix(g - 0.2, moonRest, moonUp));
   float dm = length(p - moonP);
   col += vec3(0.95, 0.90, 0.80) * (0.25 * exp(-dm * 9.0) + 0.10 * exp(-dm * 3.0)) * moonUp;
   float crater = fbm((p - moonP) * 40.0 + 3.0);
   vec3 moonCol = vec3(0.96, 0.93, 0.86) - 0.12 * smoothstep(0.45, 0.7, crater);
   col = mix(col, moonCol, smoothstep(0.05 + px, 0.05 - px, dm) * moonUp);
+
+  // shooting stars burn up in front of everything in the sky
+  if (starVis > 0.0) col += vec3(1.0, 0.95, 0.86) * meteor(p, A) * starVis;
 
   // ---- sun (sinks behind the hills at night) ----
   vec2 sunP = vec2(A * mix(0.70, 0.74, wide) + par * 0.04,
