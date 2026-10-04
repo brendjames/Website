@@ -59,3 +59,4 @@ ops/                  Server config for the old domain's redirect
 `api/` contains a global top-10 leaderboard (PHP + MySQL, see `api/README.md`). GitHub Pages
 can't run PHP, so on bkirk.eu the arcade detects the missing endpoint and keeps on-device high
 scores only.
+# Website
