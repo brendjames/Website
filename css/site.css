@@ -182,9 +182,22 @@ body::after{
 
 /* ---------- Layout ---------- */
 .wrap{ max-width: var(--maxw); margin:0 auto; padding: 0 24px; }
-main{ position:relative; z-index:1; }
+main{ position:relative; z-index:1; overflow-x:clip; }
 
-.page-head{ padding: clamp(48px, 7vw, 84px) 0 12px; }
+.page-head{ position:relative; isolation:isolate; padding: clamp(48px, 7vw, 84px) 0 12px; }
+/* watercolour savanna at golden hour, full-bleed behind the heading, fading into the paper */
+.page-head::before{
+  content:""; position:absolute; z-index:-1; pointer-events:none;
+  top:0; bottom:-40px; left:calc(50% - 50vw); right:calc(50% - 50vw);
+  background: url("../assets/img/bg/savanna.webp") right 30% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent), linear-gradient(to right, transparent 10%, #000 55%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, #000 55%, transparent), linear-gradient(to right, transparent 10%, #000 55%);
+  mask-composite: intersect;
+  opacity:.9;
+}
+@media (max-width:640px){ .page-head::before{ opacity:.5; } }
+:root[data-theme="dark"] .page-head::before{ opacity:.16; }
 .kicker, .page-head .kicker{
   font-family: var(--mono); font-size:var(--fs-2xs); letter-spacing:0.28em;
   text-transform:uppercase; color: var(--accent);
@@ -484,7 +497,7 @@ main{ position:relative; z-index:1; }
     --accent:#9A3412; --accent-deep:#7C2D12;
   }
   body{ background:#fff; font-size:12.5px; }
-  body::after{ display:none; }
+  body::after, .page-head::before{ display:none; }
   .nav, .footer, .skip-link, .btn, .no-print, .scroll-progress, .curtain, .nav-ind{ display:none !important; }
   .sec[data-num]::before{ display:none; }
   .reveal{ opacity:1 !important; transform:none !important; }
