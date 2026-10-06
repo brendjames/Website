@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://bkirk.eu/</loc><lastmod>2026-10-04</lastmod></url>
   <url><loc>https://bkirk.eu/path.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://bkirk.eu/blog.html</loc><lastmod>2026-10-04</lastmod></url>
+  <url><loc>https://bkirk.eu/blog.html</loc><lastmod>2026-10-06</lastmod></url>
   <url><loc>https://bkirk.eu/projects.html</loc><lastmod>2026-10-04</lastmod></url>
   <url><loc>https://bkirk.eu/contact.html</loc><lastmod>2026-10-04</lastmod></url>
   <url><loc>https://bkirk.eu/lab.html</loc><lastmod>2026-10-04</lastmod></url>
@@ -16,4 +16,5 @@
   <url><loc>https://bkirk.eu/blog/travel-kruger.html</loc><lastmod>2026-10-04</lastmod></url>
   <url><loc>https://bkirk.eu/blog/travel-wildcoast.html</loc><lastmod>2026-10-04</lastmod></url>
   <url><loc>https://bkirk.eu/blog/travel-wilderness.html</loc><lastmod>2026-10-04</lastmod></url>
+  <url><loc>https://bkirk.eu/blog/travel-south-africa-31-days.html</loc><lastmod>2026-10-06</lastmod></url>
 </urlset>

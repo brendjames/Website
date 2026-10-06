@@ -5,8 +5,16 @@
   <link>https://bkirk.eu/blog.html</link>
   <description>Travel essays from South Africa and perspectives on technology and culture, by Brendon James Kirk.</description>
   <language>en</language>
-  <lastBuildDate>Fri, 10 Jul 2026 00:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Tue, 06 Oct 2026 00:00:00 GMT</lastBuildDate>
   <atom:link href="https://bkirk.eu/feed.xml" rel="self" type="application/rss+xml" />
+
+  <item>
+    <title>Coast to Bush: The 31-Day South Africa Road Trip I'd Plan for a Friend</title>
+    <link>https://bkirk.eu/blog/travel-south-africa-31-days.html</link>
+    <guid>https://bkirk.eu/blog/travel-south-africa-31-days.html</guid>
+    <description>Cape Town, the Garden Route, the Wild Coast, Durban, the Drakensberg, Kruger and Joburg: a month-long South Africa road trip with honest local advice.</description>
+    <pubDate>Tue, 06 Oct 2026 00:00:00 GMT</pubDate>
+  </item>
 
   <item>
     <title>I Built This Website to Escape AI Slop. I Used AI to Do It.</title>

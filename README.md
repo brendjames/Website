@@ -20,7 +20,7 @@ npx http-server -p 5501 -c-1 .
 index.html            Landing: golden-hour WebGL horizon (js/landing.js) + where-to-next cards
 path.html             The CV: about, experience, skills, projects, writing, contact; prints as PDF
 kruger_tings.html     Interactive Kruger sightings map (built by geo/; edit the template there)
-blog.html, blog/      Blog index + 8 posts
+blog.html, blog/      Blog index + 9 posts
 projects.html         Project showcase
 contact.html          Email / GitHub / location (no form; the site has no backend)
 legal.html            Imprint (§ 25 MedienG) and privacy policy (GDPR)
