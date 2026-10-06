@@ -80,17 +80,20 @@
   }
   #sky.ready{ opacity:1; }
 
-  .hero-copy{ padding-top: calc(62px + clamp(48px, 11vh, 130px)); padding-bottom: 32px; }
+  .hero-copy{ padding-top: calc(62px + clamp(28px, 7vh, 120px)); padding-bottom: 28px; }
   .hero h1{
     margin-top:18px; max-width:12ch;
-    font-size: clamp(48px, 7vw, 92px); line-height:1.0; letter-spacing:-0.025em;
+    font-size: clamp(44px, min(7vw, 9.5vh), 92px); line-height:1.0; letter-spacing:-0.025em;
   }
   .hero h1 em{ font-style:italic; font-weight:500; color: var(--accent); }
   .hero .intro{
     margin-top:22px; max-width:46ch;
     font-size: clamp(16.5px, 1.6vw, 18.5px); line-height:1.6; color: var(--body);
   }
-  .hero .intro + .intro{ margin-top:14px; max-width:52ch; font-size: clamp(15.5px, 1.4vw, 17px); color: var(--ink-dim); }
+  .hero .intro + .intro{ margin-top:14px; max-width:50ch; font-size: clamp(15.5px, 1.4vw, 17px); color: var(--ink-dim); }
+  /* at night the copy sits over the moonlit glow: a soft dusk halo keeps it legible */
+  :root[data-theme="dark"] .hero-copy{ text-shadow: 0 1px 14px rgba(18,14,30,0.55), 0 0 2px rgba(18,14,30,0.35); }
+  :root[data-theme="dark"] .hero .intro + .intro{ color: var(--body); }
   .hero-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:32px; }
   .hero-cta .soft{ font-size:14px; font-weight:500; margin-left:4px; }
 

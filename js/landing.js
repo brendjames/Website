@@ -250,7 +250,7 @@ void main(){
   if (starVis > 0.0) col += vec3(1.0, 0.95, 0.86) * meteor(p, A) * starVis;
 
   // ---- sun (sinks behind the hills at night) ----
-  vec2 sunP = vec2(A * mix(0.70, 0.74, wide) + par * 0.04,
+  vec2 sunP = vec2(A * mix(0.70, 0.78, wide) + par * 0.04,
                    mix(g * 0.72, g + 0.1, wide) - 0.24 * smoothstep(0.0, 0.8, n) + (u_mouse.y - 0.5) * 0.02);
   float ds = length(p - sunP);
   vec3 sunCol = mix(vec3(1.0, 0.80, 0.50), vec3(1.0, 0.52, 0.26), smoothstep(0.0, 0.6, n));
