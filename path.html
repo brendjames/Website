@@ -51,7 +51,7 @@
     display:grid; gap: clamp(40px, 6vw, 72px);
     grid-template-columns: 1fr; align-items:center;
   }
-  @media(min-width: 900px){ .hero-inner{ grid-template-columns: 1.12fr .88fr; } }
+  @media(min-width: 900px){ .hero-inner:has(.hero-pic){ grid-template-columns: 1.12fr .88fr; } }
   .hero h1{
     margin-top:20px; font-size: clamp(46px, 6.2vw, 76px); font-weight:600;
     line-height:1.02; letter-spacing:-0.02em; max-width:14ch;
@@ -407,9 +407,8 @@
           <div class="frame">
             <picture>
               <source media="(max-width: 899px)" srcset="assets/bj-mobile.webp" />
-              <img src="assets/bj.webp" alt="Brendon Kirk surfing a wave while holding a duck, sharks visible underwater" fetchpriority="high" width="1200" height="1789" />
+              <img src="assets/bj.webp" alt="Brendon Kirk smiling, in a navy blazer and white shirt in a bright office" fetchpriority="high" width="1200" height="1799" />
             </picture>
-            <span class="tag">Yes, that's a duck</span>
           </div>
           <div class="stamp" aria-hidden="true">
             <svg viewBox="0 0 100 100">
