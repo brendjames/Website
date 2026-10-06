@@ -421,7 +421,16 @@ main{ position:relative; z-index:1; overflow-x:clip; }
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
   }
   .post-card .read{ font-size:12px; }
+  /* the featured post keeps a full-width image on top */
+  .post-card.featured{ flex-direction:column; }
+  .post-card.featured .thumb{
+    flex:none; max-width:none; aspect-ratio:16/9;
+    border-right:0; border-bottom:1px solid var(--line);
+  }
+  .post-card.featured h2{ font-size:19px; }
 }
+/* maps and diagrams: show the whole thumbnail, no parallax zoom */
+.post-card .thumb.whole img{ scale:1; animation:none; }
 
 /* ---------- Article page ---------- */
 .article-hero{
