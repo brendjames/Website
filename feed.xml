@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-  <title>Brendon James Kirk — Blog</title>
+  <title>Brendon James Kirk | Blog</title>
   <link>https://bkirk.eu/blog.html</link>
   <description>Travel essays from South Africa and perspectives on technology and culture, by Brendon James Kirk.</description>
   <language>en</language>
@@ -20,7 +20,7 @@
     <title>I Built This Website to Escape AI Slop. I Used AI to Do It.</title>
     <link>https://bkirk.eu/blog/perspective-ai.html</link>
     <guid>https://bkirk.eu/blog/perspective-ai.html</guid>
-    <description>The internet is drowning in AI slop. I built a refuge with the very machine causing the flood — a manifesto for Vibe Coding.</description>
+    <description>The internet is drowning in AI slop. I built a refuge with the very machine causing the flood. A manifesto for Vibe Coding.</description>
     <pubDate>Sat, 09 Aug 2025 00:00:00 GMT</pubDate>
   </item>
 
@@ -36,7 +36,7 @@
     <title>The Unintentional Empire: How American Culture Shapes the World Without Trying</title>
     <link>https://bkirk.eu/blog/perspective-america.html</link>
     <guid>https://bkirk.eu/blog/perspective-america.html</guid>
-    <description>How American fashion, slang, and media shape the world without a single directive — an empire by accident.</description>
+    <description>How American fashion, slang, and media shape the world without a single directive: an empire by accident.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
@@ -44,7 +44,7 @@
     <title>Cape Town Calling: Your Guide to the World's Most Breathtaking City</title>
     <link>https://bkirk.eu/blog/travel-capetown.html</link>
     <guid>https://bkirk.eu/blog/travel-capetown.html</guid>
-    <description>Table Mountain, penguin parties, Bo-Kaap colour, and the Cape Winelands — a love letter to the Mother City.</description>
+    <description>Table Mountain, penguin parties, Bo-Kaap colour, and the Cape Winelands: a love letter to the Mother City.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 
@@ -52,7 +52,7 @@
     <title>Surf, Spice, and Zulu Soul: Why Durban Should Be Your Next Adventure</title>
     <link>https://bkirk.eu/blog/travel-durban.html</link>
     <guid>https://bkirk.eu/blog/travel-durban.html</guid>
-    <description>The Golden Mile, bunny chow, Zulu heritage and the Dragon Mountains — why Durbs deserves your next city break.</description>
+    <description>The Golden Mile, bunny chow, Zulu heritage and the Dragon Mountains: why Durbs deserves your next city break.</description>
     <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
   </item>
 

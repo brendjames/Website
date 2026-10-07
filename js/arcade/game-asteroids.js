@@ -285,7 +285,7 @@ window.GAMES.asteroids = (function () {
     id: 'asteroids', name: 'Asteroids',
     hint: 'Arrows / WASD + SPACE · touch: hold to fly & auto-fire',
     howto: {
-      goal: 'Blast the rocks — big ones split into smaller ones. Clear the field to level up. You have 3 ships, each respawning with a brief shield.',
+      goal: 'Blast the rocks. Big ones split into smaller ones. Clear the field to level up. You have 3 ships, each respawning with a brief shield.',
       controls: [
         ['← → / A D', 'rotate'],
         ['↑ / W', 'thrust'],

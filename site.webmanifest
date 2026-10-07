@@ -1,7 +1,7 @@
 {
   "name": "Brendon James Kirk",
   "short_name": "BK",
-  "description": "Technology enthusiast in Vienna, Austria — IT support, WebGL2 shader lab, hand-built arcade, and travel writing.",
+  "description": "Technology enthusiast in Vienna, Austria: IT support, WebGL2 shader lab, hand-built arcade, and travel writing.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",

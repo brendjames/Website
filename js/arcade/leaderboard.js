@@ -78,7 +78,7 @@ window.Leaderboard = (function () {
     if (!list.length) {
       const li = document.createElement('li');
       li.className = 'lb-empty';
-      li.textContent = 'No scores yet — be the first to make the board.';
+      li.textContent = 'No scores yet. Be the first to make the board.';
       lbList.appendChild(li);
       return;
     }
@@ -123,7 +123,7 @@ window.Leaderboard = (function () {
     } catch (e) {
       lbList.innerHTML = '';
       lbState.className = 'lb-state err';
-      lbState.textContent = 'The global leaderboard isn’t available right now — your best scores are still saved on this device.';
+      lbState.textContent = 'The global leaderboard isn’t available right now, but your best scores are still saved on this device.';
     }
   }
 
@@ -146,7 +146,7 @@ window.Leaderboard = (function () {
     renderList(curGame);
     lbState.className = 'lb-state';
     lbState.textContent = '';
-    lbCongrats.innerHTML = 'You scored <b>' + Number(score).toLocaleString('en-US') + '</b> — that makes the board! Enter your initials:';
+    lbCongrats.innerHTML = 'You scored <b>' + Number(score).toLocaleString('en-US') + '</b>. That makes the board! Enter your initials:';
     lbEntry.hidden = false;
     lbErr.textContent = '';
     lbInitials.value = lastInitials;

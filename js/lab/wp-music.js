@@ -131,7 +131,7 @@ void main(){
 
   return {
     id: 'music', name: 'Music',
-    hint: 'Feed it a song — presets morph on their own, Milkdrop-style',
+    hint: 'Feed it a song · presets morph on their own, Milkdrop-style',
     setup(env) {
       prog = new (E().Program)(env.gl, E().QUAD_VERT, FRAG);
       pA = 0; seedA = Math.random(); mixAB = 0; transing = false; lastSwitch = null;

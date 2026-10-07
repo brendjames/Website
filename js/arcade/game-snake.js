@@ -145,7 +145,7 @@ window.GAMES.snake = (function () {
     id: 'snake', name: 'Snake',
     hint: 'Arrows / WASD / swipe · eat the lime',
     howto: {
-      goal: 'Eat the lime squares to grow. The snake speeds up as it gets longer — don’t hit the walls, and don’t bite yourself.',
+      goal: 'Eat the lime squares to grow. The snake speeds up as it gets longer. Don’t hit the walls, and don’t bite yourself.',
       controls: [
         ['ARROWS / WASD', 'steer'],
         ['SWIPE', 'steer on touch'],

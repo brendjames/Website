@@ -194,7 +194,7 @@ window.GAMES.breakout = (function () {
     id: 'breakout', name: 'Breakout',
     hint: 'Pointer or arrows · click to launch',
     howto: {
-      goal: 'Clear every brick to reach the next level — faster ball, smaller paddle each round. You have 3 lives; edge hits on the paddle sharpen the angle.',
+      goal: 'Clear every brick to reach the next level. Faster ball, smaller paddle each round. You have 3 lives; edge hits on the paddle sharpen the angle.',
       controls: [
         ['MOUSE / DRAG', 'move the paddle'],
         ['← → / A D', 'move the paddle'],

@@ -119,7 +119,7 @@ window.GAMES['2048'] = (function () {
     ctx.fillText('arrows / WASD / swipe · R for a fresh board', S.w / 2, by + size + 34);
     if (won) {
       ctx.fillStyle = '#c8f55a';
-      ctx.fillText('2048 — howzit! keep going', S.w / 2, by - 16);
+      ctx.fillText('2048 · howzit! keep going', S.w / 2, by - 16);
     }
 
     if (state === 'dead') {
@@ -169,7 +169,7 @@ window.GAMES['2048'] = (function () {
     id: '2048', name: '2048',
     hint: 'Arrows / swipe · merge to lime and beyond',
     howto: {
-      goal: 'Slide the whole board — equal tiles merge and double. Climb the palette from slate through cyan to the lime 2048 tile, then keep going.',
+      goal: 'Slide the whole board. Equal tiles merge and double. Climb the palette from slate through cyan to the lime 2048 tile, then keep going.',
       controls: [
         ['ARROWS / WASD', 'slide'],
         ['SWIPE', 'slide'],
