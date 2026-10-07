@@ -509,7 +509,7 @@ main{ position:relative; z-index:1; overflow-x:clip; }
   }
   body{ background:#fff; font-size:12.5px; }
   body::after, .page-head::before{ display:none; }
-  .nav, .footer, .skip-link, .btn, .no-print, .scroll-progress, .curtain, .nav-ind{ display:none !important; }
+  .nav, .footer, .skip-link, .btn, .no-print, .scroll-progress, .nav-ind{ display:none !important; }
   .sec[data-num]::before{ display:none; }
   .reveal{ opacity:1 !important; transform:none !important; }
   .sec-head::after, .stat::before, .sec-head .num, .sec-head h2{ transform:none !important; }

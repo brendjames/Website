@@ -67,12 +67,6 @@
     }
   }
   @keyframes shimmer{ 0%{ background-position: 120% 0; } 55%, 100%{ background-position: -70% 0; } }
-  /* masked word-rise: each word lifts out of its own clipping box */
-  .hero h1 .w{
-    display:inline-block; overflow:hidden; vertical-align:top;
-    padding-bottom:.09em; margin-bottom:-.09em;
-  }
-  .hero h1 .w > span{ display:inline-block; }
   .hero .role{
     margin-top:22px; font-size:17px; color: var(--ink);
     max-width:52ch; line-height:1.6;
@@ -82,7 +76,7 @@
   .hero-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:34px; }
   .hero-cta .gh{ font-size:14px; font-weight:500; margin-left:4px; }
 
-  /* ---- Hero picture: arch frame, curtain reveal, cursor tilt ---- */
+  /* ---- Hero picture: arch frame, cursor tilt ---- */
   .hero-pic{
     position:relative; perspective: 1000px;
     max-width: 440px; margin-inline: auto; width:100%;
@@ -135,46 +129,15 @@
     letter-spacing:0; fill: var(--ink);
   }
 
-  /* ---- Intro curtain: an ink panel with a terracotta trailing edge wipes up ---- */
-  .curtain{ display:none; }
+  /* entrance: the same blur-in as every other page head (css/site.css), CSS-only so it works without JS */
   @media (prefers-reduced-motion: no-preference){
-    .curtain{
-      display:block; position:fixed; inset:0; z-index:200; pointer-events:none;
-      background: var(--ink);
-      animation: curtainUp 1.05s cubic-bezier(.76,0,.24,1) .25s forwards;
-    }
-    .curtain::after{
-      content:""; position:absolute; top:100%; left:0; right:0; height:16vh;
-      background: var(--accent);
-    }
-  }
-  @keyframes curtainUp{ to{ transform: translateY(calc(-100% - 16vh)); visibility:hidden; } }
-
-  /* entrance choreography (CSS-only, so it works without JS) */
-  @media (prefers-reduced-motion: no-preference){
-    .hero .kicker{ animation: fadeIn .8s ease .55s both; }
-    .hero .kicker::before{ transform-origin:left; animation: growLine .7s var(--ease-out) .62s both; }
-    .hero h1 .w > span{
-      transform: translateY(120%) rotate(5deg); transform-origin: 0 100%;
-      animation: riseUp 1s cubic-bezier(.22,1,.36,1) forwards;
-    }
-    .hero h1 .w:nth-child(1) > span{ animation-delay:.68s; }
-    .hero h1 .w:nth-child(2) > span{ animation-delay:.8s; }
-    .hero h1 .w:nth-child(3) > span{ animation-delay:.92s; }
-    .hero .role{ animation: fadeRise .8s var(--ease-out) 1.1s both; }
-    .hero .pitch{ animation: fadeRise .8s var(--ease-out) 1.24s both; }
-    .hero-cta > :nth-child(1){ animation: fadeRise .7s var(--ease-out) 1.4s both; }
-    .hero-cta > :nth-child(2){ animation: fadeRise .7s var(--ease-out) 1.48s both; }
-    .hero-cta > :nth-child(3){ animation: fadeRise .7s var(--ease-out) 1.56s both; }
-    /* the photo: arch unclips from the bottom while the image settles from a deep zoom */
-    .hero-pic .frame{ animation: unveil 1.3s cubic-bezier(.16,1,.3,1) .85s both; }
-    .hero-pic img{ scale: 1.4; animation: settle 1.7s cubic-bezier(.16,1,.3,1) .85s forwards; }
-    .hero-pic::before{ animation: fadeRise .9s var(--ease-out) 1.6s both; }
-    .hero-pic .tag{
-      animation: fadeIn .7s ease 2s both,
-                 bob 4.5s ease-in-out 2.8s infinite alternate;
-    }
-    .stamp{ animation: fadeIn 1s ease 1.8s both; }
+    .hero .kicker{ animation: fadeIn .7s ease both; }
+    .hero .kicker::before{ transform-origin:left; animation: growLine .7s var(--ease-out) .1s both; }
+    .hero h1{ animation: blurRise .9s var(--ease-out) .12s both; }
+    .hero .pitch{ animation: fadeRise .8s var(--ease-out) .3s both; }
+    .hero .hero-cta{ animation: fadeRise .8s var(--ease-out) .42s both; }
+    /* the photo comes into focus alongside the heading */
+    .hero-pic{ animation: blurIn 1s ease .2s both; }
     .stamp .ring{ animation: spin 28s linear infinite; }
     /* stat numbers pop up after their rule draws */
     .stat.reveal .n{
@@ -184,20 +147,15 @@
     }
     .stat.reveal.visible .n{ opacity:1; transform:none; }
   }
-  /* reduced motion: a blur-to-sharp cascade — rich, but nothing moves */
+  /* reduced motion: the page heads' blur-to-sharp cascade, where nothing moves */
   @media (prefers-reduced-motion: reduce){
-    .hero-copy > *{ animation: blurIn .8s ease both; }
-    .hero-copy > :nth-child(2){ animation-delay:.1s; }
-    .hero-copy > :nth-child(3){ animation-delay:.2s; }
-    .hero-copy > :nth-child(4){ animation-delay:.3s; }
-    .hero-copy > :nth-child(5){ animation-delay:.4s; }
-    .hero-pic{ animation: blurIn 1.1s ease .3s both; }
+    .hero .kicker{ animation: blurIn .7s ease both; }
+    .hero h1{ animation: blurIn .9s ease .12s both; }
+    .hero .pitch{ animation: blurIn .9s ease .26s both; }
+    .hero .hero-cta{ animation: blurIn .9s ease .36s both; }
+    .hero-pic{ animation: blurIn 1s ease .2s both; }
   }
-  @keyframes riseUp{ to{ transform: translateY(0) rotate(0deg); } }
   @keyframes spin{ to{ transform: rotate(1turn); } }
-  @keyframes unveil{ from{ clip-path: inset(100% 0 0 0); } to{ clip-path: inset(0 0 0 0); } }
-  @keyframes settle{ to{ scale: 1; } }
-  @keyframes bob{ from{ transform: translateY(0); } to{ transform: translateY(-9px); } }
 
   .stats{
     margin-top: clamp(56px, 7vw, 84px);
@@ -369,15 +327,12 @@
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<div class="curtain" aria-hidden="true"></div>
-
 <header class="nav" role="banner">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html"><span class="bk">BK</span><span class="nav-name">Brendon James Kirk</span></a>
     <nav role="navigation" aria-label="Main">
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="path.html">Path</a></li>
         <li><a href="path.html" aria-current="page">Path</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li><a href="projects.html">Projects</a></li>
@@ -394,7 +349,7 @@
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="kicker">Vienna, Austria · ex Durban, South Africa</p>
-          <h1 aria-label="Brendon James Kirk"><span class="w"><span>Brendon</span></span> <span class="w"><span><em>James</em></span></span> <span class="w"><span>Kirk</span></span></h1>
+          <h1>Brendon <em>James</em> Kirk</h1>
           <p class="pitch">I resolve everyday technical friction with speed and empathy. I don't just fix problems — I build the upgrade path that moves systems forward. And I'm always interested in the right next challenge.</p>
           <div class="hero-cta no-print">
             <a class="btn primary" href="mailto:brendonkirk86@gmail.com">Email me</a>
