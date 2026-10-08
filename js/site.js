@@ -81,8 +81,10 @@
     navList.addEventListener('mouseleave', () => moveTo(current));
     navList.addEventListener('focusin', (e) => { const a = e.target.closest('a'); if (a) moveTo(a); });
     navList.addEventListener('focusout', () => moveTo(current));
-    window.addEventListener('resize', () => moveTo(current), { passive: true });
-    moveTo(current);
+    // Place it once the browser has done its own layout (measuring right away would
+    // force the page's first layout inside this script), then again whenever the
+    // links change width: web fonts arriving, "Home" hiding on phones, a resize.
+    new ResizeObserver(() => moveTo(current)).observe(navList);
   }
 
   // ----- Scroll reveals (staggered per sibling group) -----

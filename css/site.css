@@ -127,6 +127,9 @@ body::after{
   max-width: var(--maxw); margin:0 auto; padding: 0 24px;
   height: 62px; display:flex; align-items:center; justify-content:space-between; gap:16px;
 }
+/* hold the theme toggle's place until site.js adds it, so the nav links don't jump */
+.nav-inner::after{ content:""; flex:0 0 34px; height:34px; }
+.nav-inner:has(> .theme-toggle)::after{ display:none; }
 .nav-logo{
   display:flex; align-items:center; gap:11px;
   color: var(--ink); font-weight:600; font-size:15px; letter-spacing:-0.01em;
