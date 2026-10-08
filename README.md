@@ -1,62 +1,29 @@
-# bkirk.eu
+# Hi there, I'm Brendon 👋
 
-Personal website of **Brendon James Kirk**, IT support professional in Vienna, Austria.
+I'm an IT Administrator and developer based in Vienna, with a passion for building clean, documentation-first projects and automating complex workflows. 
 
-The homepage is a warm landing page over a hand-written WebGL golden-hour scene; the one-page CV
-(which prints cleanly to PDF) lives at `path.html`. Around them sit a blog, an interactive Kruger
-sightings map, a WebGL2 shader lab and a hand-built canvas arcade. Everything is plain HTML, CSS and JavaScript: no frameworks, no build step, and no requests to third-party servers.
+### 👨‍💻 What I'm working on
+- 🛠️ Building automated AI-driven web scrapers in **Python** for data extraction.
+- ⚙️ Tinkering with **Linux, n8n workflows, and ComfyUI** image pipelines.
+- 🌐 Maintaining my personal portfolio using vanilla **HTML, CSS, and JS**.
+- ⚡ Fun fact: When I'm not writing scripts or spinning up Docker containers, I'm usually playing Witch Doctor in Dota 2 or out on a road cycle. 
 
-## Run locally
+### 💻 Tech Stack & Tools
 
-Serve the folder with any static server, then open http://localhost:5501:
+**Languages:**  
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-```bash
-npx http-server -p 5501 -c-1 .
-```
+**Infrastructure & Databases:**  
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 
-## Structure
+### 📊 GitHub Stats
 
-```
-index.html            Landing: golden-hour WebGL horizon (js/landing.js) + where-to-next cards
-path.html             The CV: about, experience, skills, projects, writing, contact; prints as PDF
-kruger_tings.html     Interactive Kruger sightings map (built by geo/; edit the template there)
-blog.html, blog/      Blog index + 9 posts
-projects.html         Project showcase
-contact.html          Email / GitHub / location (no form; the site has no backend)
-legal.html            Imprint (§ 25 MedienG) and privacy policy (GDPR)
-lab.html, js/lab/     Shader Lab: 15 interactive WebGL2 wallpapers
-arcade.html, js/arcade/  The Arcade: 5 canvas games with local high scores
-404.html              Not-found page (root-absolute paths so it works at any depth)
-journey.html          Redirect to path.html#experience (old URL)
-css/site.css          Shared design system: light editorial + dark theme, print-as-CV
-css/fonts.css         Self-hosted fonts (assets/fonts)
-js/site.js            Theme (system-aware) + toggle, reveals, counters, print button
-geo/                  Kruger map pipeline (Python), not published
-api/                  Arcade leaderboard (PHP + MySQL), not used on GitHub Pages
-ops/                  Server config for the old domain's redirect
-```
-
-## Hosting: GitHub Pages
-
-- **Pages source:** Settings → Pages → *Deploy from a branch* → `main`, `/ (root)`.
-- **Custom domain:** the `CNAME` file holds `bkirk.eu`. Tick *Enforce HTTPS* once the certificate is issued.
-- **What gets published:** `_config.yml` keeps `README.md`, `memory.md`, `api/` and `ops/` off the live site.
-- **Security headers:** GitHub Pages can't send custom headers, so every page carries the same
-  `Content-Security-Policy` `<meta>` tag. Copy it into any new page.
-- **DNS at the registrar** (apex `bkirk.eu`):
-  - `A` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-  - `AAAA` → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
-  - `CNAME www` → `<github-username>.github.io`
-  - Verify the domain under GitHub *Settings → Pages* first to prevent takeovers, and don't add wildcard (`*`) records.
-
-## Old domain
-
-`brendonjameskirk.com` permanently redirects to the same path on `bkirk.eu`. The rule lives in
-`ops/old-domain.htaccess`; upload it to the old cPanel host as `.htaccess`.
-
-## Arcade leaderboard
-
-`api/` contains a global top-10 leaderboard (PHP + MySQL, see `api/README.md`). GitHub Pages
-can't run PHP, so on bkirk.eu the arcade detects the missing endpoint and keeps on-device high
-scores only.
-# Website
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=YOUR_GITHUB_USERNAME&show_icons=true&theme=radium&hide_border=true" alt="GitHub Stats" />
+</div>
