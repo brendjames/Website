@@ -460,6 +460,12 @@ main{ position:relative; z-index:1; overflow-x:clip; }
 .article .content p{ color: var(--body); }
 .article .content strong{ color: var(--ink); font-weight:600; }
 .article .content em{ color: var(--ink); }
+/* links inside running text carry a quiet underline, so they don't rely on colour alone */
+.article .content a, .legal a{
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+}
+.article .content a:hover, .legal a:hover{ text-decoration-color: currentColor; }
 .article .content code{
   font-family: var(--mono); font-size: 0.85em;
   background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--accent-deep);

@@ -1518,7 +1518,7 @@ function hbarChart(card, items, { head, onClick, activeKey, color }) {
   const width = body.clientWidth || 400;
   const labelW = Math.min(170, width * 0.38), valueW = 56, rowH = 26, barH = 16;
   const h = items.length * rowH + 4;
-  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img" }, body);
+  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img", "aria-label": "Chart: " + (card.querySelector("h2")?.textContent || head) }, body);
   const max = Math.max(1, ...items.map(d => d.value));
   const plotW = width - labelW - valueW;
   el("line", { x1: labelW, x2: labelW, y1: 0, y2: h, stroke: css.getPropertyValue("--baseline"), "stroke-width": 1 }, svg);
@@ -1544,7 +1544,7 @@ function hbarChart(card, items, { head, onClick, activeKey, color }) {
 function colChart(card, items, { head, color, labelEvery = 1, peakLabel = true }) {
   const body = card.querySelector(".body"); body.innerHTML = "";
   const width = body.clientWidth || 400, h = 170, left = 44, bottom = 22, top = 16;
-  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img" }, body);
+  const svg = el("svg", { viewBox: `0 0 ${width} ${h}`, height: h, role: "img", "aria-label": "Chart: " + (card.querySelector("h2")?.textContent || head) }, body);
   const max = niceMax(Math.max(1, ...items.map(d => d.value)));
   const plotW = width - left - 4, plotH = h - bottom - top;
   for (let k = 0; k <= 4; k++) {                           // hairline grid + ticks
