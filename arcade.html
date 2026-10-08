@@ -71,6 +71,9 @@
   #dock{ left:50%; bottom:30px; transform:translateX(-50%); }
   body.ui-hidden #dock{ transform:translateX(-50%) translateY(6px); }
   @media (max-width: 900px){ #dock{ bottom:88px; } }
+  /* the script builds the switcher's buttons; until it has, keep the pill out of sight
+     so it doesn't flash empty and then grow upward from its bottom anchor */
+  #dock:has(.seg:empty){ visibility:hidden; }
   .seg{
     display:flex; align-items:stretch; gap:4px; padding:5px;
     flex-wrap:wrap; justify-content:center; max-width:min(92vw, 860px);
